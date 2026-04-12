@@ -4393,6 +4393,12 @@ class Utility extends Model
                 );
             }
 
+            // Check for AVIF alternative for performance
+            $avifPath = $path . '.avif';
+            if (\Storage::disk($settings['storage_setting'])->exists($avifPath)) {
+                return \Storage::disk($settings['storage_setting'])->url($avifPath);
+            }
+
             return \Storage::disk($settings['storage_setting'])->url($path);
         } catch (\Throwable $th) {
             return '';
@@ -4406,7 +4412,7 @@ class Utility extends Model
         $data = $data->get();
         $settings = [
             "storage_setting" => "local",
-            "local_storage_validation" => "jpg,jpeg,png,xlsx,xls,csv,pdf",
+            "local_storage_validation" => "jpg,jpeg,png,xlsx,xls,csv,pdf,avif,webp",
             "local_storage_max_upload_size" => "2048000",
             "s3_key" => "",
             "s3_secret" => "",

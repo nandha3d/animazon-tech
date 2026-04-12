@@ -93,7 +93,7 @@
                                             </div>
                                             <div class="flex-1 flex items-center gap-1.5 bg-white/[0.06] rounded-md px-2.5 py-1 min-w-0">
                                                 <i class="ti ti-lock text-green-500 text-[9px]"></i>
-                                                <span class="text-white/40 text-[10px] font-mono truncate">{{ !empty($item['website_url']) ? parse_url($item['website_url'], PHP_URL_HOST) : 'example.com' }}</span>
+                                                <span class="text-white/40 text-[10px] font-mono truncate">{{ $itemTitle }} | {{ !empty($item['website_url']) ? parse_url($item['website_url'], PHP_URL_HOST) : 'animazon.tech' }}</span>
                                             </div>
                                         </div>
                                         {{-- Screenshot viewport --}}
@@ -103,9 +103,9 @@
                                                      class="w-full block object-cover object-top transition-transform duration-[4s] ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:translate-y-[calc(-100%+220px)]"
                                                      alt="{{ $itemTitle }}" width="600" height="1200" loading="lazy" decoding="async">
                                             @elseif(!empty($item['website_url']))
-                                                <img src="https://image.thum.io/get/width/600/crop/1200/noanimate/{{ $item['website_url'] }}"
-                                                     class="w-full block object-cover object-top transition-transform duration-[4s] ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:translate-y-[calc(-100%+220px)]"
-                                                     alt="{{ $itemTitle }}" width="600" height="1200" loading="lazy" decoding="async"
+                                                <img src="https://s0.wordpress.com/mshots/v1/{{ urlencode($item['website_url']) }}?w=600"
+                                                     class="w-full h-full object-cover object-top transition-transform duration-[4s] ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-105"
+                                                     alt="{{ $itemTitle }}" width="600" height="400" loading="lazy" decoding="async"
                                                      onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'w-full h-full bg-gradient-to-br from-orange-900/30 to-animazon-black flex items-center justify-center\\'><i class=\\'ti ti-world text-5xl text-orange-400/50\\'></i></div>';">
                                             @else
                                                 <div class="w-full h-full bg-gradient-to-br from-orange-900/30 to-animazon-black flex items-center justify-center">

@@ -138,6 +138,8 @@
                                                             @else
                                                                 <span class="badge bg-light text-dark"><i class="ti ti-video"></i></span>
                                                             @endif
+                                                        @elseif($value['type'] == 'website' && !empty($value['website_url']))
+                                                            <img src="https://s0.wordpress.com/mshots/v1/{{ urlencode($value['website_url']) }}?w=200" alt="Website" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
                                                         @else
                                                             <span class="badge bg-light text-dark"><i class="ti ti-photo-off"></i></span>
                                                         @endif
