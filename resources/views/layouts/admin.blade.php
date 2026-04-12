@@ -1,0 +1,392 @@
+@php
+    use App\Models\Utility;
+    $setting = \App\Models\Utility::settings();
+
+    $logo = \App\Models\Utility::get_file('uploads/logo');
+
+    $company_favicon = $setting['company_favicon'] ?? '';
+
+    $color = !empty($setting['color']) ? $setting['color'] : 'theme-3';
+
+    if(isset($setting['color_flag']) && $setting['color_flag'] == 'true')
+    {
+        $themeColor = 'custom-color';
+    }
+    else {
+        $themeColor = $color;
+    }
+
+    $primary_color = $setting['primary_color'] ?? '#00c1de';
+    $secondary_color = $setting['secondary_color'] ?? '#ff6122';
+
+    $SITE_RTL = $setting['SITE_RTL'] ?? '';
+
+    $lang = \App::getLocale('lang');
+    if ($lang == 'ar' || $lang == 'he') {
+        $SITE_RTL = 'on';
+    }
+
+    $metatitle = isset($setting['meta_title']) ? $setting['meta_title'] : '';
+    $metsdesc = isset($setting['meta_desc']) ? $setting['meta_desc'] : '';
+    $meta_logo = isset($setting['meta_image']) ? $setting['meta_image'] : '';
+
+@endphp
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ $SITE_RTL == 'on' ? 'rtl' : '' }}">
+
+<meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
+
+<head>
+    <title>{{ $setting['title_text'] ? $setting['title_text'] : config('app.name', 'ANIMAZON') }} - @yield('page-title')
+    </title>
+
+    <meta name="title" content="{{ $metatitle }}">
+    <meta name="description" content="{{ $metsdesc }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ env('APP_URL') }}">
+    <meta property="og:title" content="{{ $metatitle }}">
+    <meta property="og:description" content="{{ $metsdesc }}">
+    <meta property="og:image" content="{{ \App\Models\Utility::get_file('uploads/meta/' . $meta_logo) }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ env('APP_URL') }}">
+    <meta property="twitter:title" content="{{ $metatitle }}">
+    <meta property="twitter:description" content="{{ $metsdesc }}">
+    <meta property="twitter:image" content="{{ \App\Models\Utility::get_file('uploads/meta/' . $meta_logo) }}">
+
+
+    <script src="{{ asset('js/html5shiv.js') }}"></script>
+
+
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="url" content="{{ url('') . '/' . config('chatify.path') }}" data-user="{{ Auth::user()->id }}">
+    <link rel="icon"
+        href="{{ \App\Models\Utility::get_file('uploads/logo/' . (isset($company_favicon) && !empty($company_favicon) ? $company_favicon : 'favicon.png'))  . '?' . time() }}"
+        type="image" sizes="16x16">
+
+    <!-- Favicon icon -->
+    <!-- Calendar-->
+    <link rel="stylesheet" href="{{ asset('assets/css/plugins/main.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('assets/css/plugins/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/plugins/flatpickr.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('assets/css/plugins/animate.min.css') }}">
+
+    <!-- font css -->
+    <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/fonts/feather.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/fonts/material.css') }}">
+
+    <!--bootstrap switch-->
+    <link rel="stylesheet" href="{{ asset('assets/css/plugins/bootstrap-switch-button.min.css') }}">
+
+    <!-- vendor css -->
+
+    @if ($SITE_RTL == 'on')
+        <link rel="stylesheet" href="{{ asset('assets/css/style-rtl.css') }}">
+    @endif
+
+    @if ($setting['cust_darklayout'] == 'on')
+        <link rel="stylesheet" href="{{ asset('assets/css/style-dark.css') }}" id="main-style-link">
+        <link rel="stylesheet" href="{{ asset('css/custom-dark.css') }}">
+    @else
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
+    @endif
+
+    <link rel="stylesheet" href="{{ asset('assets/css/customizer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+
+
+    <link rel="stylesheet" href="{{ asset('css/custom-color.css') }}">
+    @stack('css-page')
+
+    <style>
+        :root {
+            --color-customColor: {{ $primary_color }};
+            --primary: {{ $primary_color }};
+            --secondary: {{ $secondary_color }};
+            --bs-primary: {{ $primary_color }};
+            --bs-primary-rgb: {{ implode(',', Utility::hex2rgb($primary_color)) }};
+            --bs-success: {{ $primary_color }};
+            --bs-success-rgb: {{ implode(',', Utility::hex2rgb($primary_color)) }};
+        }
+        
+        /* Sidebar Active State & Icons */
+        .dash-sidebar .dash-navbar > .dash-item.active > .dash-link,
+        .dash-sidebar.light-sidebar .dash-navbar > .dash-item.active > .dash-link,
+        .dash-sidebar .dash-navbar > .dash-item.dash-hasmenu.active > .dash-link {
+            background-color: {{ $primary_color }} !important;
+            color: #fff !important;
+        }
+        .dash-sidebar .dash-navbar > .dash-item.active > .dash-link i,
+        .dash-sidebar.light-sidebar .dash-navbar > .dash-item.active > .dash-link i,
+        .dash-sidebar .dash-navbar > .dash-item.dash-hasmenu.active > .dash-link i {
+            color: #fff !important;
+        }
+        
+        /* Buttons & Backgrounds */
+        .btn-primary, .bg-primary, .btn-success, .bg-success, .dash-link.btn-primary {
+            --bs-btn-bg: {{ $primary_color }} !important;
+            --bs-btn-border-color: {{ $primary_color }} !important;
+            background-color: {{ $primary_color }} !important;
+            border-color: {{ $primary_color }} !important;
+            color: #fff !important;
+        }
+        
+        /* Text Colors */
+        .text-primary, .text-success, .dash-link.text-primary, .dash-link.text-success {
+            color: {{ $primary_color }} !important;
+        }
+
+        /* Sidebar Refinement - Only highlight the actual active leaf link */
+        .dash-sidebar .dash-navbar .dash-item.active > .dash-link {
+            background-color: {{ $primary_color }} !important;
+            color: #ffffff !important;
+        }
+
+        /* Parent items that are open (dash-trigger) - less aggressive */
+        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link {
+            background-color: transparent !important;
+            color: {{ $primary_color }} !important;
+        }
+        
+        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link i {
+            color: {{ $primary_color }} !important;
+        }
+
+        /* KILL THE GREEN & BLACK - Force Brand Colors Globally */
+        .btn-primary, .btn-success, .btn-info, .btn-secondary, .btn-dark,
+        .bg-primary, .bg-success, .bg-info, .bg-secondary, .bg-dark,
+        .badge-success, .badge-primary, .badge-info,
+        .form-check-input:checked,
+        .nav-pills .nav-link.active,
+        .dropdown-item.active,
+        .dropdown-item:active {
+            background-color: {{ $primary_color }} !important;
+            border-color: {{ $primary_color }} !important;
+            color: #ffffff !important;
+        }
+
+        /* Secondary themed buttons use brand secondary (Orange) */
+        .btn-warning, .bg-warning {
+            background-color: {{ $secondary_color }} !important;
+            border-color: {{ $secondary_color }} !important;
+            color: #ffffff !important;
+        }
+
+        /* Light variants */
+        .btn-light-primary, .btn-outline-primary {
+            color: {{ $primary_color }} !important;
+            border-color: {{ $primary_color }} !important;
+        }
+        
+        .btn-light-primary:hover, .btn-outline-primary:hover {
+            background-color: {{ $primary_color }} !important;
+            color: #ffffff !important;
+        }
+
+        /* Hover states */
+        .btn-primary:hover, .btn-success:hover, .bg-primary:hover, .bg-success:hover {
+            background-color: {{ $secondary_color }} !important;
+            border-color: {{ $secondary_color }} !important;
+        }
+
+        /* Dash Sidebar Submenu Active Color Fix */
+        .dash-sidebar .dash-navbar > .dash-item.dash-trigger > .dash-link i,
+        .dash-sidebar .dash-navbar > .dash-item.active > .dash-link i {
+            color: {{ $setting['cust_darklayout'] == 'on' ? '#fff' : $primary_color }} !important;
+        }
+
+        /* Header Elements */
+        .dash-header .header-wrapper .dash-navbar-left .dash-link i,
+        .dash-header .header-wrapper .ms-auto .dash-link i {
+            color: {{ $primary_color }} !important;
+        }
+
+        /* Border Accents (Force Brand Color on ALL green/success borders) */
+        [style*="border-color: rgb(111, 217, 67)"], 
+        [style*="border-color: #6fd943"], 
+        .border-primary, 
+        .border-success,
+        .section-title,
+        .page-header h4 {
+            border-color: {{ $primary_color }} !important;
+            border-left-color: {{ $primary_color }} !important;
+        }
+        
+        /* Focus/Check states */
+        .form-check-input:checked {
+            background-color: {{ $primary_color }} !important;
+            border-color: {{ $primary_color }} !important;
+        }
+
+        /* Target the specific "Settings" vertical bar in breadcrumbs */
+        .page-header .breadcrumb-item.active {
+            color: {{ $primary_color }} !important;
+        }
+        /* Force Dark Mode Background if setting is ON */
+        @if($setting['cust_darklayout'] == 'on')
+        body, body.custom-color {
+            background: #22242c !important;
+        }
+        .dash-sidebar.light-sidebar {
+            background: #22242c !important;
+        }
+        @endif
+    </style>
+
+
+</head>
+
+
+
+<body class="{{ $themeColor }} {{ $setting['cust_darklayout'] == 'on' ? 'dash-sidebar-dark' : 'dash-sidebar-light' }}">
+
+    <!-- [ Pre-loader ] start -->
+    <div class="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
+        </div>
+    </div>
+
+    @include('partials.admin.menu')
+    <!-- [ navigation menu ] end -->
+    <!-- [ Header ] start -->
+    @include('partials.admin.header')
+
+    <!-- Modal -->
+    <div class="modal notification-modal fade" id="notification-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <h6 class="mt-2">
+                        <i data-feather="monitor" class="me-2"></i>Desktop settings
+                    </h6>
+                    <hr />
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="pcsetting1" checked />
+                        <label class="form-check-label f-w-600 pl-1" for="pcsetting1">Allow desktop notification</label>
+                    </div>
+                    <p class="text-muted ms-5">
+                        you get lettest content at a time when data will updated
+                    </p>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="pcsetting2" />
+                        <label class="form-check-label f-w-600 pl-1" for="pcsetting2">Store Cookie</label>
+                    </div>
+                    <h6 class="mb-0 mt-5">
+                        <i data-feather="save" class="me-2"></i>Application settings
+                    </h6>
+                    <hr />
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="pcsetting3" />
+                        <label class="form-check-label f-w-600 pl-1" for="pcsetting3">Backup Storage</label>
+                    </div>
+                    <p class="text-muted mb-4 ms-5">
+                        Automaticaly take backup as par schedule
+                    </p>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="pcsetting4" />
+                        <label class="form-check-label f-w-600 pl-1" for="pcsetting4">Allow guest to print
+                            file</label>
+                    </div>
+                    <h6 class="mb-0 mt-5">
+                        <i data-feather="cpu" class="me-2"></i>System settings
+                    </h6>
+                    <hr />
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="pcsetting5" checked />
+                        <label class="form-check-label f-w-600 pl-1" for="pcsetting5">View other user chat</label>
+                    </div>
+                    <p class="text-muted ms-5">Allow to show public user message</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-danger btn-sm" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-light-primary btn-sm">
+                        Save changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ Header ] end -->
+
+    <!-- [ Main Content ] start -->
+    <div class="dash-container">
+        <div class="dash-content">
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div>
+                            <div class="page-header-title">
+                                <h4 class="mb-2">@yield('page-title')</h4>
+                            </div>
+                            <ul class="breadcrumb">
+                                @yield('breadcrumb')
+                            </ul>
+                        </div>
+                        <div class="action-btn-col">
+                            @yield('action-btn')
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @yield('content')
+            <!-- [ Main Content ] end -->
+        </div>
+    </div>
+    <div class="modal fade" id="commonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="commonModalOver" tabindex="-1" role="dialog" aria-labelledby="commonModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="commonModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
+        <div id="liveToast" class="toast text-white fade" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    @include('partials.admin.footer')
+    @include('Chatify::layouts.footerLinks')
+
+</body>
+
+</html>
