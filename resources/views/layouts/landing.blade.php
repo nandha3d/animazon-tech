@@ -124,22 +124,7 @@
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
-    <style type="text/tailwindcss">
-        @layer components {
-            .btn-primary-custom {
-                @apply bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center;
-            }
-            .btn-ghost {
-                @apply border border-primary text-primary px-6 py-3 rounded-lg hover:bg-primary hover:text-white transition-all duration-300 inline-flex items-center justify-center;
-            }
-            .card-dark {
-                @apply bg-animazon-navy border border-animazon-border rounded-xl p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10;
-            }
-            .text-gradient {
-                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
-            }
-        }
-    </style>
+
     
     <style>
         .swiper {
@@ -404,7 +389,7 @@
                             From arcade & simulation games to full-scale Android, iOS, and browser experiences — try what we build, right here.
                         </p>
                         <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
-                            <button onclick="launchSpaceShooter()" class="btn-primary-custom group">
+                            <button onclick="launchSpaceShooter()" class="btn-primary group">
                                 <i class="ti ti-rocket mr-2 group-hover:animate-bounce"></i> Play Now
                             </button>
                             <a href="#problems" class="btn-ghost !text-white hover:!bg-primary">Explore Services</a>
@@ -431,7 +416,7 @@
                             Photorealistic 3D product animations and technical visualizations that explain your value in seconds.
                         </p>
                         <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
-                            <a href="#portfolio" class="btn-primary-custom">View 3D Showreel</a>
+                            <a href="#portfolio" class="btn-primary">View 3D Showreel</a>
                             <a href="#contact" class="btn-ghost !text-white hover:!bg-primary">Get a Quote</a>
                         </div>
                     </div>
@@ -459,7 +444,7 @@
                                 Crafting high-performance web experiences that drive growth, engagement, and real results.
                             </p>
                             <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
-                                <a href="#services" class="btn-primary-custom">Our Capabilities</a>
+                                <a href="#services" class="btn-primary">Our Capabilities</a>
                                 <a href="#contact" class="btn-ghost !text-white hover:!bg-primary">Start Building</a>
                             </div>
                             <!-- Trust bar -->
@@ -637,7 +622,7 @@
                             Custom mobile experiences that live in your users' pockets. Built for engagement and seamless utility.
                         </p>
                         <div class="flex flex-wrap gap-4">
-                            <a href="#portfolio" class="btn-primary-custom">View App Projects</a>
+                            <a href="#portfolio" class="btn-primary">View App Projects</a>
                             <a href="#contact" class="btn-ghost !text-white hover:!bg-primary">Consult Our Team</a>
                         </div>
                     </div>
@@ -897,13 +882,13 @@
                                                          onerror="this.onerror=null;this.src='https://img.youtube.com/vi/{{ $video_id }}/mqdefault.jpg';">
                                                 @else
                                                     <div class="w-full h-full bg-gradient-to-br from-red-900/30 to-animazon-black flex items-center justify-center">
-                                                        <i class="ti ti-player-play-filled text-5xl text-red-400/50"></i>
+                                                        <i class="ti ti-player-play text-5xl text-red-400/50"></i>
                                                     </div>
                                                 @endif
                                                 @if($video_id)
                                                     <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
                                                         <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform cursor-pointer" onclick="openVideoPlayer('{{ $video_id }}')">
-                                                            <i class="ti ti-player-play-filled text-2xl"></i>
+                                                            <i class="ti ti-player-play text-2xl"></i>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -1029,7 +1014,7 @@
 
                 <!-- View All CTA -->
                 <div class="text-center mt-16">
-                    <a href="{{ route('portfolio.public') }}" class="btn-primary-custom group inline-flex items-center">
+                    <a href="{{ route('portfolio.public') }}" class="btn-primary group inline-flex items-center">
                         View Full Portfolio <i class="ti ti-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                     </a>
                 </div>
@@ -1286,7 +1271,7 @@
                 Whether it's a complex medical visualization, a high-performance web app, or a cinematic product reveal, we have the expertise to deliver beyond expectations.
             </p>
             <div class="flex flex-wrap justify-center gap-6">
-                <a href="#contact-modal" class="btn-primary-custom">
+                <a href="#contact-modal" class="btn-primary">
                     Book a Free Consultation
                 </a>
                 <a href="#portfolio" class="btn-ghost">

@@ -151,13 +151,13 @@
                                                      onerror="this.onerror=null;this.src='https://img.youtube.com/vi/{{ $video_id }}/mqdefault.jpg';">
                                             @else
                                                 <div class="w-full h-full bg-gradient-to-br from-red-900/30 to-animazon-black flex items-center justify-center">
-                                                    <i class="ti ti-player-play-filled text-5xl text-red-400/50"></i>
+                                                    <i class="ti ti-player-play text-5xl text-red-400/50"></i>
                                                 </div>
                                             @endif
                                             @if($video_id)
                                                 <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
                                                     <button class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform cursor-pointer" onclick="openVidPlayer('{{ $video_id }}')">
-                                                        <i class="ti ti-player-play-filled text-2xl"></i>
+                                                        <i class="ti ti-player-play text-2xl"></i>
                                                     </button>
                                                 </div>
                                             @endif
