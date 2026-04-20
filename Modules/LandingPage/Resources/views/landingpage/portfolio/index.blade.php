@@ -105,18 +105,16 @@
                                             @foreach ($portfolios as $key => $value)
                                                 @php
                                                     $typeBadges = [
-                                                        'image' => 'bg-primary',
-                                                        'video' => 'bg-danger',
-                                                        'game' => 'bg-info',
                                                         'website' => 'bg-warning',
-                                                        'mobile_app' => 'bg-success',
+                                                        'video' => 'bg-danger',
+                                                        '3d' => 'bg-info',
+                                                        'application' => 'bg-success',
                                                     ];
                                                     $typeLabels = [
-                                                        'image' => 'Image',
-                                                        'video' => 'Video',
-                                                        'game' => 'Game',
                                                         'website' => 'Website',
-                                                        'mobile_app' => 'Mobile App',
+                                                        'video' => 'Video',
+                                                        '3d' => '3D Work',
+                                                        'application' => 'Application',
                                                     ];
                                                     $badgeClass = $typeBadges[$value['type']] ?? 'bg-secondary';
                                                     $typeLabel = $typeLabels[$value['type']] ?? ucfirst($value['type']);

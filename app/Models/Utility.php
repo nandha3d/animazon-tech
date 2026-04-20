@@ -2429,51 +2429,51 @@ class Utility extends Model
             $chartOfAccountTypes = Self::$chartOfAccountType;
             foreach($chartOfAccountTypes as $k => $type) {
                 $check_type = ChartOfAccountType::where('created_by', $user->id)->where('name', $type)->first();
+                if (empty($check_type)) {
+                    $check_type = ChartOfAccountType::create([
+                        'name' => $type,
+                        'created_by' => $user->id,
+                    ]);
+                }
 
                 $chartOfAccountSubTypes = Self::$chartOfAccountSubType;
-                foreach ($chartOfAccountSubTypes[$k] as $subType) {
-                    $check_subtype = ChartOfAccountSubType::where('created_by', $user->id)->where('type', $check_type->id)->where('name', $subType)->first();
-                    if (empty($check_subtype)) {
-                        $accountSubType = ChartOfAccountSubType::create(
-                            [
+                if (isset($chartOfAccountSubTypes[$k])) {
+                    foreach ($chartOfAccountSubTypes[$k] as $subType) {
+                        $check_subtype = ChartOfAccountSubType::where('created_by', $user->id)->where('type', $check_type->id)->where('name', $subType)->first();
+                        if (empty($check_subtype)) {
+                            ChartOfAccountSubType::create([
                                 'name' => $subType,
                                 'type' => $check_type->id,
                                 'created_by' => $user->id,
-                            ]
-                        );
-                    
-                        $chartOfAccounts = Self::$chartOfAccount1;
-
-                        foreach ($chartOfAccounts as $chartAccount) {
-                            $type = ChartOfAccountType::where('created_by', $user->id)->where('name', $chartAccount['type'])->first();
-                            $sub_type = ChartOfAccountSubType::where('type', $type->id)->where('name', $chartAccount['sub_type'])->where('created_by' , $user->id)->first();
-                            $check_account = ChartOfAccount::where('name', $chartAccount['name'])->where('created_by' , $user->id)->first();
-                            $receivableAccount = ChartOfAccount::where('created_by', $user->id)->where('type', $check_type->id)->where('name', 'Account Receivables')->first();
-                            $payableAccount = ChartOfAccount::where('type', $check_type->id)->where('name', 'Account Payable')->first();
-                                if(!empty($receivableAccount))
-                                {
-                                    $receivableAccount->delete();
-                                }
-                                if(!empty($payableAccount))
-                                {
-                                    $payableAccount->delete();
-                                }
-                            if (empty($check_account)) {
-                                ChartOfAccount::create(
-                                    [
-                                        'name' => $chartAccount['name'],
-                                        'code' => $chartAccount['code'],
-                                        'type' => $type->id,
-                                        'sub_type' => $sub_type->id,
-                                        'is_enabled' => 1,
-                                        'created_by' => $user->id,
-                                    ]
-                                );
-                            }
-                        }        
+                            ]);
+                        }
                     }
                 }
             }
+
+            $chartOfAccounts = Self::$chartOfAccount1;
+
+            foreach ($chartOfAccounts as $chartAccount) {
+                $type = ChartOfAccountType::where('created_by', $user->id)->where('name', $chartAccount['type'])->first();
+                if (!empty($type)) {
+                    $sub_type = ChartOfAccountSubType::where('type', $type->id)->where('name', $chartAccount['sub_type'])->where('created_by' , $user->id)->first();
+                    
+                    if (!empty($sub_type)) {
+                        $check_account = ChartOfAccount::where('name', $chartAccount['name'])->where('created_by' , $user->id)->first();
+                        
+                        if (empty($check_account)) {
+                            ChartOfAccount::create([
+                                'name' => $chartAccount['name'],
+                                'code' => $chartAccount['code'],
+                                'type' => $type->id,
+                                'sub_type' => $sub_type->id,
+                                'is_enabled' => 1,
+                                'created_by' => $user->id,
+                            ]);
+                        }
+                    }
+                }
+            }        
         }
     }
 

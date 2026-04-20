@@ -370,6 +370,16 @@
                 @endif
                 <!--------------------- End Dashboard ----------------------------------->
 
+                <!--------------------- Start Analytics ----------------------------------->
+                @if (\Auth::user()->type == 'company')
+                    <li class="dash-item {{ Request::segment(1) == 'analytics' ? ' active' : '' }}">
+                        <a href="{{ route('analytics.index') }}" class="dash-link">
+                            <span class="dash-micon"><i class="ti ti-chart-bar"></i></span>
+                            <span class="dash-mtext">{{ __('Analytics') }}</span>
+                        </a>
+                    </li>
+                @endif
+                <!--------------------- End Analytics ----------------------------------->
 
                 <!--------------------- Start HRM ----------------------------------->
 

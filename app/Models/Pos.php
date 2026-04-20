@@ -112,7 +112,7 @@ class Pos extends Model
                     \DB::raw('tax as tax'),
                     \DB::raw('SUM(price)  as price'))
                 ->leftJoin('pos', 'pos_products.pos_id', 'pos.id')
-                ->where(\DB::raw('MONTH(pos.created_at)'), '=', [date('m')])
+                ->whereMonth('pos.created_at', date('m'))
             ->where('pos.created_by', \Auth::user()->creatorId())
                 ->groupBy('pos')
                 ->get()

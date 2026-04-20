@@ -52,7 +52,7 @@ class ProductServiceCategory extends Model
     public function incomeCategoryRevenueAmount()
     {
         $year    = date('Y');
-        $revenue = $this->hasMany('App\Models\Revenue', 'category_id', 'id')->where('created_by', \Auth::user()->creatorId())->whereRAW('YEAR(date) =?', [$year])->sum('amount');
+        $revenue = $this->hasMany('App\Models\Revenue', 'category_id', 'id')->where('created_by', \Auth::user()->creatorId())->whereYear('date', $year)->sum('amount');
         $invoices     =  $this->invoices()->with('items')->get()
         ->sum->getTotal();
 
@@ -66,7 +66,7 @@ class ProductServiceCategory extends Model
         $year    = date('Y');
         $payment = $this->hasMany('App\Models\Payment', 'category_id', 'id')
             ->where('created_by', \Auth::user()->creatorId())
-            ->whereRAW('YEAR(date) =?', [$year])
+            ->whereYear('date', $year)
             ->sum('amount');
 
             $bills     =  $this->bills()->with(['items'])->get()

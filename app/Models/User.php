@@ -430,7 +430,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function incomeCurrentMonth()
     {
         $currentMonth = date('m');
-        $revenue = Revenue::where('created_by', '=', $this->creatorId())->whereRaw('MONTH(date) = ?', [$currentMonth])->sum('amount');
+        $revenue = Revenue::where('created_by', '=', $this->creatorId())->whereMonth('date', $currentMonth)->sum('amount');
         $invoiceTotal = self::getInvoiceProductsData('', $currentMonth);
 
         $totalIncome = (!empty($revenue) ? $revenue : 0) + (!empty($invoiceTotal) ? ($invoiceTotal) : 0);
@@ -442,11 +442,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
 
         $currentMonth = date('m');
-        $revenue = Revenue::where('created_by', '=', $this->creatorId())->whereRaw('MONTH(date) = ?', [$currentMonth])->sum('amount');
+        $revenue = Revenue::where('created_by', '=', $this->creatorId())->whereMonth('date', $currentMonth)->sum('amount');
 
-        $incomes = Revenue::selectRaw('sum(revenues.amount) as amount,MONTH(date) as month,YEAR(date) as year,category_id')->leftjoin('product_service_categories', 'revenues.category_id', '=', 'product_service_categories.id')->where('product_service_categories.type', '=', 1);
+        if(\DB::getDriverName() == 'sqlite') {
+            $incomes = Revenue::selectRaw("sum(revenues.amount) as amount, strftime('%m', date) as month, strftime('%Y', date) as year, category_id")->leftjoin('product_service_categories', 'revenues.category_id', '=', 'product_service_categories.id')->where('product_service_categories.type', '=', 1);
+        } else {
+            $incomes = Revenue::selectRaw('sum(revenues.amount) as amount,MONTH(date) as month,YEAR(date) as year,category_id')->leftjoin('product_service_categories', 'revenues.category_id', '=', 'product_service_categories.id')->where('product_service_categories.type', '=', 1);
+        }
 
-        $invoices = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->whereRAW('MONTH(send_date) = ?', [$currentMonth])->get();
+        $invoices = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->whereMonth('send_date', $currentMonth)->get();
 
         $invoiceArray = array();
         foreach ($invoices as $invoice) {
@@ -461,7 +465,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $currentMonth = date('m');
 
-        $payment = Payment::where('created_by', '=', $this->creatorId())->whereRaw('MONTH(date) = ?', [$currentMonth])->sum('amount');
+        $payment = Payment::where('created_by', '=', $this->creatorId())->whereMonth('date', $currentMonth)->sum('amount');
         $billTotal = self::getBillProductsData('', $currentMonth);
 
 
@@ -474,6 +478,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public static function getInvoiceProductsData($date = '', $month = '')
     {
+        $taxCondition = \DB::getDriverName() == 'sqlite' ? "\",\" || invoice_products.tax || \",\" LIKE \"%,\" || taxes.id || \",%\"" : "FIND_IN_SET(taxes.id, invoice_products.tax) > 0";
         if ($month != '' && $date != '') {
             $InvoiceProducts = \DB::table('invoice_products')
                 ->select('invoice_products.invoice_id as invoice',
@@ -481,11 +486,11 @@ class User extends Authenticatable implements MustVerifyEmail
                     \DB::raw('SUM(discount) as total_discount'),
                     \DB::raw('SUM(price * quantity)  as sub_total'))
                 ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM invoice_products
-                    LEFT JOIN taxes ON FIND_IN_SET(taxes.id, invoice_products.tax) > 0
+                    LEFT JOIN taxes ON ' . $taxCondition . '
                     WHERE invoice_products.invoice_id = invoices.id) as tax_values')
                 ->leftJoin('invoices', 'invoice_products.invoice_id', 'invoices.id')
-                ->where(\DB::raw('YEAR(invoices.send_date)'), '=', $date)
-                ->where(\DB::raw('MONTH(invoices.send_date)'), '=', $month)
+                ->whereYear('invoices.send_date', $date)
+                ->whereMonth('invoices.send_date', $month)
                 ->where('invoices.created_by', \Auth::user()->creatorId())
                 ->groupBy('invoice')
                 ->get()
@@ -497,7 +502,7 @@ class User extends Authenticatable implements MustVerifyEmail
                     \DB::raw('SUM(discount) as total_discount'),
                     \DB::raw('SUM(price * quantity)  as sub_total'))
                 ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM invoice_products
-                    LEFT JOIN taxes ON FIND_IN_SET(taxes.id, invoice_products.tax) > 0
+                    LEFT JOIN taxes ON ' . $taxCondition . '
                     WHERE invoice_products.invoice_id = invoices.id) as tax_values')
                 ->leftJoin('invoices', 'invoice_products.invoice_id', 'invoices.id')
                 ->where(\DB::raw('(invoices.send_date)'), '=', $date)
@@ -512,10 +517,10 @@ class User extends Authenticatable implements MustVerifyEmail
                     \DB::raw('SUM(discount) as total_discount'),
                     \DB::raw('SUM(price * quantity)  as sub_total'))
                 ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM invoice_products
-                    LEFT JOIN taxes ON FIND_IN_SET(taxes.id, invoice_products.tax) > 0
+                    LEFT JOIN taxes ON ' . $taxCondition . '
                     WHERE invoice_products.invoice_id = invoices.id) as tax_values')
                 ->leftJoin('invoices', 'invoice_products.invoice_id', 'invoices.id')
-                ->where(\DB::raw('MONTH(invoices.send_date)'), '=', $month)
+                ->whereMonth('invoices.send_date', $month)
                 ->where('invoices.created_by', \Auth::user()->creatorId())
                 ->groupBy('invoice')
                 ->get()
@@ -537,6 +542,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public static function getBillProductsData($date = '', $month = '')
     {
+        $taxCondition = \DB::getDriverName() == 'sqlite' ? "\",\" || bill_products.tax || \",\" LIKE \"%,\" || taxes.id || \",%\"" : "FIND_IN_SET(taxes.id, bill_products.tax) > 0";
         if ($month != '' && $date != '') {
             $BillProducts = \DB::table('bill_products')
                 ->select('bill_products.bill_id as bill',
@@ -546,11 +552,11 @@ class User extends Authenticatable implements MustVerifyEmail
                 ->selectRaw('(SELECT SUM(bill_accounts.price) FROM bill_accounts
                     WHERE bill_accounts.ref_id = bills.id) as acc_price')
                 ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM bill_products
-                                        LEFT JOIN taxes ON FIND_IN_SET(taxes.id, bill_products.tax) > 0
+                                        LEFT JOIN taxes ON ' . $taxCondition . '
                                         WHERE bill_products.bill_id = bills.id) as tax_values')
                 ->leftJoin('bills', 'bill_products.bill_id', 'bills.id')
-                ->where(\DB::raw('YEAR(bills.send_date)'), '=', $date)
-                ->where(\DB::raw('MONTH(bills.send_date)'), '=', $month)
+                ->whereYear('bills.send_date', $date)
+                ->whereMonth('bills.send_date', $month)
                 ->where('bills.created_by', \Auth::user()->creatorId())
                 ->groupBy('bill')
                 ->get()
@@ -564,7 +570,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 ->selectRaw('(SELECT SUM(bill_accounts.price) FROM bill_accounts
                     WHERE bill_accounts.ref_id = bills.id) as acc_price')
                 ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM bill_products
-                                LEFT JOIN taxes ON FIND_IN_SET(taxes.id, bill_products.tax) > 0
+                                LEFT JOIN taxes ON ' . $taxCondition . '
                                 WHERE bill_products.bill_id = bills.id) as tax_values')
                 ->leftJoin('bills', 'bill_products.bill_id', 'bills.id')
                 ->where(\DB::raw('(bills.send_date)'), '=', $date)
@@ -581,10 +587,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 ->selectRaw('(SELECT SUM(bill_accounts.price) FROM bill_accounts
                     WHERE bill_accounts.ref_id = bills.id) as acc_price')
                 ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM bill_products
-                                LEFT JOIN taxes ON FIND_IN_SET(taxes.id, bill_products.tax) > 0
+                                LEFT JOIN taxes ON ' . $taxCondition . '
                                 WHERE bill_products.bill_id = bills.id) as tax_values')
                 ->leftJoin('bills', 'bill_products.bill_id', 'bills.id')
-                ->where(\DB::raw('MONTH(bills.send_date)'), '=', $month)
+                ->whereMonth('bills.send_date', $month)
                 ->where('bills.created_by', \Auth::user()->creatorId())
                 ->groupBy('bill')
                 ->get()
@@ -620,14 +626,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $user_id = \Auth::user()->creatorId();
         for ($i = 1; $i <= 12; $i++) {
-            $monthlyIncome = Revenue::selectRaw('sum(amount) amount')->where('created_by', '=', $user_id)->whereRaw('year(`date`) = ?', array(date('Y')))->whereRaw('month(`date`) = ?', $i)->first();
+            $monthlyIncome = Revenue::selectRaw('sum(amount) amount')->where('created_by', '=', $user_id)->whereYear('date', date('Y'))->whereMonth('date', $i)->first();
             $invoiceTotal = self::getInvoiceProductsData((date('Y')), $i);
 
             $totalIncome = (!empty($monthlyIncome) ? $monthlyIncome->amount : 0) + (!empty($invoiceTotal) ? ($invoiceTotal) : 0);
 
             $incomeArr[] = !empty($totalIncome) ? str_replace(",", "", number_format($totalIncome, 2)) : 0;
 
-            $monthlyExpense = Payment::selectRaw('sum(amount) amount')->where('created_by', '=', $this->creatorId())->whereRaw('year(`date`) = ?', array(date('Y')))->whereRaw('month(`date`) = ?', $i)->first();
+            $monthlyExpense = Payment::selectRaw('sum(amount) amount')->where('created_by', '=', $this->creatorId())->whereYear('date', date('Y'))->whereMonth('date', $i)->first();
             $billTotal = self::getBillProductsData((date('Y')), $i);
 
             $totalExpense = (!empty($monthlyExpense) ? $monthlyExpense->amount : 0) + (!empty($billTotal) ? ($billTotal) : 0);
@@ -716,11 +722,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function invoicesData($start, $current)
     {
+        $taxCondition = \DB::getDriverName() == 'sqlite' ? "\",\" || invoice_products.tax || \",\" LIKE \"%,\" || taxes.id || \",%\"" : "FIND_IN_SET(taxes.id, invoice_products.tax) > 0";
         $InvoiceProducts = Invoice::select('invoices.invoice_id as invoice')
             ->selectRaw('sum((invoice_products.price * invoice_products.quantity) - invoice_products.discount) as price')
             ->selectRaw('(SELECT SUM(credit_notes.amount) FROM credit_notes WHERE credit_notes.invoice = invoices.id) as credit_price')
             ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM invoice_products
-             LEFT JOIN taxes ON FIND_IN_SET(taxes.id, invoice_products.tax) > 0
+             LEFT JOIN taxes ON ' . $taxCondition . '
              WHERE invoice_products.invoice_id = invoices.id) as total_tax')
             ->leftJoin('invoice_products', 'invoice_products.invoice_id', 'invoices.id')
             ->where('issue_date', '>=', $start)->where('issue_date', '<=', $current)
@@ -771,6 +778,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function billsData($start, $current)
     {
+        $taxCondition = \DB::getDriverName() == 'sqlite' ? "\",\" || bill_products.tax || \",\" LIKE \"%,\" || taxes.id || \",%\"" : "FIND_IN_SET(taxes.id, bill_products.tax) > 0";
         $billProducts = Bill::select('bills.bill_id as bill')
             ->selectRaw('sum((bill_products.price * bill_products.quantity) - bill_products.discount) as price')
             ->selectRaw('(SELECT SUM(debit_notes.amount) FROM debit_notes
@@ -778,7 +786,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->selectRaw('(SELECT SUM(bill_accounts.price) FROM bill_accounts
              WHERE bill_accounts.ref_id = bills.id) as acc_price')
             ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM bill_products
-             LEFT JOIN taxes ON FIND_IN_SET(taxes.id, bill_products.tax) > 0
+             LEFT JOIN taxes ON ' . $taxCondition . '
              WHERE bill_products.bill_id = bills.id) as total_tax')
             ->leftJoin('bill_products', 'bill_products.bill_id', 'bills.id')
             ->where('bill_date', '>=', $start)->where('bill_date', '<=', $current)
@@ -833,6 +841,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function expenseData($start, $current)
     {
+        $taxCondition = \DB::getDriverName() == 'sqlite' ? "\",\" || bill_products.tax || \",\" LIKE \"%,\" || taxes.id || \",%\"" : "FIND_IN_SET(taxes.id, bill_products.tax) > 0";
         $billProducts = Bill::select('bills.bill_id as bill')
             ->selectRaw('sum((bill_products.price * bill_products.quantity) - bill_products.discount) as price')
             ->selectRaw('(SELECT SUM(debit_notes.amount) FROM debit_notes
@@ -840,7 +849,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->selectRaw('(SELECT SUM(bill_accounts.price) FROM bill_accounts
              WHERE bill_accounts.ref_id = bills.id) as acc_price')
             ->selectRaw('(SELECT SUM((price * quantity - discount) * (taxes.rate / 100)) FROM bill_products
-             LEFT JOIN taxes ON FIND_IN_SET(taxes.id, bill_products.tax) > 0
+             LEFT JOIN taxes ON ' . $taxCondition . '
              WHERE bill_products.bill_id = bills.id) as total_tax')
             ->leftJoin('bill_products', 'bill_products.bill_id', 'bills.id')
             ->where('bill_date', '>=', $start)->where('bill_date', '<=', $current)

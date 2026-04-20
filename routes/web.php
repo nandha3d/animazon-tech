@@ -175,6 +175,7 @@ use Illuminate\Support\Facades\Artisan;
 //     return view('welcome');
 // });
 
+
 Route::view('/our-portfolio', 'pages.portfolio')->name('portfolio.public');
 Route::view('/blog', 'pages.blog')->name('blog.index');
 
@@ -332,8 +333,10 @@ Route::get('/', [DashboardController::class, 'landingpage'])->middleware(['XSS',
 
 // Public Cost Calculator (Project Estimate) - No auth required
 Route::get('/pricing', [CostCalculatorController::class, 'publicIndex'])->name('cost-calculator.public')->middleware(['XSS']);
+Route::get('/cost-calculator', [CostCalculatorController::class, 'publicIndex'])->name('cost-calculator.index')->middleware(['XSS']);
 Route::post('/pricing/calculate', [CostCalculatorController::class, 'publicCalculate'])->name('cost-calculator.calculate')->middleware(['XSS']);
-Route::post('/pricing/submit', [CostCalculatorController::class, 'publicSubmit'])->name('cost-calculator.submit')->middleware(['XSS']);
+
+Route::post('/pricing/submit', [CostCalculatorController::class, 'publicSubmit'])->name('cost-calculator.submit')->middleware(['XSS', \Spatie\Honeypot\ProtectAgainstSpam::class]);
 Route::get('/pricing/currency', [CostCalculatorController::class, 'getCurrency'])->name('cost-calculator.currency')->middleware(['XSS']);
 Route::get('/pricing/detect-country', [CostCalculatorController::class, 'detectCountry'])->name('cost-calculator.detect-country')->middleware(['XSS']);
 Route::get('/pricing/{projectTypeId}', [CostCalculatorController::class, 'publicCalculator'])->name('cost-calculator.show')->middleware(['XSS']);
@@ -364,6 +367,7 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('/hrm-dashboard', [DashboardController::class, 'hrm_dashboard_index'])->name('hrm.dashboard')->middleware(['auth', 'XSS', 'revalidate']);
     Route::get('/crm-dashboard', [DashboardController::class, 'crm_dashboard_index'])->name('crm.dashboard')->middleware(['auth', 'XSS', 'revalidate']);
     Route::get('/pos-dashboard', [DashboardController::class, 'pos_dashboard_index'])->name('pos.dashboard')->middleware(['auth', 'XSS', 'revalidate']);
+    Route::get('/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics.index')->middleware(['auth', 'XSS', 'revalidate']);
 
     Route::get('profile', [UserController::class, 'profile'])->name('profile')->middleware(['auth', 'XSS', 'revalidate']);
 

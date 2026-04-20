@@ -21,7 +21,7 @@ class CreateZoomMeetingsTable extends Migration
             $table->string('user_id')->nullable();
             $table->integer('client_id')->default(0);
             $table->string('password')->nullable();
-            $table->timestamp('start_date')->default(DB::raw('CURRENT_TIMESTAMP(0)'));
+            $table->timestamp('start_date')->useCurrent();
             $table->integer('duration')->default(0);
             $table->text('start_url')->nullable();
             $table->string('join_url')->nullable();

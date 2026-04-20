@@ -21,6 +21,11 @@ class EstimateSubmittedNotification extends Notification
 
     public function via($notifiable): array
     {
+        // On-demand notifications (e.g. Notification::route('mail', ...)) don't have a database record
+        if ($notifiable instanceof \Illuminate\Notifications\AnonymousNotifiable) {
+            return ['mail'];
+        }
+
         return ['mail', 'database'];
     }
 

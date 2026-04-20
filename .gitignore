@@ -1,7 +1,8 @@
 /.idea
 /.vscode
 /.phpunit.cache
-/node_modules/
+node_modules/
+**/node_modules/
 /public/build/
 /public/hot
 /public/storage
@@ -11,6 +12,7 @@
 /storage/framework/testing/*
 /storage/framework/views/*
 /storage/logs/*
+/storage/debugbar/*
 /vendor/
 .env
 .env.backup
@@ -23,3 +25,11 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+*.sql
+*.zip
+*.rar
+scraped_html.txt
+first()
+.gemini/
+.DS_Store
+Thumbs.db

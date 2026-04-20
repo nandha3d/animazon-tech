@@ -25,6 +25,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="{{$settings['SITE_RTL'] == 'on'?'rtl':''}}" class="{{ $is_dark ? 'dark' : '' }}">
 <head>
+    <!-- Critical Meta (must be first) -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0A0A0B" />
 
     <title>{{__('ANIMAZON')}}</title>
     <meta name="title" content="{{$metatitle}}">
@@ -45,40 +49,26 @@
     <meta property="twitter:image" content="{{$meta_image.$meta_logo}}">
 
 
-    <!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 11]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <!-- Meta -->
-    <meta charset="utf-8" />
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui"
-    />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description" content="Dashboard Template Description" />
-    <meta name="keywords" content="Dashboard Template" />
-    <meta name="author" content="WorkDo" />
 
     <!-- Favicon icon -->
     <link rel="icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon" />
 
-    <!-- Google Fonts (display=swap for non-blocking) -->
+    <!-- Preconnect to critical origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+
+    <!-- Google Fonts — non-render-blocking -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet"></noscript>
 
     <!-- Defer non-critical CSS: animate.min.css -->
     <link rel="stylesheet" href="{{asset('assets/css/plugins/animate.min.css')}}" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="{{asset('assets/css/plugins/animate.min.css')}}" /></noscript>
-    <!-- font css -->
+    <!-- Icon font — only tabler-icons used on landing page -->
     <link rel="stylesheet" href="{{asset('assets/fonts/tabler-icons.min.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/fonts/feather.css')}}" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="{{asset('assets/fonts/fontawesome.css')}}" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="{{asset('assets/fonts/material.css')}}" media="print" onload="this.media='all'">
 
     <!-- vendor css -->
     @if ($SITE_RTL == 'on')
@@ -88,8 +78,8 @@
     <!-- Vite App -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <link rel="stylesheet" href="{{asset('assets/css/customizer.css')}}">
-    <!-- <link rel="stylesheet" href="{{asset('assets/css/landing.css')}}" /> -->
+    <link rel="stylesheet" href="{{asset('assets/css/customizer.css')}}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{asset('assets/css/customizer.css')}}"></noscript>
 
     <style>
         :root {
@@ -119,10 +109,73 @@
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Montserrat', sans-serif;
         }
+
+        /* Footer — distinct from main dark bg */
+        .animazon-footer {
+            background: #121215;
+            color: #ffffff;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Gradient text utility */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* === Nav CTA Buttons === */
+        .btn-primary-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.3rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 0.6rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 193, 222, 0.25);
+            text-decoration: none;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 25px rgba(0, 193, 222, 0.4);
+            opacity: 0.95;
+        }
+        .btn-login-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.45rem 1.1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 0.6rem;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .btn-login-outline:hover {
+            background: var(--primary-color);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 193, 222, 0.2);
+        }
+
+
     </style>
 
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Swiper CSS — non-render-blocking -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" /></noscript>
     
 
     
@@ -318,30 +371,32 @@
             <!-- Logo -->
             <a class="flex items-center" href="{{ url('/') }}">
                 @if ($is_dark)
-                    <img src="{{ $logo . '/' . (isset($company_logos) && !empty($company_logos) ? $company_logos : 'logo-light.png') . '?' . time() }}" alt="ANIMAZON" class="h-10 w-auto"/>
+                    <img src="{{ $logo . '/' . (isset($company_logos) && !empty($company_logos) ? $company_logos : 'logo-light.png') }}" alt="ANIMAZON" class="h-10 w-auto" width="160" height="40"/>
                 @else
-                    <img src="{{ $logo . '/' . (isset($company_logo) && !empty($company_logo) ? $company_logo : 'logo-dark.png') . '?' . time() }}" alt="ANIMAZON" class="h-10 w-auto"/>
+                    <img src="{{ $logo . '/' . (isset($company_logo) && !empty($company_logo) ? $company_logo : 'logo-dark.png') }}" alt="ANIMAZON" class="h-10 w-auto" width="160" height="40"/>
                 @endif
             </a>
 
             <!-- Desktop Menu -->
             <div class="hidden lg:flex items-center space-x-8">
-                <a href="{{ url('/') }}" class="text-animazon-white hover:text-primary font-medium transition-colors">Home</a>
+                <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Home</a>
                 <a href="{{ url('/') }}#services" class="text-animazon-white hover:text-primary font-medium transition-colors">Services</a>
-                <a href="{{ route('portfolio.public') }}" class="text-animazon-white hover:text-primary font-medium transition-colors">Portfolio</a>
-                <a href="{{ route('blog.index') }}" class="text-animazon-white hover:text-primary font-medium transition-colors">Blog</a>
-                <a href="{{ route('cost-calculator.public') }}" class="text-animazon-white hover:text-primary font-medium transition-colors">Pricing</a>
+                <a href="{{ route('portfolio.public') }}" class="{{ request()->routeIs('portfolio.public') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Portfolio</a>
+                <a href="{{ route('blog.index') }}" class="{{ request()->routeIs('blog.index') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Blog</a>
+                <a href="{{ route('cost-calculator.public') }}" class="{{ request()->routeIs('cost-calculator.*') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Pricing</a>
                 <a href="{{ url('/') }}#contact" class="text-animazon-white hover:text-primary font-medium transition-colors">Contact</a>
             </div>
 
             <!-- CTA & Mobile Toggle -->
-            <div class="flex items-center space-x-4">
-                <a href="{{ url('/') }}#contact" class="hidden sm:inline-flex btn-primary-custom !py-2 !px-5 text-sm">
-                    Start Your Project
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('cost-calculator.public') }}" class="hidden sm:inline-flex btn-primary-custom">
+                    <i class="ti ti-rocket"></i> Start Your Project
                 </a>
-                <a href="{{ route('login') }}" class="text-animazon-muted hover:text-animazon-white font-medium text-sm transition-colors hidden lg:block">Login</a>
+                <a href="{{ route('login') }}" class="btn-login-outline hidden lg:inline-flex">
+                    <i class="ti ti-login"></i> Login
+                </a>
                 
-                <button id="mobile-menu-toggle" class="lg:hidden text-animazon-white p-2">
+                <button id="mobile-menu-toggle" class="lg:hidden text-animazon-white p-2" aria-label="Open navigation menu" aria-expanded="false">
                     <i class="ti ti-menu-2 text-2xl"></i>
                 </button>
             </div>
@@ -351,15 +406,15 @@
 
 <!-- Mobile Menu Overlay -->
 <div id="mobile-menu-overlay" class="fixed inset-0 bg-animazon-black/90 backdrop-blur-xl z-[60] flex-col items-center justify-center space-y-8 transition-all duration-300 opacity-0 invisible flex">
-    <button id="mobile-menu-close" class="absolute top-6 right-6 text-animazon-white p-2">
+    <button id="mobile-menu-close" class="absolute top-6 right-6 text-animazon-white p-2" aria-label="Close navigation menu">
         <i class="ti ti-x text-3xl"></i>
     </button>
     
-    <a href="{{ url('/') }}" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Home</a>
+    <a href="{{ url('/') }}" class="mobile-link text-2xl {{ request()->is('/') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Home</a>
     <a href="{{ url('/') }}#services" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Services</a>
-    <a href="{{ route('portfolio.public') }}" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Portfolio</a>
-    <a href="{{ route('blog.index') }}" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Blog</a>
-    <a href="{{ route('cost-calculator.public') }}" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Pricing</a>
+    <a href="{{ route('portfolio.public') }}" class="mobile-link text-2xl {{ request()->routeIs('portfolio.public') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Portfolio</a>
+    <a href="{{ route('blog.index') }}" class="mobile-link text-2xl {{ request()->routeIs('blog.index') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Blog</a>
+    <a href="{{ route('cost-calculator.public') }}" class="mobile-link text-2xl {{ request()->routeIs('cost-calculator.*') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Pricing</a>
     <a href="{{ url('/') }}#contact" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Contact</a>
     <a href="{{ route('login') }}" class="mobile-link text-xl text-primary font-bold transition-colors mt-8">Login</a>
 </div>
@@ -1157,58 +1212,106 @@
     </style>
 @endif
 <!-- [ Why Animazon ] start -->
-<section id="why" class="py-24 bg-animazon-black text-animazon-white relative overflow-hidden">
-    <div class="container mx-auto px-4 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto mb-16">
+<section id="why" class="py-28 bg-animazon-black text-animazon-white relative overflow-hidden">
+    <!-- Background accents -->
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[150px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="container mx-auto px-4 lg:px-8 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-20">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-4">Why Choose Us</span>
             <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-6">
-                Why Animazon
+                Why <span class="text-gradient">Animazon</span>
             </h2>
             <p class="text-lg text-animazon-muted">
                 What separates Animazon from generic production studios? It's our unique blend of technical knowledge and cinematic artistry.
             </p>
         </div>
 
-        <div class="space-y-16">
-            <!-- Differentiators -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div class="flex flex-col space-y-4">
-                    <div class="w-full h-48 overflow-hidden rounded-xl bg-animazon-navy border border-animazon-border/50">
-                        <img src="{{ asset('assets/images/branding/hero.png') }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Artistic Excellence">
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-animazon-white mb-3">Artistic Excellence</h3>
-                        <p class="text-animazon-muted leading-relaxed text-sm">We don't just "make videos" or "write code". We create cinematic experiences that command attention.</p>
+        <!-- Stats Counter Row -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
+            <div class="text-center p-6 rounded-2xl bg-animazon-navy/50 border border-animazon-border/30 backdrop-blur-sm hover:border-primary/30 transition-all duration-500">
+                <div class="text-4xl md:text-5xl font-bold text-primary mb-2" data-counter>50+</div>
+                <div class="text-animazon-muted text-sm">Projects Delivered</div>
+            </div>
+            <div class="text-center p-6 rounded-2xl bg-animazon-navy/50 border border-animazon-border/30 backdrop-blur-sm hover:border-primary/30 transition-all duration-500">
+                <div class="text-4xl md:text-5xl font-bold text-primary mb-2" data-counter>30+</div>
+                <div class="text-animazon-muted text-sm">Happy Clients</div>
+            </div>
+            <div class="text-center p-6 rounded-2xl bg-animazon-navy/50 border border-animazon-border/30 backdrop-blur-sm hover:border-primary/30 transition-all duration-500">
+                <div class="text-4xl md:text-5xl font-bold text-primary mb-2" data-counter>4+</div>
+                <div class="text-animazon-muted text-sm">Years Experience</div>
+            </div>
+            <div class="text-center p-6 rounded-2xl bg-animazon-navy/50 border border-animazon-border/30 backdrop-blur-sm hover:border-primary/30 transition-all duration-500">
+                <div class="text-4xl md:text-5xl font-bold text-primary mb-2" data-counter>100%</div>
+                <div class="text-animazon-muted text-sm">Client Satisfaction</div>
+            </div>
+        </div>
+
+        <!-- Differentiator Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="group relative rounded-2xl overflow-hidden border border-animazon-border/30 bg-animazon-navy/30 backdrop-blur-sm hover:border-primary/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,193,222,0.1)]">
+                <div class="relative h-52 overflow-hidden">
+                    <img src="{{ asset('assets/images/branding/hero.png') }}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" alt="Artistic Excellence">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-[#0A0A0B]/50 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <div class="w-12 h-12 rounded-xl bg-primary/20 backdrop-blur-md flex items-center justify-center">
+                            <i class="ti ti-palette text-primary text-2xl"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="flex flex-col space-y-4">
-                    <div class="w-full h-48 overflow-hidden rounded-xl bg-animazon-navy border border-animazon-border/50">
-                        <img src="{{ asset('assets/images/branding/why-tech.png') }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Technical Precision">
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-animazon-white mb-3">Technical Precision</h3>
-                        <p class="text-animazon-muted leading-relaxed text-sm">Whether it's a medical molecule or a complex database architecture, we get the details right.</p>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-animazon-white mb-3 group-hover:text-primary transition-colors">Artistic Excellence</h3>
+                    <p class="text-animazon-muted leading-relaxed text-sm">We don't just "make videos" or "write code". We create cinematic experiences that command attention.</p>
+                </div>
+            </div>
+
+            <div class="group relative rounded-2xl overflow-hidden border border-animazon-border/30 bg-animazon-navy/30 backdrop-blur-sm hover:border-secondary/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(255,97,34,0.1)]">
+                <div class="relative h-52 overflow-hidden">
+                    <img src="{{ asset('assets/images/branding/why-tech.png') }}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" alt="Technical Precision">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-[#0A0A0B]/50 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <div class="w-12 h-12 rounded-xl bg-secondary/20 backdrop-blur-md flex items-center justify-center">
+                            <i class="ti ti-cpu text-secondary text-2xl"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="flex flex-col space-y-4">
-                    <div class="w-full h-48 overflow-hidden rounded-xl bg-animazon-navy border border-animazon-border/50">
-                        <img src="{{ asset('assets/images/branding/process-strategy.png') }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Strategic Thinking">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-animazon-white mb-3 group-hover:text-secondary transition-colors">Technical Precision</h3>
+                    <p class="text-animazon-muted leading-relaxed text-sm">Whether it's a medical molecule or a complex database architecture, we get the details right.</p>
+                </div>
+            </div>
+
+            <div class="group relative rounded-2xl overflow-hidden border border-animazon-border/30 bg-animazon-navy/30 backdrop-blur-sm hover:border-primary/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,193,222,0.1)]">
+                <div class="relative h-52 overflow-hidden">
+                    <img src="{{ asset('assets/images/branding/process-strategy.png') }}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" alt="Strategic Thinking">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-[#0A0A0B]/50 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <div class="w-12 h-12 rounded-xl bg-primary/20 backdrop-blur-md flex items-center justify-center">
+                            <i class="ti ti-chart-arrows text-primary text-2xl"></i>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-animazon-white mb-3">Strategic Thinking</h3>
-                        <p class="text-animazon-muted leading-relaxed text-sm">We align every frame and every line of code with your business goals to ensure maximum ROI.</p>
-                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-animazon-white mb-3 group-hover:text-primary transition-colors">Strategic Thinking</h3>
+                    <p class="text-animazon-muted leading-relaxed text-sm">We align every frame and every line of code with your business goals to ensure maximum ROI.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 <!-- [ Why Animazon ] end -->
+
 <!-- [ Our Process ] start -->
-<section id="process" class="py-24 bg-animazon-navy text-animazon-white relative overflow-hidden">
-    <div class="container mx-auto px-4 lg:px-8">
+<section id="process" class="py-28 bg-animazon-navy text-animazon-white relative overflow-hidden">
+    <!-- Background mesh -->
+    <div class="absolute inset-0 pointer-events-none opacity-[0.03]" style="background-image:url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&quot;);"></div>
+
+    <div class="container mx-auto px-4 lg:px-8 relative z-10">
         <div class="text-center max-w-3xl mx-auto mb-20">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-4">How We Work</span>
             <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-6">
-                Our Process
+                Our <span class="text-gradient">Process</span>
             </h2>
             <p class="text-lg text-animazon-muted">
                 Working with Animazon is structured, professional, and transparent. We follow a proven 4-step workflow to ensure project success.
@@ -1217,201 +1320,270 @@
 
         <div class="relative">
             <!-- Connecting Line (Desktop) -->
-            <div class="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-animazon-blue via-secondary to-animazon-blue transform -translate-y-1/2 opacity-20"></div>
+            <div class="hidden lg:block absolute top-[60px] left-[12.5%] w-[75%] h-[2px]">
+                <div class="w-full h-full bg-gradient-to-r from-primary via-secondary to-primary opacity-30 rounded-full"></div>
+                <div class="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-primary to-transparent opacity-60 rounded-full animate-pulse"></div>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Step 1 -->
-                <div class="relative z-10 text-center group">
-                    <div class="w-16 h-16 bg-animazon-black border-2 border-primary rounded-full flex items-center justify-center text-animazon-white font-bold text-xl mx-auto mb-6 group-hover:bg-primary group-hover:scale-110 transition-all">1</div>
-                    <img src="{{ asset('assets/images/branding/process-strategy.png') }}" class="w-full h-32 object-cover rounded-lg mb-4 opacity-70 group-hover:opacity-100 transition-opacity" alt="Strategy">
-                    <h3 class="text-lg font-bold text-animazon-white mb-4">Strategy & Vision</h3>
-                    <p class="text-animazon-muted text-sm leading-relaxed">We start by understanding your goals, audience, and the unique value of your project.</p>
+                <div class="relative z-10 group">
+                    <div class="text-center">
+                        <div class="relative inline-flex">
+                            <div class="w-[120px] h-[120px] rounded-3xl bg-animazon-black border-2 border-primary/30 flex items-center justify-center mx-auto mb-6 group-hover:border-primary group-hover:shadow-[0_0_30px_rgba(0,193,222,0.2)] transition-all duration-500 overflow-hidden">
+                                <img src="{{ asset('assets/images/branding/process-strategy.png') }}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" alt="Strategy">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] to-transparent"></div>
+                                <span class="absolute bottom-2 text-2xl font-bold text-primary">01</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold text-animazon-white mb-3 group-hover:text-primary transition-colors">Strategy & Vision</h3>
+                        <p class="text-animazon-muted text-sm leading-relaxed">We start by understanding your goals, audience, and the unique value of your project.</p>
+                    </div>
                 </div>
 
                 <!-- Step 2 -->
-                <div class="relative z-10 text-center group">
-                    <div class="w-16 h-16 bg-animazon-black border-2 border-secondary rounded-full flex items-center justify-center text-animazon-white font-bold text-xl mx-auto mb-6 group-hover:bg-secondary group-hover:scale-110 transition-all">2</div>
-                    <img src="{{ asset('assets/images/branding/hero.png') }}" class="w-full h-32 object-cover rounded-lg mb-4 opacity-70 group-hover:opacity-100 transition-opacity" alt="Creative">
-                    <h3 class="text-lg font-bold text-animazon-white mb-4">Creative Direction</h3>
-                    <p class="text-animazon-muted text-sm leading-relaxed">Design once, build perfectly. We develop the visual style and technical architecture early.</p>
+                <div class="relative z-10 group">
+                    <div class="text-center">
+                        <div class="relative inline-flex">
+                            <div class="w-[120px] h-[120px] rounded-3xl bg-animazon-black border-2 border-secondary/30 flex items-center justify-center mx-auto mb-6 group-hover:border-secondary group-hover:shadow-[0_0_30px_rgba(255,97,34,0.2)] transition-all duration-500 overflow-hidden">
+                                <img src="{{ asset('assets/images/branding/hero.png') }}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" alt="Creative">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] to-transparent"></div>
+                                <span class="absolute bottom-2 text-2xl font-bold text-secondary">02</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold text-animazon-white mb-3 group-hover:text-secondary transition-colors">Creative Direction</h3>
+                        <p class="text-animazon-muted text-sm leading-relaxed">Design once, build perfectly. We develop the visual style and technical architecture early.</p>
+                    </div>
                 </div>
 
                 <!-- Step 3 -->
-                <div class="relative z-10 text-center group">
-                    <div class="w-16 h-16 bg-animazon-black border-2 border-primary rounded-full flex items-center justify-center text-animazon-white font-bold text-xl mx-auto mb-6 group-hover:bg-primary group-hover:scale-110 transition-all">3</div>
-                    <img src="{{ asset('assets/images/branding/process-execution.png') }}" class="w-full h-32 object-cover rounded-lg mb-4 opacity-70 group-hover:opacity-100 transition-opacity" alt="Execution">
-                    <h3 class="text-lg font-bold text-animazon-white mb-4">Precision Execution</h3>
-                    <p class="text-animazon-muted text-sm leading-relaxed">Our team of artists and engineers bring the vision to life with obsessive attention to detail.</p>
+                <div class="relative z-10 group">
+                    <div class="text-center">
+                        <div class="relative inline-flex">
+                            <div class="w-[120px] h-[120px] rounded-3xl bg-animazon-black border-2 border-primary/30 flex items-center justify-center mx-auto mb-6 group-hover:border-primary group-hover:shadow-[0_0_30px_rgba(0,193,222,0.2)] transition-all duration-500 overflow-hidden">
+                                <img src="{{ asset('assets/images/branding/process-execution.png') }}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" alt="Execution">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] to-transparent"></div>
+                                <span class="absolute bottom-2 text-2xl font-bold text-primary">03</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold text-animazon-white mb-3 group-hover:text-primary transition-colors">Precision Execution</h3>
+                        <p class="text-animazon-muted text-sm leading-relaxed">Our team of artists and engineers bring the vision to life with obsessive attention to detail.</p>
+                    </div>
                 </div>
 
                 <!-- Step 4 -->
-                <div class="relative z-10 text-center group">
-                    <div class="w-16 h-16 bg-animazon-black border-2 border-secondary rounded-full flex items-center justify-center text-animazon-white font-bold text-xl mx-auto mb-6 group-hover:bg-secondary group-hover:scale-110 transition-all">4</div>
-                    <img src="{{ asset('assets/images/branding/service-web.png') }}" class="w-full h-32 object-cover rounded-lg mb-4 opacity-70 group-hover:opacity-100 transition-opacity" alt="Success">
-                    <h3 class="text-lg font-bold text-animazon-white mb-4">Success & Scale</h3>
-                    <p class="text-animazon-muted text-sm leading-relaxed">We launch, optimize, and help you scale your digital presence as your business grows.</p>
+                <div class="relative z-10 group">
+                    <div class="text-center">
+                        <div class="relative inline-flex">
+                            <div class="w-[120px] h-[120px] rounded-3xl bg-animazon-black border-2 border-secondary/30 flex items-center justify-center mx-auto mb-6 group-hover:border-secondary group-hover:shadow-[0_0_30px_rgba(255,97,34,0.2)] transition-all duration-500 overflow-hidden">
+                                <img src="{{ asset('assets/images/branding/service-web.png') }}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" alt="Success">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] to-transparent"></div>
+                                <span class="absolute bottom-2 text-2xl font-bold text-secondary">04</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold text-animazon-white mb-3 group-hover:text-secondary transition-colors">Success & Scale</h3>
+                        <p class="text-animazon-muted text-sm leading-relaxed">We launch, optimize, and help you scale your digital presence as your business grows.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 <!-- [ Our Process ] end -->
-<!-- [ faq ] End -->
+
 <!-- [ Contact / CTA ] start -->
-<section id="contact" class="py-24 bg-animazon-black text-animazon-white relative overflow-hidden">
+<section id="contact" class="py-28 bg-animazon-black text-animazon-white relative overflow-hidden">
     <!-- Gradient Glow -->
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full pointer-events-none"></div>
 
     <div class="container mx-auto px-4 lg:px-8 relative z-10 text-center">
-        <div class="max-w-3xl mx-auto border border-animazon-border/50 bg-animazon-navy/50 backdrop-blur-xl p-12 md:p-20 rounded-[2rem] shadow-2xl">
-            <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-8">
-                Ready to Bring Your <span class="text-gradient">Vision to Life?</span>
-            </h2>
-            <p class="text-xl text-animazon-muted mb-12">
-                Whether it's a complex medical visualization, a high-performance web app, or a cinematic product reveal, we have the expertise to deliver beyond expectations.
-            </p>
-            <div class="flex flex-wrap justify-center gap-6">
-                <a href="#contact-modal" class="btn-primary">
-                    Book a Free Consultation
-                </a>
-                <a href="#portfolio" class="btn-ghost">
-                    See Our Recent Work
-                </a>
-            </div>
-            
-            <div class="mt-12 pt-12 border-t border-animazon-border/30 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-animazon-muted">
-                <div class="flex flex-col items-center">
-                    <i class="ti ti-mail text-primary text-xl mb-2"></i>
-                    <span>{{ $landing_settings['footer_email'] }}</span>
+        <div class="max-w-3xl mx-auto relative">
+            <!-- Gradient border effect -->
+            <div class="absolute -inset-[1px] bg-gradient-to-r from-primary/30 via-secondary/20 to-primary/30 rounded-[2rem] blur-sm"></div>
+            <div class="relative bg-animazon-navy/80 backdrop-blur-xl p-12 md:p-20 rounded-[2rem] shadow-2xl border border-animazon-border/20">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-6">Get Started</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-8">
+                    Ready to Bring Your <span class="text-gradient">Vision to Life?</span>
+                </h2>
+                <p class="text-xl text-animazon-muted mb-12">
+                    Whether it's a complex medical visualization, a high-performance web app, or a cinematic product reveal, we have the expertise to deliver beyond expectations.
+                </p>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="{{ route('cost-calculator.public') }}" class="btn-primary-custom group">
+                        <i class="ti ti-send mr-2 group-hover:translate-x-1 transition-transform"></i> Start Your Project
+                    </a>
+                    <a href="{{ route('portfolio.public') }}" class="btn-ghost">
+                        See Our Recent Work
+                    </a>
                 </div>
-                <div class="flex flex-col items-center">
-                    <i class="ti ti-map-pin text-primary text-xl mb-2"></i>
-                    <span>{{ $landing_settings['footer_address'] }}</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <i class="ti ti-device-laptop text-primary text-xl mb-2"></i>
-                    <span>Global Remote Studio</span>
+                
+                <div class="mt-12 pt-12 border-t border-animazon-border/30 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-animazon-muted">
+                    <div class="flex flex-col items-center group">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                            <i class="ti ti-mail text-primary text-lg"></i>
+                        </div>
+                        <span>{{ $landing_settings['footer_email'] }}</span>
+                    </div>
+                    <div class="flex flex-col items-center group">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                            <i class="ti ti-map-pin text-primary text-lg"></i>
+                        </div>
+                        <span>{{ $landing_settings['footer_address'] }}</span>
+                    </div>
+                    <div class="flex flex-col items-center group">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                            <i class="ti ti-device-laptop text-primary text-lg"></i>
+                        </div>
+                        <span>Global Remote Studio</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 <!-- [ Contact / CTA ] end -->
+@endif
 
 <!-- [ Footer ] start -->
-<footer class="py-12 bg-animazon-black text-animazon-white border-t border-animazon-border/30">
-    <div class="container mx-auto px-4 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            <div class="space-y-6">
-                <div class="flex items-center space-x-4">
-                    @if ($is_dark)
+<footer class="animazon-footer relative overflow-hidden">
+    <!-- Gradient separator line -->
+    <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+    
+    <!-- Main footer content -->
+    <div class="py-16">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-14">
+                <!-- Brand Column -->
+                <div class="md:col-span-5 space-y-6">
+                    <div class="flex items-center space-x-4">
+                        {{-- Always use light logo in footer since footer is always dark --}}
                         <img src="{{ $logo . '/' . (isset($company_logos) && !empty($company_logos) ? $company_logos : 'logo-light.png') . '?' . time() }}" alt="ANIMAZON" class="h-10 w-auto"/>
-                    @else
-                        <img src="{{ $logo . '/' . (isset($company_logo) && !empty($company_logo) ? $company_logo : 'logo-dark.png') . '?' . time() }}" alt="ANIMAZON" class="h-10 w-auto"/>
-                    @endif
+                    </div>
+                    <p class="text-[#8E8E93] text-sm leading-relaxed max-w-sm">
+                        Premium Digital Production Studio specialized in 3D Animations, Web Applications, and Mobile Solutions.
+                    </p>
+                    <!-- Social links -->
+                    <div class="flex items-center gap-3 pt-2">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                            <i class="ti ti-brand-instagram text-lg"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                            <i class="ti ti-brand-linkedin text-lg"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                            <i class="ti ti-brand-youtube text-lg"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                            <i class="ti ti-brand-behance text-lg"></i>
+                        </a>
+                    </div>
                 </div>
-                <p class="text-animazon-muted text-sm leading-relaxed">
-                    Premium Digital Production Studio specialized in 3D Animations, Web Applications, and Mobile Solutions.
-                </p>
-            </div>
-            
-            <div class="space-y-6">
-                <h4 class="text-animazon-white font-bold">Quick Links</h4>
-                <ul class="space-y-4 text-sm text-animazon-muted">
-                    <li><a href="{{ url('/') }}" class="hover:text-primary transition-colors">Home</a></li>
-                    <li><a href="{{ url('/') }}#services" class="hover:text-primary transition-colors">Services</a></li>
-                    <li><a href="{{ route('portfolio.public') }}" class="hover:text-primary transition-colors">Portfolio</a></li>
-                    <li><a href="{{ route('blog.index') }}" class="hover:text-primary transition-colors">Blog</a></li>
-                </ul>
+                
+                <!-- Quick Links -->
+                <div class="md:col-span-3 space-y-6">
+                    <h4 class="text-white font-bold text-sm tracking-wider uppercase">Quick Links</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="{{ url('/') }}" class="text-[#8E8E93] hover:text-primary hover:translate-x-1 inline-flex transition-all duration-300">Home</a></li>
+                        <li><a href="{{ url('/') }}#services" class="text-[#8E8E93] hover:text-primary hover:translate-x-1 inline-flex transition-all duration-300">Services</a></li>
+                        <li><a href="{{ route('portfolio.public') }}" class="text-[#8E8E93] hover:text-primary hover:translate-x-1 inline-flex transition-all duration-300">Portfolio</a></li>
+                        <li><a href="{{ route('blog.index') }}" class="text-[#8E8E93] hover:text-primary hover:translate-x-1 inline-flex transition-all duration-300">Blog</a></li>
+                        <li><a href="{{ route('cost-calculator.public') }}" class="text-[#8E8E93] hover:text-primary hover:translate-x-1 inline-flex transition-all duration-300">Pricing</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="md:col-span-4 space-y-6">
+                    <h4 class="text-white font-bold text-sm tracking-wider uppercase">Contact Us</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="ti ti-map-pin text-primary text-sm"></i>
+                            </div>
+                            <span class="text-[#8E8E93]">{{ $landing_settings['footer_address'] }}</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <i class="ti ti-mail text-primary text-sm"></i>
+                            </div>
+                            <a href="mailto:{{ $landing_settings['footer_email'] }}" class="text-[#8E8E93] hover:text-primary transition-colors">{{ $landing_settings['footer_email'] }}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="space-y-6">
-                <h4 class="text-animazon-white font-bold">Contact Us</h4>
-                <ul class="space-y-4 text-sm text-animazon-muted">
-                    <li class="flex items-start space-x-3">
-                        <i class="ti ti-map-pin text-primary mt-1"></i>
-                        <span>{{ $landing_settings['footer_address'] }}</span>
-                    </li>
-                    <li class="flex items-center space-x-3">
-                        <i class="ti ti-mail text-primary"></i>
-                        <span>{{ $landing_settings['footer_email'] }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="pt-8 border-t border-animazon-border/30 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-animazon-muted">
-            <div class="text-animazon-muted text-sm">
-                Copyright © {{ date('Y') }} | <span class="text-animazon-white font-semibold">ANIMAZON</span>
-            </div>
-            <div class="flex space-x-6">
-                <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
-                <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
+            <!-- Bottom bar -->
+            <div class="pt-8 border-t border-white/[0.08] flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+                <div class="text-[#555]">
+                    Copyright © {{ date('Y') }} | <span class="text-white font-semibold">ANIMAZON</span>
+                </div>
+                <div class="flex gap-6">
+                    <a href="#" class="text-[#555] hover:text-primary transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-[#555] hover:text-primary transition-colors">Terms of Service</a>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Subtle background glow -->
+    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
 </footer>
 <!-- [ Footer ] end -->
 <!-- [ dashboard ] End -->
 <!-- Required Js -->
-<script src="{{asset('assets/js/plugins/popper.min.js')}}"></script>
-<script src="{{asset('assets/js/plugins/bootstrap.min.js')}}"></script>
-<script src="{{asset('assets/js/pages/wow.min.js')}}"></script>
+<script src="{{asset('assets/js/plugins/popper.min.js')}}" defer></script>
+<script src="{{asset('assets/js/plugins/bootstrap.min.js')}}" defer></script>
+<script src="{{asset('assets/js/pages/wow.min.js')}}" defer></script>
 <!-- Swiper JS -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
 <script>
-    // Initialize Swiper
-    const swiper = new Swiper('.hero-swiper', {
-        loop: true,
-        autoplay: {
-            delay: 6000,
-            disableOnInteraction: false,
-        },
-        effect: 'fade',
-        fadeEffect: {
-            crossFade: true
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-    });
-    window.heroSwiper = swiper;
-
-    // Start [ Menu hide/show on scroll ]
-    let ost = 0;
-    document.addEventListener("scroll", function () {
-        let cOst = document.documentElement.scrollTop;
-        if (cOst == 0) {
-            document.querySelector(".navbar").classList.add("top-nav-collapse");
-        } else if (cOst > ost) {
-            document.querySelector(".navbar").classList.add("top-nav-collapse");
-            document.querySelector(".navbar").classList.remove("default");
-        } else {
-            document.querySelector(".navbar").classList.add("default");
-            document
-                .querySelector(".navbar")
-                .classList.remove("top-nav-collapse");
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Swiper
+        if(document.querySelector('.hero-swiper')) {
+            const swiper = new Swiper('.hero-swiper', {
+                loop: true,
+                autoplay: {
+                    delay: 6000,
+                    disableOnInteraction: false,
+                },
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+            window.heroSwiper = swiper;
         }
-        ost = cOst;
-    });
-    // End [ Menu hide/show on scroll ]
-    var wow = new WOW({
-        animateClass: "animate__animated", // animation css class (default is animated)
-    });
-    wow.init();
-    var scrollSpy = new bootstrap.ScrollSpy(document.body, {
-        target: "#navbar-example",
+
+        // WOW.js animations
+        if (typeof WOW !== 'undefined') {
+            var wow = new WOW({
+                animateClass: "animate__animated",
+            });
+            wow.init();
+        }
+
+        // Bootstrap ScrollSpy
+        if (typeof bootstrap !== 'undefined' && bootstrap.ScrollSpy) {
+            var scrollSpy = new bootstrap.ScrollSpy(document.body, {
+                target: "#navbar-example",
+            });
+        }
     });
 </script>
 @if($get_cookie['enable_cookie'] == 'on')
     @include('layouts.cookie_consent')
 @endif
-<script src="{{ asset('assets/landingpage/js/space_shooter.js') }}"></script>
+@if(!View::hasSection('page_content'))
+<script src="{{ asset('assets/landingpage/js/space_shooter.js') }}" defer></script>
+@endif
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const mobileToggle = document.getElementById('mobile-menu-toggle');
@@ -1521,6 +1693,23 @@
     });
 </script>
 @yield('page_scripts')
-@endif
+
+<!-- Google Analytics — loaded last for maximum page speed -->
+<script>
+    window.addEventListener('load', function() {
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-JV402RKXVS';
+        s.async = true;
+        document.head.appendChild(s);
+        s.onload = function() {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-JV402RKXVS');
+        };
+    });
+</script>
+
+
 </body>
 </html>

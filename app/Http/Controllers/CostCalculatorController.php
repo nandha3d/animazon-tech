@@ -8,10 +8,13 @@ use App\Models\CostCalculatorAnswer;
 use App\Models\CostEstimate;
 use App\Models\CostEstimateAnswer;
 use App\Models\User;
+use App\Models\Lead;
+use App\Models\Project;
 use App\Notifications\EstimateSubmittedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class CostCalculatorController extends Controller
 {
@@ -307,29 +310,85 @@ class CostCalculatorController extends Controller
                 if ($question->type === 'single_select' || $question->type === 'multi_select') {
                     $answerIds = is_array($answer) ? $answer : [$answer];
                     foreach ($answerIds as $answerId) {
-                    $answerObj = CostCalculatorAnswer::find($answerId);
-                    if (!$answerObj) continue;
+                        $answerObj = CostCalculatorAnswer::find($answerId);
+                        if (!$answerObj) continue;
 
+                        CostEstimateAnswer::create([
+                            'cost_estimate_id' => $estimate->id,
+                            'question_id' => $questionId,
+                            'answer_id' => $answerId,
+                            'cost_contribution' => ($estimate->base_cost * $answerObj->cost_multiplier) + $answerObj->additional_cost,
+                        ]);
+                    }
+                } else {
                     CostEstimateAnswer::create([
                         'cost_estimate_id' => $estimate->id,
                         'question_id' => $questionId,
-                        'answer_id' => $answerId,
-                        'cost_contribution' => ($estimate->base_cost * $answerObj->cost_multiplier) + $answerObj->additional_cost,
+                        'answer_value' => $answer,
                     ]);
                 }
-            } else {
-                CostEstimateAnswer::create([
-                    'cost_estimate_id' => $estimate->id,
-                    'question_id' => $questionId,
-                    'answer_value' => $answer,
-                ]);
-            }
             }
         }
 
-        // Send notification to admin
+        // Create CRM Lead
         try {
-            $admin = User::where('type', 'super admin')->first();
+            $adminUser = User::where('type', 'super admin')->first();
+            $adminId = $adminUser ? $adminUser->id : 1;
+            
+            $pipelineId = \DB::table('pipelines')->value('id') ?? 1;
+            $stageId = \DB::table('lead_stages')->where('pipeline_id', $pipelineId)->value('id') ?? 1;
+            
+            $lead = Lead::create([
+                'name' => $request->visitor_name,
+                'email' => $request->visitor_email,
+                'phone' => $request->visitor_phone,
+                'subject' => 'Project Enquiry: ' . $projectType->name,
+                'pipeline_id' => $pipelineId,
+                'stage_id' => $stageId,
+                'sources' => 'Website Cost Calculator',
+                'products' => $projectType->name,
+                'notes' => "Estimated Timeline: " . ($request->timeline_weeks ?? 'N/A') . " weeks\n" .
+                           "Estimated Price: " . $currency['symbol'] . $request->total_cost . "\n" .
+                           "Additional Notes: " . $request->notes,
+                'order' => 0,
+                'created_by' => $adminId,
+                'is_active' => 1,
+                'is_converted' => 0,
+                'date' => now()->format('Y-m-d'),
+            ]);
+        } catch (\Exception $e) {
+            Log::warning('CRM Lead generation failed: ' . $e->getMessage());
+        }
+
+        // Create Project in Projects section
+        try {
+            $adminId = $adminId ?? (User::where('type', 'super admin')->value('id') ?? 1);
+            
+            Project::create([
+                'project_name' => $projectType->name . ' - ' . $request->visitor_name,
+                'start_date' => now()->format('Y-m-d'),
+                'end_date' => $request->timeline_weeks ? now()->addWeeks($request->timeline_weeks)->format('Y-m-d') : null,
+                'budget' => (int)$request->total_cost,
+                'client_id' => 0,
+                'description' => "Source: Cost Calculator Estimate\n" .
+                                 "Client Email: " . $request->visitor_email . "\n" .
+                                 "Client Notes: " . $request->notes,
+                'status' => 'estimated',
+                'estimated_hrs' => ($request->timeline_weeks * 40 * ($request->team_size ?: 1)),
+                'created_by' => $adminId,
+            ]);
+        } catch (\Exception $e) {
+            Log::warning('Project generation failed: ' . $e->getMessage());
+        }
+
+        // Send notifications
+        try {
+            // Forward to business email (configurable via env)
+            $notifyEmail = env('ESTIMATE_NOTIFY_EMAIL', 'info@animazon.in');
+            Notification::route('mail', $notifyEmail)->notify(new EstimateSubmittedNotification($estimate));
+
+            // Also notify super admin inside the system
+            $admin = $adminUser ?? User::where('type', 'super admin')->first();
             if ($admin) {
                 $admin->notify(new EstimateSubmittedNotification($estimate));
             }

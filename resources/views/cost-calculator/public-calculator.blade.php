@@ -220,6 +220,11 @@
                                     <i class="ti ti-alert-circle mr-1"></i> You must agree to the Terms & Conditions before submitting.
                                 </p>
                             </div>
+
+                            {{-- Honeypot Anti-Spam --}}
+                            <div id="honeypotWrapper" class="hidden">
+                                @honeypot
+                            </div>
                         </div>
                     </div>
 
@@ -678,6 +683,12 @@
 
         // T&C agreement
         formData.append('agree_terms', '1');
+
+        // Append honeypot fields explicitly
+        const honeypotInputs = document.querySelectorAll('#honeypotWrapper input');
+        honeypotInputs.forEach(input => {
+            formData.append(input.name, input.value);
+        });
 
         fetch('{{ url("/pricing/submit") }}', {
             method: 'POST',

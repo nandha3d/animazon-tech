@@ -131,7 +131,7 @@ class Purchase extends Model
                     \DB::raw('tax as tax'),
                     \DB::raw('SUM(price)  as price'))
                 ->leftJoin('purchases', 'purchase_products.purchase_id', 'purchases.id')
-                ->where(\DB::raw('MONTH(purchases.created_at)'), '=', [date('m')])
+                ->whereMonth('purchases.created_at', date('m'))
             ->where('purchases.created_by', \Auth::user()->creatorId())
                 ->groupBy('purchase')
                 ->get()

@@ -9,6 +9,7 @@ class Lead extends Model
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'subject',
         'user_id',
         'pipeline_id',
@@ -20,6 +21,7 @@ class Lead extends Model
         'order',
         'created_by',
         'is_active',
+        'is_converted',
         'date',
     ];
 
