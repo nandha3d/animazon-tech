@@ -45,7 +45,7 @@ class EstimateSubmittedNotification extends Notification
             ->line('**Timeline:** ' . $estimate->timeline_weeks . ' weeks')
             ->line('**Team Size:** ' . $estimate->team_size . ' members')
             ->line('**Notes:** ' . ($estimate->notes ?: 'None'))
-            ->action('View in Dashboard', url('/account-dashboard'))
+            ->action('View Full Estimate Document', url('/cost-estimate/' . $estimate->id))
             ->line('Follow up promptly to convert this lead!');
     }
 

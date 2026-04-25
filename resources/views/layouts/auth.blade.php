@@ -115,6 +115,9 @@
         :root {
             --color-customColor: <?= $color ?>;
         }
+        body, .custom-login {
+            background-color: #222431 !important;
+        }
     </style>
 
     <link rel="stylesheet" href="{{ asset('css/custom-color.css') }}">
@@ -127,11 +130,7 @@
 
 <body class="{{ $themeColor }}">
     <div class="custom-login">
-        <div class="login-bg-img">
-            <img src="{{ isset($setting['color_flag']) && $setting['color_flag'] == 'false' ? asset('assets/images/auth/'.$color.'.svg') : asset('assets/images/auth/theme-3.svg') }}" class="login-bg-1">
-            <img src="{{ asset('assets/images/auth/common.svg') }}" class="login-bg-2">
-        </div>
-        <div class="bg-login bg-primary"></div>
+        <!-- Background illustrations removed for a clean, professional solid gray look -->
         <div class="custom-login-inner">
             <header class="dash-header">
                 <nav class="navbar navbar-expand-md default">

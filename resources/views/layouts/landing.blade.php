@@ -742,8 +742,7 @@
             <a href="{{ route('services.game-development') }}" class="card-dark group overflow-hidden !p-0 block hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:border-purple-500/50 relative">
                 <div class="relative overflow-hidden aspect-video">
                     <picture>
-                        <source srcset="{{ asset('assets/images/branding/service-medical.avif') }}" type="image/avif">
-                        <img src="{{ asset('assets/images/branding/service-medical.png') }}" alt="Game Development" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" width="600" height="338" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/pricing/gaming.jpg') }}" alt="Game Development" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" width="600" height="338" loading="lazy" decoding="async">
                     </picture>
                     <div class="absolute inset-0 bg-purple-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
                 </div>

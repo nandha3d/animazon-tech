@@ -119,17 +119,35 @@
             --bs-success-rgb: {{ implode(',', Utility::hex2rgb($primary_color)) }};
         }
         
-        /* Sidebar Active State & Icons */
-        .dash-sidebar .dash-navbar > .dash-item.active > .dash-link,
-        .dash-sidebar.light-sidebar .dash-navbar > .dash-item.active > .dash-link,
-        .dash-sidebar .dash-navbar > .dash-item.dash-hasmenu.active > .dash-link {
-            background-color: {{ $primary_color }} !important;
-            color: #fff !important;
+        /* ===== SIDEBAR: Reset ACTIVE parent items to transparent ===== */
+        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link,
+        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.dash-trigger > .dash-link,
+        .dash-sidebar.light-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link {
+            background-color: transparent !important;
         }
-        .dash-sidebar .dash-navbar > .dash-item.active > .dash-link i,
-        .dash-sidebar.light-sidebar .dash-navbar > .dash-item.active > .dash-link i,
-        .dash-sidebar .dash-navbar > .dash-item.dash-hasmenu.active > .dash-link i {
-            color: #fff !important;
+        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link i,
+        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.dash-trigger > .dash-link i,
+        .dash-sidebar.light-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link i {
+        }
+
+        /* ===== SIDEBAR: Only highlight LEAF submenu items (no children) ===== */
+        .dash-sidebar .dash-navbar .dash-submenu > .dash-item.active > .dash-link {
+            background-color: {{ $primary_color }} !important;
+            color: #1e1e2d !important;
+            font-weight: 700 !important;
+        }
+        .dash-sidebar .dash-navbar .dash-submenu > .dash-item.active > .dash-link i {
+            color: #1e1e2d !important;
+        }
+
+        /* ===== SIDEBAR: Top-level items WITHOUT submenu (e.g. Dashboard, Analytics) ===== */
+        .dash-sidebar .dash-navbar > .dash-item.active:not(.dash-hasmenu) > .dash-link {
+            background-color: {{ $primary_color }} !important;
+            color: #1e1e2d !important;
+            font-weight: 700 !important;
+        }
+        .dash-sidebar .dash-navbar > .dash-item.active:not(.dash-hasmenu) > .dash-link i {
+            color: #1e1e2d !important;
         }
         
         /* Buttons & Backgrounds */
@@ -143,22 +161,6 @@
         
         /* Text Colors */
         .text-primary, .text-success, .dash-link.text-primary, .dash-link.text-success {
-            color: {{ $primary_color }} !important;
-        }
-
-        /* Sidebar Refinement - Only highlight the actual active leaf link */
-        .dash-sidebar .dash-navbar .dash-item.active > .dash-link {
-            background-color: {{ $primary_color }} !important;
-            color: #ffffff !important;
-        }
-
-        /* Parent items that are open (dash-trigger) - less aggressive */
-        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link {
-            background-color: transparent !important;
-            color: {{ $primary_color }} !important;
-        }
-        
-        .dash-sidebar .dash-navbar .dash-item.dash-hasmenu.active > .dash-link i {
             color: {{ $primary_color }} !important;
         }
 
@@ -199,11 +201,7 @@
             border-color: {{ $secondary_color }} !important;
         }
 
-        /* Dash Sidebar Submenu Active Color Fix */
-        .dash-sidebar .dash-navbar > .dash-item.dash-trigger > .dash-link i,
-        .dash-sidebar .dash-navbar > .dash-item.active > .dash-link i {
-            color: {{ $setting['cust_darklayout'] == 'on' ? '#fff' : $primary_color }} !important;
-        }
+
 
         /* Header Elements */
         .dash-header .header-wrapper .dash-navbar-left .dash-link i,
@@ -239,6 +237,22 @@
         }
         .dash-sidebar.light-sidebar {
             background: #22242c !important;
+        }
+        .crm-sales-card {
+            background: transparent !important;
+        }
+        .crm-sales-card .card-header {
+            background: #2b2d39 !important;
+            border-top: 2px solid {{ $primary_color }} !important;
+            color: #fff !important;
+        }
+        .sales-item {
+            background: #2b2d39 !important;
+            border: 1px solid #3d4052 !important;
+            color: #fff !important;
+        }
+        .sales-item .dashboard-link {
+            color: #fff !important;
         }
         @endif
     </style>

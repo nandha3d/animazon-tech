@@ -24,11 +24,17 @@ class CurrencyService
                 return false;
             }
 
+            // Get base currency from settings
+            $baseCurrency = \App\Models\Utility::getValByName('site_currency') ?? 'USD';
+
+            // We need to fetch the rate of our base currency as well
+            $currenciesToFetch = array_unique(array_merge($currencies, [$baseCurrency]));
+
             // Fetch rates from Frankfurter API (base is EUR)
             $response = Http::timeout(10)
                 ->get(self::FRANKFURTER_BASE_URL . '/latest', [
                     'base' => 'EUR',
-                    'symbols' => implode(',', $currencies)
+                    'symbols' => implode(',', $currenciesToFetch)
                 ]);
 
             if (!$response->successful()) {
@@ -36,17 +42,23 @@ class CurrencyService
             }
 
             $rates = $response->json()['rates'] ?? [];
+            $rates['EUR'] = 1.0;
 
-            // Get EUR rate in USD
-            $eurRate = $this->getEURtoUSD();
+            // Get EUR rate in the base currency
+            $eurToBaseRate = $rates[$baseCurrency] ?? 1.0;
 
             // Update database
             foreach ($rates as $code => $rate) {
-                // Convert EUR-based rate to USD-based rate
-                $usdRate = $rate / $eurRate;
+                // We don't need to update currencies that aren't in our active list
+                if (!in_array($code, $currencies)) {
+                    continue;
+                }
+                
+                // Convert EUR-based rate to site base currency rate
+                $baseRate = $rate / $eurToBaseRate;
 
                 Currency::where('code', $code)->update([
-                    'exchange_rate' => $usdRate,
+                    'exchange_rate' => $baseRate,
                     'last_updated' => now(),
                 ]);
             }

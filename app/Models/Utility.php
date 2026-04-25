@@ -2534,6 +2534,8 @@ class Utility extends Model
                                     'mail.password' => $settings['mail_password'] ? $settings['mail_password'] : $setting['mail_password'],
                                     'mail.from.address' => $settings['mail_from_address'] ? $settings['mail_from_address'] : $setting['mail_from_address'],
                                     'mail.from.name' => $settings['mail_from_name'] ? $settings['mail_from_name'] : $setting['mail_from_name'],
+                                    'mail.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
+                                    'mail.mailers.smtp.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
                                 ]
                             );
 
@@ -2613,6 +2615,8 @@ class Utility extends Model
                                 'mail.password' => $settings['mail_password'],
                                 'mail.from.address' => $settings['mail_from_address'],
                                 'mail.from.name' => $settings['mail_from_name'],
+                                'mail.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
+                                'mail.mailers.smtp.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
                             ]
                         );
                         Mail::to($mailTo)->send(new CommonEmailTemplate($content, $settings));
@@ -4905,6 +4909,8 @@ class Utility extends Model
                 'mail.password' => $settings['mail_password'],
                 'mail.from.address' => $settings['mail_from_address'],
                 'mail.from.name' => $settings['mail_from_name'],
+                'mail.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
+                'mail.mailers.smtp.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
             ]
         );
 

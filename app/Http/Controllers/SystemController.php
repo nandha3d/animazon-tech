@@ -1151,6 +1151,8 @@ class SystemController extends Controller
                     'mail.password' => $request->mail_password,
                     'mail.from.address' => $request->mail_from_address,
                     'mail.from.name' => $request->mail_from_name,
+                    'mail.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
+                    'mail.mailers.smtp.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
                 ]
             );
             Mail::to($request->email)->send(new TestMail());

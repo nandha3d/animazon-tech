@@ -120,16 +120,19 @@
                                                         @endif
                                                     </div>
                                                     @if(!$answer->is_included && !$answer->is_enterprise)
-                                                        @if($answer->cost_multiplier != 1.0)
-                                                            <span class="text-xs text-primary/80 font-mono">×{{ $answer->cost_multiplier }}</span>
-                                                        @endif
+                                                        <span class="flex items-center gap-2">
+                                                            @if($answer->cost_multiplier != 1.0)
+                                                                <span class="text-xs text-primary/80 font-mono multiplier-tag"
+                                                                      data-multiplier="{{ $answer->cost_multiplier }}">×{{ $answer->cost_multiplier }}</span>
+                                                            @endif
 
-                                                        @if($answer->additional_cost > 0)
-                                                            <span class="text-xs text-secondary font-mono additional-cost-tag"
-                                                                  data-usd="{{ $answer->additional_cost }}">
-                                                                +${{ number_format($answer->additional_cost, 0) }}
-                                                            </span>
-                                                        @endif
+                                                            @if($answer->additional_cost > 0)
+                                                                <span class="text-xs text-secondary font-mono additional-cost-tag"
+                                                                      data-usd="{{ $answer->additional_cost }}">
+                                                                    +${{ number_format($answer->additional_cost, 0) }}
+                                                                </span>
+                                                            @endif
+                                                        </span>
                                                     @endif
                                                 </div>
                                                 @if($answer->explanation)
@@ -221,9 +224,9 @@
                                 </p>
                             </div>
 
-                            {{-- Honeypot Anti-Spam --}}
-                            <div id="honeypotWrapper" class="hidden">
-                                @honeypot
+                            {{-- Simple anti-spam honeypot (no Spatie package needed) --}}
+                            <div style="position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;">
+                                <input type="text" name="website_url" value="" tabindex="-1" autocomplete="off">
                             </div>
                         </div>
                     </div>
@@ -404,6 +407,24 @@
 
     const isCustom = {{ $projectType->base_cost == 0 ? 'true' : 'false' }};
 
+    // Update multiplier tags to show the actual additional amount
+    function updateMultiplierAmounts() {
+        const c = getCurrency();
+        const isIndia = (currentCountry === 'IN');
+        const margin = isIndia ? 1 : 2;
+        const effectiveBase = baseCostUsd * margin;
+
+        document.querySelectorAll('.multiplier-tag').forEach(el => {
+            const mult = parseFloat(el.dataset.multiplier);
+            if (mult && mult !== 1.0) {
+                const additionalUsd = effectiveBase * (mult - 1);
+                const additionalLocal = additionalUsd * c.rate;
+                const formatted = c.symbol + Math.round(additionalLocal).toLocaleString('en-US');
+                el.textContent = '×' + mult + ' (+' + formatted + ')';
+            }
+        });
+    }
+
     function changeCurrency(countryCode) {
         currentCountry = countryCode;
         localStorage.setItem('animazon_country', countryCode);
@@ -433,6 +454,9 @@
             const usd = parseFloat(el.dataset.usd);
             el.textContent = '+' + formatPrice(usd);
         });
+
+        // Update multiplier amount displays
+        updateMultiplierAmounts();
 
         // If answers exist, do a full recalculate (which updates total)
         if (Object.keys(selectedAnswers).length > 0) {
@@ -569,7 +593,8 @@
             const c = getCurrency();
 
             // Update sidebar
-            document.getElementById('sidebarBaseCost').textContent = formatPrice(data.base_cost_usd);
+            const baseCostEl = document.getElementById('sidebarBaseCost');
+            if (baseCostEl) baseCostEl.textContent = formatPrice(data.base_cost_usd);
             
             if (hasEnterprise || isCustom) {
                 document.getElementById('sidebarTotal').textContent = 'Custom Quote';
@@ -594,20 +619,31 @@
             // Build breakdown
             const list = document.getElementById('breakdownList');
             list.innerHTML = '';
-            document.getElementById('answerHint').classList.add('hidden');
+            const hintEl = document.getElementById('answerHint');
+            if (hintEl) hintEl.classList.add('hidden');
 
             data.cost_breakdown.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'flex justify-between text-xs py-1 border-b border-animazon-border/20';
                 let detail = '';
-                if (item.multiplier !== 1.0) detail = `×${item.multiplier}`;
-                if (item.additional_cost > 0) detail = `+${formatPrice(item.additional_cost)}`;
+                if (item.multiplier !== 1.0 && item.additional_cost > 0) {
+                    detail = `×${item.multiplier} +${formatPrice(item.additional_cost)}`;
+                } else if (item.multiplier !== 1.0) {
+                    // Show multiplier with computed amount
+                    const addedUsd = data.base_cost_usd * (item.multiplier - 1);
+                    detail = `×${item.multiplier} (+${formatPrice(addedUsd)})`;
+                } else if (item.additional_cost > 0) {
+                    detail = `+${formatPrice(item.additional_cost)}`;
+                }
                 div.innerHTML = `
                     <span class="text-animazon-muted truncate mr-2">${item.answer}</span>
                     <span class="text-primary whitespace-nowrap">${detail}</span>
                 `;
                 list.appendChild(div);
             });
+
+            // Update multiplier amount labels on the options
+            updateMultiplierAmounts();
         })
         .catch(err => console.error('Calc error:', err));
     }
@@ -617,14 +653,14 @@
         const name = document.getElementById('visitorName').value.trim();
         const email = document.getElementById('visitorEmail').value.trim();
         const notes = document.getElementById('visitorNotes').value.trim();
-        const isCustom = {{ $projectType->base_cost == 0 ? 'true' : 'false' }};
+        const isCustomProject = {{ $projectType->base_cost == 0 ? 'true' : 'false' }};
 
         if (!name || !email) {
             alert('Please enter your name and email address.');
             return;
         }
 
-        if (isCustom && !notes) {
+        if (isCustomProject && !notes) {
             alert('Please provide a detailed project description.');
             return;
         }
@@ -659,19 +695,29 @@
         formData.append('currency_code', c.code);
         formData.append('country_code', currentCountry);
         
-        if (document.getElementById('sidebarWeeks')) {
-            formData.append('timeline_weeks', parseInt(document.getElementById('sidebarWeeks').textContent) || '');
+        const weeksEl = document.getElementById('sidebarWeeks');
+        const teamEl = document.getElementById('sidebarTeam');
+        if (weeksEl) {
+            const weeks = parseInt(weeksEl.textContent);
+            if (!isNaN(weeks)) formData.append('timeline_weeks', weeks);
         }
-        if (document.getElementById('sidebarTeam')) {
-            formData.append('team_size', parseInt(document.getElementById('sidebarTeam').textContent) || '');
+        if (teamEl) {
+            const team = parseInt(teamEl.textContent);
+            if (!isNaN(team)) formData.append('team_size', team);
         }
 
-        // Handle Object to nested FormData Array
+        // Handle answers — serialize properly for FormData
         Object.keys(selectedAnswers).forEach(key => {
-            if (Array.isArray(selectedAnswers[key])) {
-                selectedAnswers[key].forEach(val => formData.append(`answers[${key}][]`, val));
+            const val = selectedAnswers[key];
+            if (Array.isArray(val)) {
+                // Multi-select: array of answer IDs
+                val.forEach(v => formData.append(`answers[${key}][]`, v));
+            } else if (typeof val === 'object' && val !== null) {
+                // Input-type: {value, answerId} → send just the value string
+                formData.append(`answers[${key}]`, String(val.value || val));
             } else {
-                formData.append(`answers[${key}]`, selectedAnswers[key]);
+                // Single select: answer ID string
+                formData.append(`answers[${key}]`, val);
             }
         });
 
@@ -684,11 +730,8 @@
         // T&C agreement
         formData.append('agree_terms', '1');
 
-        // Append honeypot fields explicitly
-        const honeypotInputs = document.querySelectorAll('#honeypotWrapper input');
-        honeypotInputs.forEach(input => {
-            formData.append(input.name, input.value);
-        });
+        // Simple anti-spam: the hidden 'website_url' field should be empty
+        // (bots fill it in, humans never see it)
 
         fetch('{{ url("/pricing/submit") }}', {
             method: 'POST',
@@ -699,8 +742,21 @@
             body: formData,
         })
         .then(async r => {
-            const data = await r.json();
-            if (!r.ok) { throw new Error(data.message || 'Validation failed'); }
+            let data;
+            try {
+                data = await r.json();
+            } catch (e) {
+                throw new Error('Server returned invalid response (status ' + r.status + ')');
+            }
+            if (!r.ok) {
+                // Build readable error from validation errors
+                let msg = data.message || 'Validation failed';
+                if (data.errors) {
+                    const errorList = Object.values(data.errors).flat().join('\n');
+                    msg += ':\n' + errorList;
+                }
+                throw new Error(msg);
+            }
             return data;
         })
         .then(data => {
@@ -714,8 +770,9 @@
                 btn.innerHTML = '<i class="ti ti-send mr-1"></i> Submit Estimate';
             }
         })
-        .catch(() => {
-            alert('Network error. Please try again.');
+        .catch(err => {
+            console.error('Submit error:', err);
+            alert(err.message || 'Network error. Please try again.');
             btn.disabled = false;
             btn.innerHTML = '<i class="ti ti-send mr-1"></i> Submit Estimate';
         });
@@ -725,6 +782,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         showStep(0);
         changeCurrency(currentCountry);
+        updateMultiplierAmounts();
     });
 </script>
 @endsection

@@ -336,10 +336,11 @@ Route::get('/pricing', [CostCalculatorController::class, 'publicIndex'])->name('
 Route::get('/cost-calculator', [CostCalculatorController::class, 'publicIndex'])->name('cost-calculator.index')->middleware(['XSS']);
 Route::post('/pricing/calculate', [CostCalculatorController::class, 'publicCalculate'])->name('cost-calculator.calculate')->middleware(['XSS']);
 
-Route::post('/pricing/submit', [CostCalculatorController::class, 'publicSubmit'])->name('cost-calculator.submit')->middleware(['XSS', \Spatie\Honeypot\ProtectAgainstSpam::class]);
+Route::post('/pricing/submit', [CostCalculatorController::class, 'publicSubmit'])->name('cost-calculator.submit')->middleware(['XSS']);
 Route::get('/pricing/currency', [CostCalculatorController::class, 'getCurrency'])->name('cost-calculator.currency')->middleware(['XSS']);
 Route::get('/pricing/detect-country', [CostCalculatorController::class, 'detectCountry'])->name('cost-calculator.detect-country')->middleware(['XSS']);
 Route::get('/pricing/{projectTypeId}', [CostCalculatorController::class, 'publicCalculator'])->name('cost-calculator.show')->middleware(['XSS']);
+Route::get('/cost-estimate/{id}', [CostCalculatorController::class, 'viewEstimate'])->name('cost-estimate.view')->middleware(['XSS']);
 
 // Terms and Conditions
 Route::get('/terms-and-conditions', function () {

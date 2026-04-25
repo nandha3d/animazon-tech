@@ -82,6 +82,47 @@
                             </span>
                         </a>
                     </li>
+                    
+                    @php
+                        $unreadNotifications = \Auth::user()->unreadNotifications;
+                    @endphp
+                    <li class="dropdown dash-h-item drp-notification">
+                        <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                            <i class="ti ti-bell"></i>
+                            @if($unreadNotifications->count() > 0)
+                                <span class="bg-danger dash-h-badge"><span class="sr-only"></span></span>
+                            @endif
+                        </a>
+                        <div class="dropdown-menu dash-h-dropdown dropdown-menu-end" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                            <div class="noti-header border-bottom p-3">
+                                <h5 class="m-0">{{__('Notifications')}}</h5>
+                            </div>
+                            <div class="noti-body">
+                                @forelse($unreadNotifications as $notification)
+                                    @php 
+                                        $data = $notification->data; 
+                                        $url = isset($data['estimate_id']) ? url('/cost-estimate/' . $data['estimate_id']) : '#';
+                                    @endphp
+                                    <a href="{{ $url }}" class="dropdown-item py-3 border-bottom">
+                                        <div class="d-flex align-items-center">
+                                            <div class="theme-avtar bg-primary text-white">
+                                                <i class="ti ti-receipt"></i>
+                                            </div>
+                                            <div class="ms-3 text-wrap" style="width: 210px;">
+                                                <h6 class="m-0 mb-1 font-weight-bold text-dark">{{ $data['visitor_name'] ?? 'New Estimate' }}</h6>
+                                                <p class="m-0 text-sm text-muted lh-sm">{{ $data['project_type'] ?? 'Project Inquiry' }} - {{ \App\Models\Utility::priceFormat($data['grand_total'] ?? 0) }}</p>
+                                                <small class="text-muted mt-1 d-block">{{ $notification->created_at->diffForHumans() }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="dropdown-item text-center py-4">
+                                        <p class="m-0 text-sm text-muted">{{__('No new notifications')}}</p>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </li>
                 @endif
 
                 <li class="dropdown dash-h-item drp-language">

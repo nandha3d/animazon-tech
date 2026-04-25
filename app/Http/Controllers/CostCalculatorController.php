@@ -95,7 +95,46 @@ class CostCalculatorController extends Controller
             ->get();
 
         $countries = self::COUNTRIES;
-        $currencies = self::CURRENCY_MAP;
+        
+        // Fetch live currency rates using Frankfurter, cached for 12 hours
+        $currencies = \Illuminate\Support\Facades\Cache::remember('live_cost_calculator_currencies', 43200, function () {
+            $currencyMap = self::CURRENCY_MAP;
+            $symbols = collect($currencyMap)->pluck('code')->unique()->toArray();
+            
+            // Get the base currency from Admin Settings (defaults to USD)
+            $baseCurrency = \App\Models\Utility::getValByName('site_currency');
+            if (!$baseCurrency) {
+                $baseCurrency = 'USD';
+            }
+
+            try {
+                // Fetch rates from Frankfurter API with EUR as base (most compatible)
+                $response = \Illuminate\Support\Facades\Http::timeout(5)->get('https://api.frankfurter.app/latest', [
+                    'symbols' => implode(',', array_unique(array_merge($symbols, [$baseCurrency])))
+                ]);
+                
+                if ($response->successful()) {
+                    $rates = $response->json()['rates'] ?? [];
+                    $rates['EUR'] = 1.0; // Implicit base
+                    
+                    // The rate of the base currency compared to EUR
+                    $baseRate = $rates[$baseCurrency] ?? 1.0;
+                    
+                    // Convert all currency map rates relative to the new base currency
+                    foreach ($currencyMap as $country => $details) {
+                        $targetRate = $rates[$details['code']] ?? null;
+                        if ($targetRate !== null) {
+                            $currencyMap[$country]['rate'] = $targetRate / $baseRate;
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Cost Calculator Frankfurter API failed: ' . $e->getMessage());
+                // Silently fallback to hardcoded self::CURRENCY_MAP
+            }
+            
+            return $currencyMap;
+        });
 
         return view('cost-calculator.public-index', compact('categories', 'countries', 'currencies'));
     }
@@ -256,6 +295,16 @@ class CostCalculatorController extends Controller
      */
     public function publicSubmit(Request $request)
     {
+        // Simple honeypot check
+        if (!empty($request->website_url)) {
+            // Bot detected, pretend it succeeded
+            return response()->json(['success' => true, 'message' => 'Estimate submitted successfully.']);
+        }
+
+        // Clean up empty string values for integer fields
+        if ($request->timeline_weeks === '') $request->merge(['timeline_weeks' => null]);
+        if ($request->team_size === '') $request->merge(['team_size' => null]);
+
         $request->validate([
             'project_type_id' => 'required|exists:project_types,id',
             'visitor_name' => 'required|string|max:255',
@@ -330,12 +379,17 @@ class CostCalculatorController extends Controller
             }
         }
 
+        // Identify the company admin for assigning CRM Leads and Projects
+        $adminUser = User::where('type', 'company')->first() ?? User::where('type', 'super admin')->first();
+        $adminId = $adminUser ? $adminUser->id : 1;
+
         // Create CRM Lead
         try {
-            $adminUser = User::where('type', 'super admin')->first();
-            $adminId = $adminUser ? $adminUser->id : 1;
+            $pipelineId = \DB::table('pipelines')->where('created_by', $adminId)->value('id');
+            if (!$pipelineId) {
+                $pipelineId = \DB::table('pipelines')->value('id') ?? 1;
+            }
             
-            $pipelineId = \DB::table('pipelines')->value('id') ?? 1;
             $stageId = \DB::table('lead_stages')->where('pipeline_id', $pipelineId)->value('id') ?? 1;
             
             $lead = Lead::create([
@@ -347,8 +401,9 @@ class CostCalculatorController extends Controller
                 'stage_id' => $stageId,
                 'sources' => 'Website Cost Calculator',
                 'products' => $projectType->name,
-                'notes' => "Estimated Timeline: " . ($request->timeline_weeks ?? 'N/A') . " weeks\n" .
+                'notes' => "Estimated Timeline: " . ((int)$request->timeline_weeks ?? 'N/A') . " weeks\n" .
                            "Estimated Price: " . $currency['symbol'] . $request->total_cost . "\n" .
+                           "Estimate Link: " . url('/cost-estimate/' . $estimate->id) . "\n" .
                            "Additional Notes: " . $request->notes,
                 'order' => 0,
                 'created_by' => $adminId,
@@ -362,19 +417,17 @@ class CostCalculatorController extends Controller
 
         // Create Project in Projects section
         try {
-            $adminId = $adminId ?? (User::where('type', 'super admin')->value('id') ?? 1);
-            
             Project::create([
                 'project_name' => $projectType->name . ' - ' . $request->visitor_name,
                 'start_date' => now()->format('Y-m-d'),
-                'end_date' => $request->timeline_weeks ? now()->addWeeks($request->timeline_weeks)->format('Y-m-d') : null,
+                'end_date' => $request->timeline_weeks ? now()->addWeeks((int)$request->timeline_weeks)->format('Y-m-d') : null,
                 'budget' => (int)$request->total_cost,
                 'client_id' => 0,
                 'description' => "Source: Cost Calculator Estimate\n" .
                                  "Client Email: " . $request->visitor_email . "\n" .
                                  "Client Notes: " . $request->notes,
                 'status' => 'estimated',
-                'estimated_hrs' => ($request->timeline_weeks * 40 * ($request->team_size ?: 1)),
+                'estimated_hrs' => ((int)$request->timeline_weeks * 40 * ((int)$request->team_size ?: 1)),
                 'created_by' => $adminId,
             ]);
         } catch (\Exception $e) {
@@ -383,14 +436,18 @@ class CostCalculatorController extends Controller
 
         // Send notifications
         try {
-            // Forward to business email (configurable via env)
+            // 1. Notify the Company/Admin
             $notifyEmail = env('ESTIMATE_NOTIFY_EMAIL', 'info@animazon.in');
             Notification::route('mail', $notifyEmail)->notify(new EstimateSubmittedNotification($estimate));
 
-            // Also notify super admin inside the system
-            $admin = $adminUser ?? User::where('type', 'super admin')->first();
-            if ($admin) {
-                $admin->notify(new EstimateSubmittedNotification($estimate));
+            if ($adminUser) {
+                $adminUser->notify(new EstimateSubmittedNotification($estimate));
+            }
+
+            // 2. Notify the Client with the estimation summary document
+            if (!empty($request->visitor_email)) {
+                Notification::route('mail', $request->visitor_email)
+                    ->notify(new \App\Notifications\ClientEstimateSummaryNotification($estimate));
             }
         } catch (\Exception $e) {
             Log::warning('Estimate notification failed: ' . $e->getMessage());
@@ -478,5 +535,27 @@ class CostCalculatorController extends Controller
         if ($costUsd <= 25000) return 5;
         if ($costUsd <= 50000) return 6;
         return max(2, min(12, ceil($costUsd / 8000)));
+    }
+
+    /**
+     * View the estimation document
+     */
+    public function viewEstimate($id)
+    {
+        $estimate = CostEstimate::with(['answers.question', 'answers.answerDef', 'projectType'])->findOrFail($id);
+
+        // If admin is logged in, mark any related notifications as read
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            foreach ($user->unreadNotifications as $notification) {
+                if (isset($notification->data['estimate_id']) && $notification->data['estimate_id'] == $id) {
+                    $notification->markAsRead();
+                }
+            }
+        }
+
+        $settings = \App\Models\Utility::settings();
+
+        return view('cost-calculator.estimate-document', compact('estimate', 'settings'));
     }
 }

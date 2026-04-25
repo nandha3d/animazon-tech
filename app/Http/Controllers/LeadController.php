@@ -1748,6 +1748,7 @@ class LeadController extends Controller
 
                 try
                 {
+                    Utility::smtpDetail(\Auth::user()->creatorId());
                     Mail::to($request->to)->send(new SendLeadEmail($leadEmail, $settings));
                 }
                 catch(\Exception $e)

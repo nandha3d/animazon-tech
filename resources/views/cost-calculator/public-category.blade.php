@@ -36,20 +36,60 @@
             </select>
         </div>
 
-        {{-- Sub-services Grid --}}
+        {{-- Sub-services Grid — Ordered: E-Commerce, Business, Web App, Landing, then Custom --}}
+        @php
+            // Define desired display order keywords
+            $displayOrder = ['E-Commerce', 'Business', 'Corporate', 'Web Application', 'SaaS', 'Landing', 'Custom'];
+            
+            // Define accent colors per card type
+            $cardAccents = [
+                'E-Commerce' => ['color' => 'cyan',   'glow' => '0 0 30px rgba(0,200,255,0.15), 0 0 60px rgba(0,200,255,0.05)'],
+                'Business'   => ['color' => 'orange', 'glow' => '0 0 30px rgba(255,150,50,0.15), 0 0 60px rgba(255,150,50,0.05)'],
+                'Corporate'  => ['color' => 'orange', 'glow' => '0 0 30px rgba(255,150,50,0.15), 0 0 60px rgba(255,150,50,0.05)'],
+                'Web App'    => ['color' => 'green',  'glow' => '0 0 30px rgba(50,220,100,0.15), 0 0 60px rgba(50,220,100,0.05)'],
+                'SaaS'       => ['color' => 'green',  'glow' => '0 0 30px rgba(50,220,100,0.15), 0 0 60px rgba(50,220,100,0.05)'],
+                'Landing'    => ['color' => 'blue',   'glow' => '0 0 30px rgba(80,130,255,0.15), 0 0 60px rgba(80,130,255,0.05)'],
+                'Custom'     => ['color' => 'secondary', 'glow' => '0 0 30px rgba(255,97,34,0.15), 0 0 60px rgba(255,97,34,0.05)'],
+            ];
+
+            // Sort children by display order
+            $ordered = collect();
+            foreach ($displayOrder as $keyword) {
+                $match = $projectType->children->first(fn($c) => str_contains($c->name, $keyword) && !$ordered->contains('id', $c->id));
+                if ($match) $ordered->push($match);
+            }
+            // Add any remaining
+            foreach ($projectType->children as $c) {
+                if (!$ordered->contains('id', $c->id)) $ordered->push($c);
+            }
+
+            function getCardAccent($name, $accents) {
+                foreach ($accents as $key => $val) {
+                    if (str_contains($name, $key)) return $val;
+                }
+                return ['color' => 'primary', 'glow' => '0 0 30px rgba(0,193,222,0.15), 0 0 60px rgba(0,193,222,0.05)'];
+            }
+        @endphp
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            @foreach($projectType->children as $sub)
+            @foreach($ordered as $sub)
+                @php
+                    $accent = getCardAccent($sub->name, $cardAccents);
+                    $accentColor = $accent['color'];
+                    $glowShadow = $accent['glow'];
+                @endphp
+
                 @if($sub->base_cost > 0)
                     <a href="{{ url('/pricing/' . $sub->id . '?country=US') }}"
-                       class="service-card group bg-animazon-navy/50 border border-animazon-border/30 hover:border-primary/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
-                       data-base-cost="{{ $sub->base_cost }}">
+                       class="service-card group bg-animazon-navy/50 border border-animazon-border/30 hover:border-{{ $accentColor }}-500/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+                       style="box-shadow: {{ $glowShadow }};">
 
                         {{-- Icon + Title --}}
                         <div>
-                            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-xl mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+                            <div class="w-12 h-12 rounded-xl bg-{{ $accentColor }}-500/10 flex items-center justify-center text-{{ $accentColor }}-400 text-xl mb-4 group-hover:bg-{{ $accentColor }}-500 group-hover:text-white transition-all">
                                 <i class="{{ $sub->icon }}"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-animazon-white mb-2 group-hover:text-primary transition-colors">
+                            <h3 class="text-lg font-bold text-animazon-white mb-2 group-hover:text-{{ $accentColor }}-400 transition-colors">
                                 {{ $sub->name }}
                             </h3>
                             <p class="text-animazon-muted text-xs leading-relaxed mb-4">
@@ -61,12 +101,12 @@
                         <div class="mt-auto pt-4 border-t border-animazon-border/20 flex items-center justify-between">
                             <div>
                                 <span class="block text-[10px] uppercase tracking-wider text-animazon-muted">Starting from</span>
-                                <span class="text-xl font-bold text-primary currency-price"
+                                <span class="text-xl font-bold text-{{ $accentColor }}-400 currency-price"
                                       data-usd="{{ $sub->base_cost }}">
                                     ${{ number_format($sub->base_cost, 0) }}
                                 </span>
                             </div>
-                            <span class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                            <span class="w-9 h-9 rounded-full bg-{{ $accentColor }}-500/10 flex items-center justify-center text-{{ $accentColor }}-400 group-hover:bg-{{ $accentColor }}-500 group-hover:text-white transition-all">
                                 <i class="ti ti-arrow-right text-sm"></i>
                             </span>
                         </div>
@@ -74,7 +114,8 @@
                 @else
                     {{-- Custom / Contact card --}}
                     <a href="{{ url('/pricing/' . $sub->id . '?country=US') }}"
-                       class="service-card group bg-animazon-navy/50 border border-dashed border-animazon-border/40 hover:border-secondary/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 cursor-pointer">
+                       class="service-card group bg-animazon-navy/50 border border-dashed border-animazon-border/40 hover:border-secondary/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+                       style="box-shadow: {{ $glowShadow }};">
                         <div>
                             <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary text-xl mb-4 group-hover:bg-secondary group-hover:text-white transition-all">
                                 <i class="{{ $sub->icon }}"></i>

@@ -363,6 +363,23 @@
     </script>
 
     <script>
+        const currencySymbols = {
+            'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹', 'AUD': 'A$', 'CAD': 'C$', 'AED': 'د.إ',
+            'SAR': '﷼', 'ZAR': 'R', 'SGD': 'S$', 'MYR': 'RM', 'NZD': 'NZ$', 'JPY': '¥', 'CHF': 'Fr',
+            'SEK': 'kr', 'NOK': 'kr', 'MXN': 'Mex$', 'BRL': 'R$', 'KRW': '₩', 'CNY': '¥', 'HKD': 'HK$',
+            'THB': '฿', 'PHP': '₱', 'EGP': 'E£', 'NGN': '₦', 'KES': 'KSh', 'PKR': '₨', 'BDT': '৳',
+            'LKR': 'Rs', 'QAR': 'QR', 'KWD': 'KD', 'BHD': 'BD', 'OMR': 'OMR'
+        };
+
+        $(document).on('change', '#site_currency', function() {
+            var selectedCurrency = $(this).val();
+            if (currencySymbols[selectedCurrency]) {
+                $('#site_currency_symbol').val(currencySymbols[selectedCurrency]);
+            }
+            // Trigger preview update
+            $(this).trigger('keyup');
+        });
+
         $(document).on('keyup change', '.currency_preview', function() {
             var data = $('#currency_setting').serialize();
             $.ajax({
@@ -1199,8 +1216,23 @@
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     {{ Form::label('site_currency', __('Currency'), ['class' => 'form-label']) }}
-                                    {{ Form::text('site_currency', isset($setting['site_currency']) ? $setting['site_currency'] : '', ['class' => 'form-control font-style currency_preview', 'required', 'placeholder' => __('Enter Currency')]) }}
-                                    <small> {{ __('Note: Add currency code as per three-letter ISO code.') }}<br>
+                                    @php
+                                        $currencyList = [
+                                            'USD' => 'USD - US Dollar', 'EUR' => 'EUR - Euro', 'GBP' => 'GBP - British Pound', 
+                                            'INR' => 'INR - Indian Rupee', 'AUD' => 'AUD - Australian Dollar', 'CAD' => 'CAD - Canadian Dollar', 
+                                            'AED' => 'AED - UAE Dirham', 'SAR' => 'SAR - Saudi Riyal', 'ZAR' => 'ZAR - South African Rand', 
+                                            'SGD' => 'SGD - Singapore Dollar', 'MYR' => 'MYR - Malaysian Ringgit', 'NZD' => 'NZD - New Zealand Dollar', 
+                                            'JPY' => 'JPY - Japanese Yen', 'CHF' => 'CHF - Swiss Franc', 'SEK' => 'SEK - Swedish Krona', 
+                                            'NOK' => 'NOK - Norwegian Krone', 'MXN' => 'MXN - Mexican Peso', 'BRL' => 'BRL - Brazilian Real', 
+                                            'KRW' => 'KRW - South Korean Won', 'CNY' => 'CNY - Chinese Yuan', 'HKD' => 'HKD - Hong Kong Dollar', 
+                                            'THB' => 'THB - Thai Baht', 'PHP' => 'PHP - Philippine Peso', 'EGP' => 'EGP - Egyptian Pound', 
+                                            'NGN' => 'NGN - Nigerian Naira', 'KES' => 'KES - Kenyan Shilling', 'PKR' => 'PKR - Pakistani Rupee', 
+                                            'BDT' => 'BDT - Bangladeshi Taka', 'LKR' => 'LKR - Sri Lankan Rupee', 'QAR' => 'QAR - Qatari Riyal', 
+                                            'KWD' => 'KWD - Kuwaiti Dinar', 'BHD' => 'BHD - Bahraini Dinar', 'OMR' => 'OMR - Omani Rial'
+                                        ];
+                                    @endphp
+                                    {{ Form::select('site_currency', $currencyList, isset($setting['site_currency']) ? $setting['site_currency'] : 'USD', ['class' => 'form-control selectric font-style currency_preview', 'required', 'id' => 'site_currency']) }}
+                                    <small> {{ __('Note: Select currency code as per three-letter ISO code.') }}<br>
                                         <a href="https://stripe.com/docs/currencies"
                                             target="_blank">{{ __('You can find out how to do that here.') }}</a></small>
                                     <br>

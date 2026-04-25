@@ -382,8 +382,36 @@ class DashboardController extends Controller
                 }
             } else {
 
-                // return view('dashboard');
-                return $this->account_dashboard_index();
+                // Fallback: render account dashboard with minimal data to avoid
+                // infinite loop (account→project→crm→pos→hrm→account).
+                $data = [
+                    'latestIncome'        => collect(),
+                    'latestExpense'       => collect(),
+                    'incomeCategoryColor' => [],
+                    'incomeCategory'      => [],
+                    'incomeCatAmount'     => [],
+                    'expenseCategoryColor'=> [],
+                    'expenseCategory'     => [],
+                    'expenseCatAmount'    => [],
+                    'incExpBarChartData'  => ['label' => [], 'data' => []],
+                    'incExpLineChartData' => ['label' => [], 'data' => []],
+                    'currentYear'         => date('Y'),
+                    'currentMonth'        => date('M'),
+                    'constant'            => ['taxes' => 0, 'category' => 0, 'units' => 0, 'bankAccount' => 0],
+                    'bankAccountDetail'   => collect(),
+                    'recentInvoice'       => collect(),
+                    'weeklyInvoice'       => ['invoiceTotal' => 0, 'invoicePaid' => 0, 'invoiceDue' => 0],
+                    'monthlyInvoice'      => ['invoiceTotal' => 0, 'invoicePaid' => 0, 'invoiceDue' => 0],
+                    'recentBill'          => collect(),
+                    'weeklyBill'          => ['billTotal' => 0, 'billPaid' => 0, 'billDue' => 0],
+                    'monthlyBill'         => ['billTotal' => 0, 'billPaid' => 0, 'billDue' => 0],
+                    'goals'               => collect(),
+                    'users'               => Auth::user(),
+                    'plan'                => Plan::getPlan(Auth::user()->show_dashboard()),
+                    'storage_limit'       => 0,
+                ];
+
+                return view('dashboard.account-dashboard', $data);
             }
         } else {
             if (!file_exists(storage_path() . "/installed")) {

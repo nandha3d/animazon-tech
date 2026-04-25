@@ -408,7 +408,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function todayIncome()
     {
-        $revenue = Revenue::where('created_by', '=', $this->creatorId())->whereRaw('Date(date) = CURDATE()')->where('created_by', \Auth::user()->creatorId())->sum('amount');
+        $curdate = \DB::getDriverName() == 'sqlite' ? "date('now')" : 'CURDATE()';
+        $revenue = Revenue::where('created_by', '=', $this->creatorId())->whereRaw('Date(date) = ' . $curdate)->where('created_by', \Auth::user()->creatorId())->sum('amount');
         $invoiceTotal = self::getInvoiceProductsData((date('y-m-d')));
 
         $totalIncome = (!empty($revenue) ? $revenue : 0) + (!empty($invoiceTotal) ? ($invoiceTotal) : 0);
@@ -418,7 +419,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function todayExpense()
     {
-        $payment = Payment::where('created_by', '=', $this->creatorId())->where('created_by', \Auth::user()->creatorId())->whereRaw('Date(date) = CURDATE()')->sum('amount');
+        $curdate = \DB::getDriverName() == 'sqlite' ? "date('now')" : 'CURDATE()';
+        $payment = Payment::where('created_by', '=', $this->creatorId())->where('created_by', \Auth::user()->creatorId())->whereRaw('Date(date) = ' . $curdate)->sum('amount');
 
         $billTotal = self::getBillProductsData(date('y-m-d'));
 
