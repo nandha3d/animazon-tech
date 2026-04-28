@@ -101,11 +101,9 @@ class CostCalculatorController extends Controller
             $currencyMap = self::CURRENCY_MAP;
             $symbols = collect($currencyMap)->pluck('code')->unique()->toArray();
             
-            // Get the base currency from Admin Settings (defaults to USD)
-            $baseCurrency = \App\Models\Utility::getValByName('site_currency');
-            if (!$baseCurrency) {
-                $baseCurrency = 'USD';
-            }
+            // Cost calculator base prices are always stored in USD,
+            // so always convert relative to USD regardless of admin site_currency
+            $baseCurrency = 'USD';
 
             try {
                 // Fetch rates from Frankfurter API with EUR as base (most compatible)
@@ -142,11 +140,18 @@ class CostCalculatorController extends Controller
     /**
      * Public: Show the calculator wizard for a specific sub-service
      */
-    public function publicCalculator($projectTypeId)
+    public function publicCalculator($projectType)
     {
-        $projectType = ProjectType::with(['parent', 'children' => function($q) {
+        // Try finding by slug first, then ID
+        $projectType = ProjectType::where('slug', $projectType)
+            ->orWhere('id', $projectType)
+            ->firstOrFail();
+
+        $projectType->load(['parent', 'children' => function($q) {
             $q->where('active', true)->orderBy('name');
-        }])->findOrFail($projectTypeId);
+        }]);
+
+        $projectTypeId = $projectType->id;
 
         // If it's a category, show the drill-down view of its sub-services
         if ($projectType->isCategory()) {

@@ -2526,16 +2526,23 @@ class Utility extends Model
                         {
                             config(
                                 [
-                                    'mail.driver' => $settings['mail_driver'] ? $settings['mail_driver'] : $setting['mail_driver'],
-                                    'mail.host' => $settings['mail_host'] ? $settings['mail_host'] : $setting['mail_host'],
-                                    'mail.port' => $settings['mail_port'] ? $settings['mail_port'] :$setting['mail_port'],
-                                    'mail.encryption' => $settings['mail_encryption'] ? $settings['mail_encryption'] : $setting['mail_encryption'],
-                                    'mail.username' => $settings['mail_username'] ? $settings['mail_username'] : $setting['mail_username'],
-                                    'mail.password' => $settings['mail_password'] ? $settings['mail_password'] : $setting['mail_password'],
+                                    'mail.default' => $settings['mail_driver'] ? $settings['mail_driver'] : $setting['mail_driver'],
+                                    'mail.mailers.smtp.transport' => $settings['mail_driver'] ? $settings['mail_driver'] : $setting['mail_driver'],
+                                    'mail.mailers.smtp.host' => $settings['mail_host'] ? $settings['mail_host'] : $setting['mail_host'],
+                                    'mail.mailers.smtp.port' => $settings['mail_port'] ? $settings['mail_port'] : $setting['mail_port'],
+                                    'mail.mailers.smtp.encryption' => $settings['mail_encryption'] ? $settings['mail_encryption'] : $setting['mail_encryption'],
+                                    'mail.mailers.smtp.username' => $settings['mail_username'] ? $settings['mail_username'] : $setting['mail_username'],
+                                    'mail.mailers.smtp.password' => $settings['mail_password'] ? $settings['mail_password'] : $setting['mail_password'],
                                     'mail.from.address' => $settings['mail_from_address'] ? $settings['mail_from_address'] : $setting['mail_from_address'],
                                     'mail.from.name' => $settings['mail_from_name'] ? $settings['mail_from_name'] : $setting['mail_from_name'],
-                                    'mail.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
-                                    'mail.mailers.smtp.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
+                                    'mail.mailers.smtp.verify_peer' => false,
+                                    'mail.mailers.smtp.stream' => [
+                                        'ssl' => [
+                                            'allow_self_signed' => true,
+                                            'verify_peer' => false,
+                                            'verify_peer_name' => false,
+                                        ],
+                                    ],
                                 ]
                             );
 
@@ -2607,16 +2614,23 @@ class Utility extends Model
                     {
                         config(
                             [
-                                'mail.driver' => $settings['mail_driver'],
-                                'mail.host' => $settings['mail_host'],
-                                'mail.port' => $settings['mail_port'],
-                                'mail.encryption' => $settings['mail_encryption'],
-                                'mail.username' => $settings['mail_username'],
-                                'mail.password' => $settings['mail_password'],
+                                'mail.default' => $settings['mail_driver'],
+                                'mail.mailers.smtp.transport' => $settings['mail_driver'],
+                                'mail.mailers.smtp.host' => $settings['mail_host'],
+                                'mail.mailers.smtp.port' => $settings['mail_port'],
+                                'mail.mailers.smtp.encryption' => $settings['mail_encryption'],
+                                'mail.mailers.smtp.username' => $settings['mail_username'],
+                                'mail.mailers.smtp.password' => $settings['mail_password'],
                                 'mail.from.address' => $settings['mail_from_address'],
                                 'mail.from.name' => $settings['mail_from_name'],
-                                'mail.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
-                                'mail.mailers.smtp.stream' => ['ssl' => ['allow_self_signed' => true, 'verify_peer' => false, 'verify_peer_name' => false]],
+                                'mail.mailers.smtp.verify_peer' => false,
+                                'mail.mailers.smtp.stream' => [
+                                    'ssl' => [
+                                        'allow_self_signed' => true,
+                                        'verify_peer' => false,
+                                        'verify_peer_name' => false,
+                                    ],
+                                ],
                             ]
                         );
                         Mail::to($mailTo)->send(new CommonEmailTemplate($content, $settings));
@@ -4399,8 +4413,12 @@ class Utility extends Model
 
             // Check for AVIF alternative for performance
             $avifPath = $path . '.avif';
+            $simpleAvifPath = preg_replace('/\.[^.]+$/', '', $path) . '.avif';
+            
             if (\Storage::disk($settings['storage_setting'])->exists($avifPath)) {
                 return \Storage::disk($settings['storage_setting'])->url($avifPath);
+            } elseif (\Storage::disk($settings['storage_setting'])->exists($simpleAvifPath)) {
+                return \Storage::disk($settings['storage_setting'])->url($simpleAvifPath);
             }
 
             return \Storage::disk($settings['storage_setting'])->url($path);

@@ -80,7 +80,7 @@
                 @endphp
 
                 @if($sub->base_cost > 0)
-                    <a href="{{ url('/pricing/' . $sub->id . '?country=US') }}"
+                    <a href="{{ route('cost-calculator.show', $sub->slug ?? $sub->id) }}?country=US"
                        class="service-card group bg-animazon-navy/50 border border-animazon-border/30 hover:border-{{ $accentColor }}-500/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 cursor-pointer"
                        style="box-shadow: {{ $glowShadow }};">
 
@@ -113,7 +113,7 @@
                     </a>
                 @else
                     {{-- Custom / Contact card --}}
-                    <a href="{{ url('/pricing/' . $sub->id . '?country=US') }}"
+                    <a href="{{ route('cost-calculator.show', $sub->slug ?? $sub->id) }}?country=US"
                        class="service-card group bg-animazon-navy/50 border border-dashed border-animazon-border/40 hover:border-secondary/50 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 cursor-pointer"
                        style="box-shadow: {{ $glowShadow }};">
                         <div>

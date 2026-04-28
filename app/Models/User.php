@@ -17,6 +17,16 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles ,Impersonate;
 
+    public function notifications()
+    {
+        return $this->hasMany('App\Models\Notification', 'user_id', 'id');
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->hasMany('App\Models\Notification', 'user_id', 'id')->where('is_read', 0);
+    }
+
     protected $appends = ['profile'];
 
     protected $fillable = [

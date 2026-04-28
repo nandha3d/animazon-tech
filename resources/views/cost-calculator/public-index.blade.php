@@ -62,7 +62,7 @@
             }
         @endphp
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             @foreach($orderedCategories as $category)
                 @php
                     $minPrice = $category->children->where('base_cost', '>', 0)->min('base_cost');
@@ -78,57 +78,66 @@
                     $accent = $style['accent'];
 
                     // Define relevant placeholder image URL based on category
-                    $imageUrl = asset('assets/images/pricing/webapp1.jpg'); // Web Dev
+                    $imageUrl = asset('assets/images/pricing/webapp1.jpg');
                     if (str_contains($category->name, '3D') || str_contains($category->name, 'Animation')) {
-                        $imageUrl = asset('assets/images/pricing/3d.png'); // 3D Render
+                        $imageUrl = asset('assets/images/pricing/3d.png');
                     } elseif (str_contains($category->name, 'App') || str_contains($category->name, 'Mobile')) {
-                        $imageUrl = asset('assets/images/pricing/mobileapp.jpg'); // Mobile App
+                        $imageUrl = asset('assets/images/pricing/mobileapp.jpg');
                     } elseif (str_contains($category->name, 'Game')) {
-                        $imageUrl = asset('assets/images/pricing/gaming.jpg'); // Gaming
+                        $imageUrl = asset('assets/images/pricing/gaming.jpg');
                     }
                 @endphp
 
-                <a href="{{ url('/pricing/' . $category->id) }}"
-                   class="group relative flex flex-col items-stretch rounded-2xl border border-animazon-border/30 bg-animazon-navy/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-{{ $accent }}-500/50"
-                   style="box-shadow: {{ $style['glow'] ?? '0 0 30px rgba(0,193,222,0.1)' }};">
+                <a href="{{ route('cost-calculator.show', $category->slug ?? $category->id) }}"
+                   class="group relative flex flex-col items-stretch rounded-3xl border border-animazon-border/30 bg-animazon-navy/50 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:border-{{ $accent }}-500/60"
+                   style="box-shadow: {{ $style['glow'] ?? '0 0 30px rgba(0,193,222,0.1)' }}; min-height: 520px;">
 
                     {{-- Image Header --}}
-                    <div class="w-full relative overflow-hidden bg-animazon-navy" style="height: 200px;">
+                    <div class="w-full relative overflow-hidden bg-animazon-navy" style="height: 230px;">
                         <img src="{{ $imageUrl }}" alt="{{ $category->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        
+                        {{-- Dark gradient overlay on image --}}
+                        <div class="absolute inset-0 bg-gradient-to-t from-animazon-navy/80 via-transparent to-transparent"></div>
+
                         {{-- Icon overlay --}}
-                        <div class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-animazon-navy/80 backdrop-blur-md border border-{{ $accent }}-500/30 flex items-center justify-center group-hover:bg-{{ $accent }}-500 group-hover:border-{{ $accent }}-400 transition-colors duration-300">
-                            <i class="{{ $category->icon ?: $style['icon_fallback'] }} text-{{ $accent }}-400 group-hover:text-white text-lg transition-colors duration-300"></i>
+                        <div class="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-animazon-navy/80 backdrop-blur-md border border-{{ $accent }}-500/30 flex items-center justify-center group-hover:bg-{{ $accent }}-500 group-hover:border-{{ $accent }}-400 transition-colors duration-300">
+                            <i class="{{ $category->icon ?: $style['icon_fallback'] }} text-{{ $accent }}-400 group-hover:text-white text-xl transition-colors duration-300"></i>
+                        </div>
+
+                        {{-- Service count badge on image --}}
+                        <div class="absolute top-4 left-4 z-20">
+                            <span class="px-3 py-1.5 rounded-full bg-animazon-navy/70 backdrop-blur-md border border-{{ $accent }}-500/20 text-{{ $accent }}-400 text-[11px] font-bold tracking-wider">{{ $serviceCount }} {{ $serviceCount === 1 ? 'SERVICE' : 'SERVICES' }}</span>
                         </div>
                     </div>
 
-                    {{-- Top accent bar --}}
-                    <div class="h-1 w-full bg-gradient-to-r from-{{ $accent }}-400 to-{{ $accent }}-600 flex-shrink-0 group-hover:h-1.5 transition-all duration-300"></div>
+                    {{-- Accent bar --}}
+                    <div class="h-1 w-full bg-gradient-to-r from-{{ $accent }}-400 via-{{ $accent }}-500 to-{{ $accent }}-600 flex-shrink-0 group-hover:h-1.5 transition-all duration-300"></div>
 
                     {{-- Content --}}
-                    <div class="flex-1 p-5 flex flex-col">
-                        <div class="flex items-start justify-between mb-3 gap-2">
-                            <h2 class="text-xl font-bold text-animazon-white group-hover:text-{{ $accent }}-400 transition-colors duration-300 leading-tight">{{ $category->name }}</h2>
-                            <span class="px-2 py-1 rounded bg-{{ $accent }}-500/15 text-{{ $accent }}-400 text-[10px] font-bold tracking-wider whitespace-nowrap">{{ $serviceCount }} {{ $serviceCount === 1 ? 'SERVICE' : 'SERVICES' }}</span>
-                        </div>
-                        
+                    <div class="flex-1 p-6 flex flex-col text-center items-center">
+                        <h2 class="text-2xl font-bold text-animazon-white group-hover:text-{{ $accent }}-400 transition-colors duration-300 leading-tight mb-3">{{ $category->name }}</h2>
+
                         <p class="text-animazon-muted text-sm leading-relaxed mb-6 flex-1">{{ str_replace('ÔÇö', '—', $category->description) }}</p>
-                        
-                        @if($minPrice && $maxPrice)
-                            <div class="mt-auto pt-4 border-t border-animazon-border/20 flex items-end justify-between">
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[10px] text-animazon-muted uppercase tracking-wider font-semibold">Starting from</span>
-                                    <span class="text-[15px] font-bold text-{{ $accent }}-400" data-usd-min="{{ $minPrice }}">${{ number_format($minPrice, 0) }}</span>
-                                </div>
-                                <div class="w-9 h-9 rounded-full bg-{{ $accent }}-500/10 border border-{{ $accent }}-500/20 flex items-center justify-center group-hover:bg-{{ $accent }}-500 group-hover:border-{{ $accent }}-400 transition-all duration-300">
-                                    <i class="ti ti-arrow-right text-{{ $accent }}-400 group-hover:text-white transition-all duration-300"></i>
+
+                        @if($minPrice)
+                            {{-- Price badge --}}
+                            <div class="mb-5">
+                                <span class="text-[11px] text-animazon-muted uppercase tracking-widest font-semibold block mb-2">Starting from</span>
+                                <div class="inline-flex items-center gap-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-{{ $accent }}-500/15 to-{{ $accent }}-600/10 border border-{{ $accent }}-500/25">
+                                    <span class="text-2xl font-extrabold text-{{ $accent }}-400 tracking-tight" data-usd-min="{{ $minPrice }}">${{ number_format($minPrice, 0) }}</span>
                                 </div>
                             </div>
                         @endif
+
+                        {{-- Estimate button --}}
+                        <div class="mt-auto w-full">
+                            <div class="w-full py-3 rounded-xl bg-gradient-to-r from-{{ $accent }}-500/20 to-{{ $accent }}-600/10 border border-{{ $accent }}-500/30 text-{{ $accent }}-400 font-bold text-sm text-center tracking-wide group-hover:from-{{ $accent }}-500 group-hover:to-{{ $accent }}-600 group-hover:text-white group-hover:border-{{ $accent }}-400 transition-all duration-300">
+                                <i class="ti ti-calculator mr-1"></i> Get Estimate
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Hover glow overlay --}}
-                    <div class="absolute inset-0 bg-gradient-to-t from-{{ $accent }}-500/5 via-{{ $accent }}-500/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-{{ $accent }}-500/8 via-{{ $accent }}-500/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"></div>
                 </a>
             @endforeach
         </div>
@@ -178,10 +187,7 @@
     }
 
     function formatNum(n) {
-        if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
-        if (n >= 100000) return (n/1000).toFixed(0) + 'K';
-        if (n >= 10000) return (n/1000).toFixed(1) + 'K';
-        return n.toLocaleString('en', {maximumFractionDigits: 0});
+        return Math.round(n).toLocaleString('en-IN', {maximumFractionDigits: 0});
     }
 
     document.addEventListener('DOMContentLoaded', () => {

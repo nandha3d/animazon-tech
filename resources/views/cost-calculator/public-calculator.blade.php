@@ -18,7 +18,7 @@
         {{-- Service siblings tabs --}}
         <div class="flex flex-wrap gap-2 mb-8 pb-4 border-b border-animazon-border/30">
             @foreach($siblings as $sib)
-                <a href="{{ url('/pricing/' . $sib->id . '?country=' . request('country', 'US')) }}"
+                <a href="{{ url('/pricing/' . $sib->slug . '?country=' . request('country', 'US')) }}"
                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all
                           {{ $sib->id == $projectType->id
                               ? 'bg-primary text-white'
@@ -142,6 +142,159 @@
                                                 @if($answer->insight)
                                                     <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs text-blue-900 font-medium leading-relaxed insight-box hidden">
                                                         <i class="ti ti-bulb mr-1 text-amber-500 text-sm"></i> {{ $answer->insight }}
+                                                    </div>
+                                                @endif
+                                                
+                                                {{-- Pros and Cons for E-Commerce Platforms --}}
+                                                @if(str_contains(strtolower($answer->answer_text), 'woocommerce') || str_contains(strtolower($answer->answer_text), 'wordpress'))
+                                                    <div class="mt-4 grid grid-cols-1 xl:grid-cols-2 gap-4 insight-box hidden">
+                                                        <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+                                                            <h4 class="text-green-400 text-sm font-bold uppercase mb-3 flex items-center gap-1"><i class="ti ti-check"></i> Pros</h4>
+                                                            <ul class="text-sm text-animazon-white/80 space-y-2">
+                                                                <li>• No monthly platform fee.</li>
+                                                                <li>• Complete ownership of your store data.</li>
+                                                                <li>• Total customizability (if you have strong technical knowledge).</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                                                            <h4 class="text-red-400 text-sm font-bold uppercase mb-3 flex items-center gap-1"><i class="ti ti-x"></i> Cons</h4>
+                                                            <ul class="text-sm text-animazon-white/80 space-y-2">
+                                                                <li>• <strong>Bloated & Slow:</strong> Relying on plugins makes the site extremely slow.</li>
+                                                                <li>• <strong>High Risk:</strong> High risk of the site breaking completely during automatic plugin updates.</li>
+                                                                <li>• <strong>Hidden Costs:</strong> You are responsible for security, hosting, and constant manual maintenance.</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'shopify'))
+                                                    <div class="mt-4 grid grid-cols-1 xl:grid-cols-2 gap-4 insight-box hidden">
+                                                        <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+                                                            <h4 class="text-green-400 text-sm font-bold uppercase mb-3 flex items-center gap-1"><i class="ti ti-check"></i> Pros</h4>
+                                                            <ul class="text-sm text-animazon-white/80 space-y-2">
+                                                                <li>• Fully managed hosting & built-in security.</li>
+                                                                <li>• Fast setup and zero technical maintenance.</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                                                            <h4 class="text-red-400 text-sm font-bold uppercase mb-3 flex items-center gap-1"><i class="ti ti-x"></i> Cons</h4>
+                                                            <ul class="text-sm text-animazon-white/80 space-y-2">
+                                                                <li>• <strong>Expensive Subscription:</strong> Basic plan costs roughly <strong>₹39,000+ per year</strong> ($468/yr), forever.</li>
+                                                                <li>• <strong>Hidden App Fees:</strong> Every extra feature requires a monthly paid app, easily tripling your yearly costs.</li>
+                                                                <li>• <strong>Locked Ecosystem:</strong> You don't truly own your store; you are renting it.</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'custom stack'))
+                                                    <div class="mt-4 bg-primary/10 border border-primary/30 rounded-xl p-5 insight-box hidden shadow-[0_0_15px_rgba(0,194,222,0.15)] relative overflow-hidden">
+                                                        <div class="absolute top-0 right-0 bg-primary text-animazon-black text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-widest">Highly Recommended</div>
+                                                        <h4 class="text-primary text-sm font-bold uppercase mb-3 flex items-center gap-1"><i class="ti ti-rocket"></i> Why Choose Custom Stack?</h4>
+                                                        <ul class="text-sm text-animazon-white space-y-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                                            <li><strong class="text-primary">• Zero Monthly Lock-in:</strong> No recurring ₹39,000+ yearly fees to platforms like Shopify.</li>
+                                                            <li><strong class="text-primary">• Blazing Fast Performance:</strong> Built from scratch with modern tech (no slow WordPress plugins).</li>
+                                                            <li><strong class="text-primary">• 100% Ownership:</strong> You own the code, the database, and the intellectual property entirely.</li>
+                                                            <li><strong class="text-primary">• Infinite Scalability:</strong> Can handle millions of users and highly complex, unique business logic.</li>
+                                                            <li><strong class="text-primary">• Bank-grade Security:</strong> Custom architecture means no vulnerable public WordPress plugins.</li>
+                                                            <li><strong class="text-primary">• Tailored UX/UI:</strong> Pixel-perfect design that perfectly matches your premium brand.</li>
+                                                        </ul>
+                                                    </div>
+                                                
+                                                {{-- Payment Options Details --}}
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'cash on delivery'))
+                                                    <div class="mt-4 bg-animazon-black/30 border border-animazon-border/50 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-animazon-white text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-truck"></i> Cash on Delivery (COD) Ready</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed">
+                                                            We will build your checkout system to support Cash on Delivery orders. To actually fulfill them, you will need to connect with a courier partner (like Shiprocket or Delhivery). The courier collects the cash upon delivery and transfers it to your bank account after a few days, deducting their COD handling fee (usually ₹50-₹100 per order).<br><br>
+                                                            <strong class="text-red-400">Note:</strong> COD orders typically have a higher Return to Origin (RTO) rate, meaning customers may reject the package at the door, and you will have to bear the shipping cost.
+                                                        </p>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'shipping courier integration'))
+                                                    <div class="mt-4 bg-[#8a2be2]/10 border border-[#8a2be2]/30 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-[#b266ff] text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-package"></i> Automated Shipping & Tracking</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed mb-2">
+                                                            Instead of manually copying customer addresses into your courier's portal, this integration connects your store directly to shipping aggregators like <strong>Shiprocket</strong> or <strong>Delhivery</strong>.
+                                                        </p>
+                                                        <ul class="text-sm text-animazon-white/80 space-y-1">
+                                                            <li>• Automatically generate Airway Bills (AWB) in one click.</li>
+                                                            <li>• Auto-sync live tracking links back to your customer's dashboard and email.</li>
+                                                            <li>• Live shipping rates calculated directly at checkout.</li>
+                                                        </ul>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'razorpay integration'))
+                                                    <div class="mt-4 bg-[#02042b]/50 border border-[#3395ff]/30 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-[#3395ff] text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-credit-card"></i> Razorpay Charges Explained</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed mb-2">
+                                                            Razorpay is the most popular payment gateway in India. There are <strong>no setup fees</strong> and <strong>no monthly maintenance fees</strong>. They charge a flat fee per successful transaction:
+                                                        </p>
+                                                        <ul class="text-sm text-animazon-white/80 space-y-1 mb-3">
+                                                            <li>• <strong>2%</strong> for domestic Credit/Debit cards, Netbanking, UPI, and Wallets.</li>
+                                                            <li>• <strong>3%</strong> for Diners, Amex, EMI, and International Cards.</li>
+                                                        </ul>
+                                                        <a href="https://razorpay.com/pricing/" target="_blank" class="text-[#3395ff] hover:text-white transition-colors text-xs font-bold underline">View Official Razorpay Pricing &rarr;</a>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'stripe integration'))
+                                                    <div class="mt-4 bg-[#635bff]/10 border border-[#635bff]/30 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-[#635bff] text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-brand-stripe"></i> Stripe Charges Explained</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed mb-2">
+                                                            Stripe is excellent for global payments. No setup or monthly fees.
+                                                        </p>
+                                                        <ul class="text-sm text-animazon-white/80 space-y-1 mb-3">
+                                                            <li>• <strong>2% + ₹3.00</strong> for domestic cards.</li>
+                                                            <li>• <strong>3% + ₹3.00</strong> for international cards.</li>
+                                                        </ul>
+                                                        <a href="https://stripe.com/en-in/pricing" target="_blank" class="text-[#635bff] hover:text-white transition-colors text-xs font-bold underline">View Official Stripe Pricing &rarr;</a>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'paypal integration'))
+                                                    <div class="mt-4 bg-[#003087]/10 border border-[#0079c1]/30 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-[#0079c1] text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-brand-paypal"></i> PayPal Charges Explained</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed mb-2">
+                                                            PayPal is trusted globally but has higher transaction fees for Indian merchants receiving international payments.
+                                                        </p>
+                                                        <ul class="text-sm text-animazon-white/80 space-y-1 mb-3">
+                                                            <li>• <strong>4.4% + Fixed Fee</strong> (based on currency) for commercial transactions.</li>
+                                                        </ul>
+                                                        <a href="https://www.paypal.com/in/webapps/mpp/paypal-fees" target="_blank" class="text-[#0079c1] hover:text-white transition-colors text-xs font-bold underline">View Official PayPal Pricing &rarr;</a>
+                                                    </div>
+                                                
+                                                {{-- Hosting Options Details --}}
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'shared hosting setup'))
+                                                    <div class="mt-4 bg-animazon-black/30 border border-animazon-border/50 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-animazon-white text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-server"></i> Shared Hosting & Domain Details</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed">
+                                                            This is the most affordable hosting option, suitable for small to medium traffic (up to ~5,000 visitors/month).
+                                                        </p>
+                                                        <div class="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                                                            <strong class="text-primary text-xs uppercase tracking-wider block mb-1">Domain Name Inclusion:</strong>
+                                                            <p class="text-sm text-animazon-white/90">
+                                                                A standard low-cost domain (like <strong>.in</strong> or <strong>.co.in</strong>) is <strong>included</strong> in this base price.<br><br>
+                                                                If you require a high-priced premium domain (like <strong>.com</strong>, <strong>.io</strong>, <strong>.ai</strong>) or a highly sought-after name, the domain registrar's extra charges will apply on top of this.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'cloud & amc standard') || str_contains(strtolower($answer->answer_text), 'vps hosting setup'))
+                                                    <div class="mt-4 bg-animazon-black/30 border border-animazon-border/50 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-animazon-white text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-cloud"></i> Cloud / VPS & Domain Details</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed">
+                                                            Dedicated server resources to handle growing traffic and provide much faster load speeds.
+                                                        </p>
+                                                        <div class="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                                                            <strong class="text-primary text-xs uppercase tracking-wider block mb-1">Domain Name Inclusion:</strong>
+                                                            <p class="text-sm text-animazon-white/90">
+                                                                A standard low-cost domain (like <strong>.in</strong> or <strong>.co.in</strong>) is <strong>included</strong> in this base price.<br><br>
+                                                                Premium domains (like <strong>.com</strong>, <strong>.io</strong>, <strong>.ai</strong>) or highly competitive names will incur extra charges based on their actual market price.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                @elseif(str_contains(strtolower($answer->answer_text), 'enterprise amc'))
+                                                    <div class="mt-4 bg-animazon-black/30 border border-animazon-border/50 rounded-xl p-4 insight-box hidden">
+                                                        <h4 class="text-animazon-white text-sm font-bold uppercase mb-2 flex items-center gap-1"><i class="ti ti-building-skyscraper"></i> Enterprise Hosting Details</h4>
+                                                        <p class="text-sm text-animazon-muted leading-relaxed">
+                                                            Auto-scaling infrastructure designed for massive traffic, complete with a dedicated support channel and priority feature development.
+                                                        </p>
+                                                        <div class="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                                                            <strong class="text-primary text-xs uppercase tracking-wider block mb-1">Domain Name Inclusion:</strong>
+                                                            <p class="text-sm text-animazon-white/90">
+                                                                Standard domains are included. Premium market-priced domains (like high-value <strong>.com</strong> names) will be billed at cost.
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 @endif
                                             </div>
@@ -555,10 +708,10 @@
 
             // Show/hide insight boxes based on selection
             step.querySelectorAll('.answer-option').forEach(opt => {
-                const insightBox = opt.querySelector('.insight-box');
-                if (!insightBox) return;
                 const isSelected = opt.classList.contains('!border-primary') || opt.classList.contains('bg-primary/5');
-                insightBox.classList.toggle('hidden', !isSelected);
+                opt.querySelectorAll('.insight-box').forEach(box => {
+                    box.classList.toggle('hidden', !isSelected);
+                });
             });
 
             recalculate();

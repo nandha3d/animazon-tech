@@ -1,3 +1,28 @@
+# Add missing MIME types for modern images
+AddType image/avif .avif
+AddType image/webp .webp
+
+# ─── Disable LiteSpeed Image Optimization ───
+# Hostinger uses LiteSpeed which intercepts image requests and returns
+# "Invalid source image" errors. These directives disable that behavior.
+<IfModule LiteSpeed>
+    CacheLookup off
+    # Explicitly tell LiteSpeed not to optimize images in assets folder
+    RewriteRule ^assets/images/ - [E=no-litespeed:1]
+</IfModule>
+
+# Prevent any server-side image transformation
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$">
+        Header set Cache-Control "no-transform"
+    </FilesMatch>
+</IfModule>
+
+# Disable mod_pagespeed image optimization if present
+<IfModule pagespeed_module>
+    ModPagespeed off
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

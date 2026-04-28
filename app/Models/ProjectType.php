@@ -4,14 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ProjectType extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            if (empty($model->slug)) {
+                $model->slug = Str::slug($model->name);
+                
+                // Ensure uniqueness
+                $originalSlug = $model->slug;
+                $count = 1;
+                while (static::where('slug', $model->slug)->where('id', '!=', $model->id)->exists()) {
+                    $model->slug = "{$originalSlug}-" . $count++;
+                }
+            }
+        });
+    }
+
     protected $fillable = [
         'parent_id',
         'name',
+        'slug',
         'description',
         'icon',
         'image_path',
@@ -23,6 +43,11 @@ class ProjectType extends Model
         'base_cost' => 'decimal:2',
         'active' => 'boolean'
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     // ─── Relationships ────────────────────────────────────
 

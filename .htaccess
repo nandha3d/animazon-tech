@@ -1,3 +1,22 @@
+# Add missing MIME types for modern images
+AddType image/avif .avif
+AddType image/webp .webp
+
+# ─── Disable LiteSpeed Image Optimization ───
+<IfModule LiteSpeed>
+    CacheLookup off
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$">
+        Header set Cache-Control "no-transform"
+    </FilesMatch>
+</IfModule>
+
+<IfModule pagespeed_module>
+    ModPagespeed off
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -15,7 +34,7 @@
     RewriteRule ^ %1 [L,R=301]
 
     # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_URI} !(\.css|\.js|\.png|\.jpg|\.jpeg|\.gif|robots\.txt|\.ico|\.woff|\.woff2|.ttf|\.svg)$ [NC]
+    RewriteCond %{REQUEST_URI} !(\.css|\.js|\.png|\.jpg|\.jpeg|\.gif|robots\.txt|\.ico|\.woff|\.woff2|.ttf|\.svg|\.avif|\.webp)$ [NC]
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
@@ -23,5 +42,5 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(css|assets|landing|storage|installer|js)/(.*)$ public/$1/$2 [L,NC]
+    RewriteRule ^(css|assets|landing|storage|installer|js|build|uploads)/(.*)$ public/$1/$2 [L,NC]
 </IfModule>

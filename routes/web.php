@@ -339,7 +339,7 @@ Route::post('/pricing/calculate', [CostCalculatorController::class, 'publicCalcu
 Route::post('/pricing/submit', [CostCalculatorController::class, 'publicSubmit'])->name('cost-calculator.submit')->middleware(['XSS']);
 Route::get('/pricing/currency', [CostCalculatorController::class, 'getCurrency'])->name('cost-calculator.currency')->middleware(['XSS']);
 Route::get('/pricing/detect-country', [CostCalculatorController::class, 'detectCountry'])->name('cost-calculator.detect-country')->middleware(['XSS']);
-Route::get('/pricing/{projectTypeId}', [CostCalculatorController::class, 'publicCalculator'])->name('cost-calculator.show')->middleware(['XSS']);
+Route::get('/pricing/{projectType}', [CostCalculatorController::class, 'publicCalculator'])->name('cost-calculator.show')->middleware(['XSS']);
 Route::get('/cost-estimate/{id}', [CostCalculatorController::class, 'viewEstimate'])->name('cost-estimate.view')->middleware(['XSS']);
 
 // Terms and Conditions
@@ -1848,3 +1848,42 @@ Route::group(['middleware' => ['verified']], function () {
 
 Route::any('/cookie-consent', [SystemController::class, 'CookieConsent'])->name('cookie-consent');
 Route::get('payslip/payslipPdf/{id}/{month}', [PaySlipController::class, 'payslipPdf'])->name('payslip.payslipPdf')->middleware(['XSS']);
+
+// Temporary route to update pricing
+Route::get('/update-pricing', function () {
+    $updates = [
+        61 => ['answer_text' => 'Up to 10 products (Free)', 'additional_cost' => 0, 'is_included' => 1, 'is_enterprise' => 0, 'insight' => '💡 10 products are included completely free of cost.'],
+        62 => ['answer_text' => 'Up to 15 products', 'additional_cost' => 18, 'is_included' => 0, 'is_enterprise' => 0, 'insight' => null],
+        63 => ['answer_text' => 'Up to 25 products', 'additional_cost' => 30, 'is_included' => 0, 'is_enterprise' => 0, 'insight' => null],
+        64 => ['answer_text' => 'Up to 50 products', 'additional_cost' => 60, 'is_included' => 0, 'is_enterprise' => 0, 'insight' => null],
+        65 => ['answer_text' => '100+ products', 'additional_cost' => 120, 'is_included' => 0, 'is_enterprise' => 0, 'insight' => null],
+        68 => ['cost_multiplier' => 1.00, 'additional_cost' => 120],
+        70 => ['answer_text' => 'Cash on Delivery (COD) Ready', 'is_included' => 1],
+    ];
+    foreach ($updates as $id => $data) {
+        $a = \App\Models\CostCalculatorAnswer::find($id);
+        if ($a) {
+            $a->update($data);
+        }
+    }
+    
+    // Add Shipping Integration
+    \App\Models\CostCalculatorAnswer::updateOrCreate(
+        ['id' => 233],
+        [
+            'question_id' => 19,
+            'answer_text' => 'Shipping Courier Integration',
+            'cost_multiplier' => 1.00,
+            'additional_cost' => 30.00,
+            'is_included' => 0,
+            'is_enterprise' => 0,
+            'explanation' => 'Automate AWB generation & tracking via Shiprocket/Delhivery',
+            'insight' => '💡 Eliminates manual data entry by automatically syncing orders to your courier partner.',
+            'order' => 6,
+            'active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]
+    );
+    return 'Database pricing successfully updated! You can now close this tab and refresh the pricing page.';
+});

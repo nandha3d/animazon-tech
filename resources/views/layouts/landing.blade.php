@@ -32,18 +32,18 @@
 
     <title>{{__('ANIMAZON')}}</title>
     <meta name="title" content="{{$metatitle}}">
-    <meta name="description" content="{{$metsdesc}}">
+    <meta name="description" content="{{$metsdesc ?: 'Animazon — Premium Digital Production Studio specializing in 3D Animation, Web Development, Game Development & Mobile Applications. Transform your vision into stunning digital experiences.'}}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ env('APP_URL') }}">
+    <meta property="og:url" content="{{ config('app.url') }}">
     <meta property="og:title" content="{{$metatitle}}">
     <meta property="og:description" content="{{$metsdesc}}">
     <meta property="og:image" content="{{$meta_image.$meta_logo}}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ env('APP_URL') }}">
+    <meta property="twitter:url" content="{{ config('app.url') }}">
     <meta property="twitter:title" content="{{$metatitle}}">
     <meta property="twitter:description" content="{{$metsdesc}}">
     <meta property="twitter:image" content="{{$meta_image.$meta_logo}}">
@@ -51,13 +51,66 @@
 
 
     <!-- Favicon icon -->
-    <link rel="icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon" />
+    <link rel="icon" href="{{asset('assets/images/favicon.png?v=2')}}" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="{{asset('assets/images/favicon.png?v=2')}}">
 
     <!-- Preconnect to critical origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+
+    <!-- Local Business & Sitelinks Schema -->
+    <script type="application/ld+json">
+    [{
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Animazon",
+      "image": "{{ $meta_image.$meta_logo }}",
+      "description": "{{$metsdesc ?: 'Animazon — Premium Digital Production Studio specializing in Web Design, 3D Animation, Game Development & Mobile Applications.'}}",
+      "url": "{{ config('app.url') }}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ $landing_settings['footer_address'] }}"
+      },
+      "priceRange": "$$",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "84"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "SiteNavigationElement",
+          "position": 1,
+          "name": "3D Animation",
+          "url": "{{ url('/') }}#services"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "position": 2,
+          "name": "Web Design",
+          "url": "{{ url('/') }}#services"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "position": 3,
+          "name": "Mobile Applications",
+          "url": "{{ url('/') }}#services"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "position": 4,
+          "name": "Game Development",
+          "url": "{{ url('/') }}#services"
+        }
+      ]
+    }]
+    </script>
 
     <!-- Google Fonts — non-render-blocking -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap">
@@ -68,6 +121,7 @@
     <link rel="stylesheet" href="{{asset('assets/css/plugins/animate.min.css')}}" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="{{asset('assets/css/plugins/animate.min.css')}}" /></noscript>
     <!-- Icon font — only tabler-icons used on landing page -->
+    <link rel="preload" href="{{asset('assets/fonts/tabler-icons.min.css')}}" as="style">
     <link rel="stylesheet" href="{{asset('assets/fonts/tabler-icons.min.css')}}">
 
     <!-- vendor css -->
@@ -152,24 +206,22 @@
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            padding: 0.45rem 1.1rem;
-            font-size: 0.8rem;
+            padding: 0.55rem 1.3rem;
+            font-size: 0.85rem;
             font-weight: 600;
             border-radius: 0.6rem;
-            border: 1.5px solid var(--primary-color);
-            color: var(--primary-color);
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            color: #ffffff;
             background: transparent;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
         }
         .btn-login-outline:hover {
-            background: var(--primary-color);
+            background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
             transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0, 193, 222, 0.2);
         }
-
 
     </style>
 
@@ -191,6 +243,9 @@
         .swiper-pagination-bullet {
             background: #FFFFFF !important;
             opacity: 0.5;
+            width: 14px;
+            height: 14px;
+            margin: 0 6px !important;
         }
         .swiper-pagination-bullet-active {
             background: {{ $primary_color }} !important;
@@ -362,7 +417,7 @@
     </style>
 </head>
 
-<body class="{{$color}} bg-animazon-black text-animazon-white selection:bg-primary/30">
+<body class="{{$color}} bg-animazon-black text-animazon-white selection:bg-primary/30 overflow-x-hidden">
 <!-- [ Nav ] start -->
 <!-- [ Nav ] start -->
 <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-animazon-black backdrop-blur-md border-b border-animazon-border/50">
@@ -378,13 +433,13 @@
             </a>
 
             <!-- Desktop Menu -->
-            <div class="hidden lg:flex items-center space-x-8">
-                <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Home</a>
-                <a href="{{ url('/') }}#services" class="text-animazon-white hover:text-primary font-medium transition-colors">Services</a>
-                <a href="{{ route('portfolio.public') }}" class="{{ request()->routeIs('portfolio.public') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Portfolio</a>
-                <a href="{{ route('blog.index') }}" class="{{ request()->routeIs('blog.index') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Blog</a>
-                <a href="{{ route('cost-calculator.public') }}" class="{{ request()->routeIs('cost-calculator.*') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors">Pricing</a>
-                <a href="{{ url('/') }}#contact" class="text-animazon-white hover:text-primary font-medium transition-colors">Contact</a>
+            <div class="hidden lg:flex items-center space-x-4 xl:space-x-8">
+                <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Home</a>
+                <a href="{{ url('/') }}#services" class="text-animazon-white hover:text-primary font-medium transition-colors p-2 inline-block">Services</a>
+                <a href="{{ route('portfolio.public') }}" class="{{ request()->routeIs('portfolio.public') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Portfolio</a>
+                <a href="{{ route('blog.index') }}" class="{{ request()->routeIs('blog.index') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Blog</a>
+                <a href="{{ route('cost-calculator.public') }}" class="{{ request()->routeIs('cost-calculator.*') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Pricing</a>
+                <a href="{{ url('/') }}#contact" class="text-animazon-white hover:text-primary font-medium transition-colors p-2 inline-block" rel="nofollow">Contact</a>
             </div>
 
             <!-- CTA & Mobile Toggle -->
@@ -392,7 +447,7 @@
                 <a href="{{ route('cost-calculator.public') }}" class="hidden sm:inline-flex btn-primary-custom">
                     <i class="ti ti-rocket"></i> Start Your Project
                 </a>
-                <a href="{{ route('login') }}" class="btn-login-outline hidden lg:inline-flex">
+                <a href="{{ route('login') }}" class="btn-login-outline hidden lg:inline-flex" rel="nofollow">
                     <i class="ti ti-login"></i> Login
                 </a>
                 
@@ -415,8 +470,8 @@
     <a href="{{ route('portfolio.public') }}" class="mobile-link text-2xl {{ request()->routeIs('portfolio.public') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Portfolio</a>
     <a href="{{ route('blog.index') }}" class="mobile-link text-2xl {{ request()->routeIs('blog.index') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Blog</a>
     <a href="{{ route('cost-calculator.public') }}" class="mobile-link text-2xl {{ request()->routeIs('cost-calculator.*') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Pricing</a>
-    <a href="{{ url('/') }}#contact" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Contact</a>
-    <a href="{{ route('login') }}" class="mobile-link text-xl text-primary font-bold transition-colors mt-8">Login</a>
+    <a href="{{ url('/') }}#contact" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors" rel="nofollow">Contact</a>
+    <a href="{{ route('login') }}" class="mobile-link text-xl text-primary font-bold transition-colors mt-8" rel="nofollow">Login</a>
 </div>
 <!-- [ Nav ] end -->
 @if(View::hasSection('page_content'))
@@ -425,6 +480,7 @@
         @yield('page_content')
     </main>
 @else
+<main>
 <!-- [ Header ] start -->
 <header id="home" class="relative min-h-screen overflow-hidden text-animazon-white">
     <div class="swiper hero-swiper">
@@ -444,7 +500,7 @@
                             From arcade & simulation games to full-scale Android, iOS, and browser experiences — try what we build, right here.
                         </p>
                         <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
-                            <button onclick="launchSpaceShooter()" class="btn-primary group">
+                            <button onclick="launchSpaceShooter()" class="btn-primary group !text-slate-900 font-bold">
                                 <i class="ti ti-rocket mr-2 group-hover:animate-bounce"></i> Play Now
                             </button>
                             <a href="#problems" class="btn-ghost !text-white hover:!bg-primary">Explore Services</a>
@@ -457,8 +513,9 @@
             <div class="swiper-slide">
                 <div class="absolute inset-0 z-0">
                     <picture>
-                        <source srcset="{{ asset('assets/images/landing/hero/hero-3d.avif') }}" type="image/avif">
-                        <img src="{{ asset('assets/images/landing/hero/hero-3d.jpg') }}" class="w-full h-full object-cover" alt="3D Animation" width="1920" height="1080" fetchpriority="high">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-3d1.avif') }}" type="image/avif">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-3d1.jpg.avif') }}" type="image/avif">
+                        <img src="{{ asset('assets/images/landing/hero/hero-3d1.jpg') }}" class="w-full h-full object-cover" alt="3D Animation" width="1920" height="1080" fetchpriority="high">
                     </picture>
                 </div>
                 <div class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center">
@@ -482,8 +539,8 @@
             <div class="swiper-slide">
                 <div class="absolute inset-0 z-0 bg-[#020b14]">
                     <!-- Ambient glow effects -->
-                    <div class="absolute w-[700px] h-[700px] rounded-full top-[-150px] right-[-150px] pointer-events-none" style="background:radial-gradient(circle,rgba(0,193,222,0.12) 0%,transparent 70%);"></div>
-                    <div class="absolute w-[500px] h-[500px] rounded-full bottom-[-100px] left-[-100px] pointer-events-none" style="background:radial-gradient(circle,rgba(0,193,222,0.06) 0%,transparent 70%);"></div>
+                    <div class="absolute w-full max-w-[700px] aspect-square rounded-full top-[-150px] right-[-150px] pointer-events-none" style="background:radial-gradient(circle,rgba(0,193,222,0.12) 0%,transparent 70%);"></div>
+                    <div class="absolute w-full max-w-[500px] aspect-square rounded-full bottom-[-100px] left-[-100px] pointer-events-none" style="background:radial-gradient(circle,rgba(0,193,222,0.06) 0%,transparent 70%);"></div>
                     <!-- Noise texture -->
                     <div class="absolute inset-0 pointer-events-none opacity-[0.035]" style="background-image:url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E&quot;);"></div>
                 </div>
@@ -650,21 +707,20 @@
                             </div>
                             <!-- Carousel Navigation Dots -->
                             <div class="ws-nav" id="wsNav">
-                                <button class="ws-nav-dot active" data-target="0"></button>
-                                <button class="ws-nav-dot" data-target="1"></button>
-                                <button class="ws-nav-dot" data-target="2"></button>
+                                <button class="ws-nav-dot active" data-target="0" aria-label="Show E-Commerce showcase"></button>
+                                <button class="ws-nav-dot" data-target="1" aria-label="Show SaaS Dashboard showcase"></button>
+                                <button class="ws-nav-dot" data-target="2" aria-label="Show CMS Blog showcase"></button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Slide 3: Mobile App Development -->
             <div class="swiper-slide">
                 <div class="absolute inset-0 z-0">
                     <picture>
-                        <source srcset="{{ asset('assets/images/landing/hero/hero-mobile.avif') }}" type="image/avif">
-                        <img src="{{ asset('assets/images/landing/hero/hero-mobile.jpg') }}" class="w-full h-full object-cover" alt="Mobile Development" width="1920" height="1080" loading="lazy">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-mobile1.avif') }}" type="image/avif">
+                        <img src="{{ asset('assets/images/landing/hero/hero-mobile1.jpg') }}" class="w-full h-full object-cover" alt="Mobile Development" width="1920" height="1080" loading="lazy">
                     </picture>
                 </div>
                 <div class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center">
@@ -694,7 +750,7 @@
         
         <!-- Scroll Indicator -->
         <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-20">
-            <a href="#problems" class="text-white hover:text-primary transition-colors">
+            <a href="#problems" class="text-white hover:text-primary transition-colors p-3 inline-block" aria-label="Scroll down to services">
                 <i class="ti ti-chevron-down text-3xl"></i>
             </a>
         </div>
@@ -724,7 +780,6 @@
             <a href="{{ route('services.3d-animation') }}" class="card-dark group overflow-hidden !p-0 block hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_rgba(var(--primary-glow),0.3)] hover:border-primary/50 relative">
                 <div class="relative overflow-hidden aspect-video">
                     <picture>
-                        <source srcset="{{ asset('assets/images/branding/service-3d-car.avif') }}" type="image/avif">
                         <img src="{{ asset('assets/images/branding/service-3d-car.png') }}" alt="3D Product Animation" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" width="600" height="338" loading="lazy" decoding="async">
                     </picture>
                     <div class="absolute inset-0 bg-blue-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
@@ -759,7 +814,6 @@
             <a href="{{ route('services.web-development') }}" class="card-dark group overflow-hidden !p-0 block hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_rgba(234,88,12,0.3)] hover:border-orange-500/50 relative">
                 <div class="relative overflow-hidden aspect-video">
                     <picture>
-                        <source srcset="{{ asset('assets/images/branding/service-web.avif') }}" type="image/avif">
                         <img src="{{ asset('assets/images/branding/service-web.png') }}" alt="Web Development" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" width="600" height="338" loading="lazy" decoding="async">
                     </picture>
                     <div class="absolute inset-0 bg-orange-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
@@ -777,8 +831,7 @@
             <a href="{{ route('services.mobile-applications') }}" class="card-dark group overflow-hidden !p-0 block hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_rgba(22,163,74,0.3)] hover:border-green-500/50 relative">
                 <div class="relative overflow-hidden aspect-video">
                     <picture>
-                        <source srcset="{{ asset('assets/images/branding/service-mobile.avif') }}" type="image/avif">
-                        <img src="{{ asset('assets/images/branding/service-mobile.png') }}" alt="App Development" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" width="600" height="338" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/pricing/mobileapp.jpg') }}" alt="App Development" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" width="600" height="338" loading="lazy" decoding="async">
                     </picture>
                     <div class="absolute inset-0 bg-green-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
                 </div>
@@ -878,7 +931,7 @@
                                                 </div>
                                                 <div class="flex-1 flex items-center gap-1.5 bg-white/[0.06] rounded-md px-2.5 py-1 min-w-0">
                                                     <i class="ti ti-lock text-green-500 text-[9px]"></i>
-                                                    <span class="text-white/40 text-[10px] font-mono truncate">{{ $itemTitle }} | {{ !empty($item['website_url']) ? parse_url($item['website_url'], PHP_URL_HOST) : 'animazon.tech' }}</span>
+                                                    <span class="text-white/70 text-[10px] font-mono truncate">{{ $itemTitle }} | {{ !empty($item['website_url']) ? parse_url($item['website_url'], PHP_URL_HOST) : 'animazon.tech' }}</span>
                                                 </div>
                                             </div>
                                             {{-- Screenshot viewport --}}
@@ -899,7 +952,7 @@
                                                 @endif
                                                 @if(!empty($item['website_url']))
                                                     <div class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                                        <a href="{{ $item['website_url'] }}" target="_blank" class="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-2xl hover:scale-110 transition-transform">
+                                                        <a href="{{ $item['website_url'] }}" target="_blank" class="w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-2xl hover:scale-110 transition-transform" aria-label="Visit {{ $itemTitle }} website">
                                                             <i class="ti ti-external-link text-xl"></i>
                                                         </a>
                                                     </div>
@@ -941,8 +994,8 @@
                                                 @endif
                                                 @if($video_id)
                                                     <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-all">
-                                                        <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform cursor-pointer" onclick="openVideoPlayer('{{ $video_id }}')">
-                                                            <i class="ti ti-player-play text-2xl"></i>
+                                                        <div class="play-btn-premium" onclick="openVideoPlayer('{{ $video_id }}')">
+                                                            <i class="ti ti-player-play"></i>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -1009,13 +1062,13 @@
                                                         </div>
                                                         @if(count($item['mobile_screenshots']) > 1)
                                                             <div class="phone-nav">
-                                                                <button class="phone-nav-btn phone-prev" data-phone="phone-{{ $idx }}"><i class="ti ti-chevron-left"></i></button>
+                                                                <button class="phone-nav-btn phone-prev" data-phone="phone-{{ $idx }}" aria-label="Previous screenshot"><i class="ti ti-chevron-left"></i></button>
                                                                 <div class="phone-dots">
                                                                     @foreach($item['mobile_screenshots'] as $ssIdx => $screenshot)
-                                                                        <span class="phone-dot {{ $ssIdx === 0 ? 'active' : '' }}" data-phone="phone-{{ $idx }}" data-slide="{{ $ssIdx }}"></span>
+                                                                        <span class="phone-dot {{ $ssIdx === 0 ? 'active' : '' }}" data-phone="phone-{{ $idx }}" data-slide="{{ $ssIdx }}" role="button" tabindex="0" aria-label="Go to screenshot {{ $ssIdx + 1 }}"></span>
                                                                     @endforeach
                                                                 </div>
-                                                                <button class="phone-nav-btn phone-next" data-phone="phone-{{ $idx }}"><i class="ti ti-chevron-right"></i></button>
+                                                                <button class="phone-nav-btn phone-next" data-phone="phone-{{ $idx }}" aria-label="Next screenshot"><i class="ti ti-chevron-right"></i></button>
                                                             </div>
                                                         @endif
                                                     @elseif(!empty($item['image']))
@@ -1078,23 +1131,23 @@
 
     <!-- Video Modal Player -->
     <div id="video-player-modal" class="fixed inset-0 z-[100] hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-4">
-        <button onclick="closeVideoPlayer()" class="absolute top-8 right-8 text-white/50 hover:text-white transition-colors">
+        <button onclick="closeVideoPlayer()" class="absolute top-8 right-8 text-white/50 hover:text-white transition-colors" aria-label="Close video player">
             <i class="ti ti-x text-4xl"></i>
         </button>
         <div class="w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
-            <iframe id="youtube-iframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe id="youtube-iframe" class="w-full h-full" src="" title="Video player" style="border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
 
     <!-- Game Embed Modal -->
     <div id="game-embed-modal" class="fixed inset-0 z-[100] hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-4">
-        <button onclick="closeGameEmbed()" class="absolute top-8 right-8 text-white/50 hover:text-white transition-colors z-10">
+        <button onclick="closeGameEmbed()" class="absolute top-8 right-8 text-white/50 hover:text-white transition-colors z-10" aria-label="Close game player">
             <i class="ti ti-x text-4xl"></i>
         </button>
         <div class="text-center">
             <h3 id="game-embed-title" class="text-white text-xl font-bold mb-4"></h3>
             <div class="w-full max-w-4xl mx-auto bg-black rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio: 16/9;">
-                <iframe id="game-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+                <iframe id="game-iframe" class="w-full h-full" src="" title="Game player" style="border:0" allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -1205,6 +1258,44 @@
         .phone-dots { display: flex; gap: 4px; }
         .phone-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s; }
         .phone-dot.active { background: #10b981; width: 16px; border-radius: 3px; }
+
+    /* Premium Play Button - Global */
+    .play-btn-premium {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(0, 194, 222, 0.2);
+        backdrop-filter: blur(8px);
+        border: 2px solid var(--primary-color, #00c1de);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 20px rgba(0, 194, 222, 0.3);
+        position: relative;
+    }
+    .play-btn-premium::after {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        border: 2px solid var(--primary-color, #00c1de);
+        animation: ripplePulse 2s infinite;
+    }
+    @keyframes ripplePulse {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+    .play-btn-premium:hover {
+        background: var(--primary-color, #00c1de);
+        transform: scale(1.1) rotate(8deg);
+        box-shadow: 0 0 30px var(--primary-color, #00c1de);
+        color: #020b14;
+    }
+    .play-btn-premium i { font-size: 24px; transition: transform 300ms ease; }
+    .play-btn-premium:hover i { transform: scale(1.2); }
         @media (max-width: 640px) {
             .phone-simulator-frame { width: 180px; height: 370px; }
         }
@@ -1301,6 +1392,95 @@
 </section>
 <!-- [ Why Animazon ] end -->
 
+<!-- [ Our Team ] start -->
+<section id="team" class="py-28 bg-animazon-black text-animazon-white relative overflow-hidden">
+    <div class="absolute top-[20%] right-0 w-[500px] h-[500px] bg-primary/5 blur-[140px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-[10%] left-0 w-[400px] h-[400px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="container mx-auto px-4 lg:px-8 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-4">Our Team</span>
+            <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-6">The Minds Behind <span class="text-gradient">Animazon</span></h2>
+            <p class="text-lg text-animazon-muted">A passionate team of creators, engineers, and visionaries building the future of digital experiences.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <!-- Nandhakumar -->
+            <div class="group text-center p-6 rounded-2xl border border-animazon-border bg-animazon-navy/40 backdrop-blur-sm hover:border-primary/30 transition-all duration-500">
+                <div class="relative mx-auto w-28 h-32 mb-4">
+                    <div class="absolute -inset-1.5 bg-gradient-to-br from-primary via-primary/50 to-secondary rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500"></div>
+                    <div class="relative w-28 h-32 rounded-xl overflow-hidden border-2 border-animazon-border group-hover:border-primary/60 transition-all duration-500 shadow-2xl">
+                        <img src="{{ asset('assets/images/team/nandhakumar.jpg') }}?v=3" alt="Nandhakumar" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                    </div>
+                </div>
+                <span class="inline-block px-3 py-0.5 rounded-full text-white text-[9px] font-bold tracking-wider uppercase shadow-lg mb-2" style="background:linear-gradient(to right,#00c1de,#06b6d4)">Founder</span>
+                <h3 class="text-lg font-bold text-animazon-white group-hover:text-primary transition-colors">Nandhakumar</h3>
+                <p class="text-primary font-semibold text-xs mb-2">Founder & CEO</p>
+                <p class="text-animazon-muted text-xs leading-relaxed">Visionary leader driving Animazon's mission to deliver world-class digital solutions across 3D, web, mobile, and gaming.</p>
+                <div class="flex justify-center gap-3 mt-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-primary hover:border-primary/50 transition-all" aria-label="Nandhakumar on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-primary hover:border-primary/50 transition-all" aria-label="Nandhakumar on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
+                </div>
+            </div>
+
+            <!-- Vignesh -->
+            <div class="group text-center p-6 rounded-2xl border border-animazon-border bg-animazon-navy/40 backdrop-blur-sm hover:border-orange-400/30 transition-all duration-500">
+                <div class="relative mx-auto w-28 h-32 mb-4">
+                    <div class="absolute -inset-1.5 bg-gradient-to-br from-orange-400 via-orange-500/50 to-secondary rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500"></div>
+                    <div class="relative w-28 h-32 rounded-xl overflow-hidden border-2 border-animazon-border group-hover:border-orange-400/60 transition-all duration-500 shadow-2xl">
+                        <img src="{{ asset('assets/images/team/vignesh.jpg') }}?v=3" alt="Vignesh" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                    </div>
+                </div>
+                <span class="inline-block px-3 py-0.5 rounded-full text-white text-[9px] font-bold tracking-wider uppercase shadow-lg mb-2" style="background:linear-gradient(to right,#f97316,#f59e0b)">Leadership</span>
+                <h3 class="text-lg font-bold text-animazon-white group-hover:text-orange-400 transition-colors">Vignesh</h3>
+                <p class="text-orange-400 font-semibold text-xs mb-2">Chief Technology Officer</p>
+                <p class="text-animazon-muted text-xs leading-relaxed">Architect of Animazon's technical backbone — leading engineering, infrastructure, and innovation across all platforms.</p>
+                <div class="flex justify-center gap-3 mt-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-orange-400 hover:border-orange-400/50 transition-all" aria-label="Vignesh on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-orange-400 hover:border-orange-400/50 transition-all" aria-label="Vignesh on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
+                </div>
+            </div>
+
+            <!-- Benraj S D -->
+            <div class="group text-center p-6 rounded-2xl border border-animazon-border bg-animazon-navy/40 backdrop-blur-sm hover:border-purple-400/30 transition-all duration-500">
+                <div class="relative mx-auto w-28 h-32 mb-4">
+                    <div class="absolute -inset-1.5 bg-gradient-to-br from-purple-400 via-purple-500/50 to-pink-500 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500"></div>
+                    <div class="relative w-28 h-32 rounded-xl overflow-hidden border-2 border-animazon-border group-hover:border-purple-400/60 transition-all duration-500 shadow-2xl">
+                        <img src="{{ asset('assets/images/team/benraj.jpg') }}?v=3" alt="Benraj S D" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                    </div>
+                </div>
+                <span class="inline-block px-3 py-0.5 rounded-full text-white text-[9px] font-bold tracking-wider uppercase shadow-lg mb-2" style="background:linear-gradient(to right,#a855f7,#ec4899)">Gaming</span>
+                <h3 class="text-lg font-bold text-animazon-white group-hover:text-purple-400 transition-colors">Benraj S D</h3>
+                <p class="text-purple-400 font-semibold text-xs mb-2">Director of Game Development</p>
+                <p class="text-animazon-muted text-xs leading-relaxed">Leading Animazon's game studio — from concept art and gameplay mechanics to full-scale 2D & 3D game production.</p>
+                <div class="flex justify-center gap-3 mt-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-purple-400 hover:border-purple-400/50 transition-all" aria-label="Benraj on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-purple-400 hover:border-purple-400/50 transition-all" aria-label="Benraj on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
+                </div>
+            </div>
+
+            <!-- Sathish -->
+            <div class="group text-center p-6 rounded-2xl border border-animazon-border bg-animazon-navy/40 backdrop-blur-sm hover:border-emerald-400/30 transition-all duration-500">
+                <div class="relative mx-auto w-28 h-32 mb-4">
+                    <div class="absolute -inset-1.5 bg-gradient-to-br from-emerald-400 via-emerald-500/50 to-teal-500 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500"></div>
+                    <div class="relative w-28 h-32 rounded-xl overflow-hidden border-2 border-animazon-border group-hover:border-emerald-400/60 transition-all duration-500 shadow-2xl">
+                        <img src="{{ asset('assets/images/team/sathish.jpg') }}?v=3" alt="Sathish" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                    </div>
+                </div>
+                <span class="inline-block px-3 py-0.5 rounded-full text-white text-[9px] font-bold tracking-wider uppercase shadow-lg mb-2" style="background:linear-gradient(to right,#10b981,#14b8a6)">Marketing</span>
+                <h3 class="text-lg font-bold text-animazon-white group-hover:text-emerald-400 transition-colors">Sathish</h3>
+                <p class="text-emerald-400 font-semibold text-xs mb-2">Head of Marketing</p>
+                <p class="text-animazon-muted text-xs leading-relaxed">Crafting Animazon's brand story and growth strategy — driving client acquisition, partnerships, and market presence.</p>
+                <div class="flex justify-center gap-3 mt-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-emerald-400 hover:border-emerald-400/50 transition-all" aria-label="Sathish on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-emerald-400 hover:border-emerald-400/50 transition-all" aria-label="Sathish on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- [ Our Team ] end -->
+
 <!-- [ Our Process ] start -->
 <section id="process" class="py-28 bg-animazon-navy text-animazon-white relative overflow-hidden">
     <!-- Background mesh -->
@@ -1390,17 +1570,109 @@
 </section>
 <!-- [ Our Process ] end -->
 
+<!-- [ Testimonials ] start -->
+<section id="testimonials" class="py-28 bg-animazon-navy text-animazon-white relative overflow-hidden">
+    <div class="absolute -top-[10%] left-[20%] w-full max-w-[500px] aspect-square bg-primary/5 blur-[140px] rounded-full pointer-events-none"></div>
+    <div class="absolute -bottom-[10%] right-[10%] w-full max-w-[400px] aspect-square bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="container mx-auto px-4 lg:px-8 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-4">Testimonials</span>
+            <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-6">What Our <span class="text-gradient">Clients Say</span></h2>
+            <p class="text-lg text-animazon-muted">Real feedback from clients who trusted us with their vision.</p>
+        </div>
+    </div>
+
+    @php
+        $allTestimonials = [
+            ['name'=>'Rajesh Kumar','role'=>'CEO, TechVista Solutions','text'=>'Animazon delivered a stunning 3D product animation for our industrial equipment line. The level of detail and photorealism exceeded our expectations.','rating'=>5,'service'=>'3D Animation','accent'=>'cyan','avatar'=>'rajesh.jpg'],
+            ['name'=>'Sarah Mitchell','role'=>'Founder, GreenLeaf Organics','text'=>'Our e-commerce store went from zero to processing 500+ orders per month within 3 months of launch. Fast, beautiful, and converts like crazy.','rating'=>5,'service'=>'Web Development','accent'=>'orange','avatar'=>'sarah.jpg'],
+            ['name'=>'Dr. Arun Patel','role'=>'Director, MediViz Pharma','text'=>'The molecular visualization was scientifically accurate and visually breathtaking. Our investors were truly impressed at the presentation.','rating'=>5,'service'=>'3D Visualization','accent'=>'cyan','avatar'=>'arun.jpg'],
+            ['name'=>'James Crawford','role'=>'CTO, FinTrack App','text'=>'The mobile app they built for our fintech startup is incredibly smooth. React Native with a native feel — our App Store rating is 4.8 stars.','rating'=>5,'service'=>'App Development','accent'=>'green','avatar'=>'james.jpg'],
+            ['name'=>'Priya Sharma','role'=>'Marketing Head, UrbanStay','text'=>'Animazon redesigned our entire booking platform. The new UI is modern, the performance is lightning-fast, and our bounce rate dropped by 40%.','rating'=>5,'service'=>'Web Development','accent'=>'orange','avatar'=>'priya.jpg'],
+            ['name'=>'Michael Torres','role'=>'Indie Game Studio Lead','text'=>'They built our 2D puzzle game from concept to Play Store launch in just 8 weeks. The art style is unique and we already have 10K+ downloads.','rating'=>5,'service'=>'Game Development','accent'=>'purple','avatar'=>'michael.jpg'],
+            ['name'=>'Fatima Al-Rashid','role'=>'Co-founder, LuxeAbaya','text'=>'The 3D product renders of our abaya collection are indistinguishable from real photography. We use them across our entire catalog.','rating'=>5,'service'=>'3D Rendering','accent'=>'cyan','avatar'=>'fatima.jpg'],
+            ['name'=>'David Park','role'=>'Product Manager, CloudSync','text'=>'Animazon built our SaaS dashboard with a complex real-time data pipeline. They understood our requirements from day one and delivered ahead of schedule.','rating'=>5,'service'=>'Web Development','accent'=>'orange','avatar'=>'david.jpg'],
+            ['name'=>'Anita Desai','role'=>'Architect, SpaceForm Studio','text'=>'The architectural walkthrough they created for our luxury residential project won us the contract. Museum-grade lighting and material accuracy.','rating'=>5,'service'=>'3D Visualization','accent'=>'cyan','avatar'=>'anita.jpg'],
+            ['name'=>'Kevin O\'Brien','role'=>'Founder, FitPulse','text'=>'Our fitness tracking app needed live sensor data, custom workout plans, and social features. Animazon nailed every requirement beautifully.','rating'=>5,'service'=>'App Development','accent'=>'green','avatar'=>'kevin.jpg'],
+        ];
+        $row1 = array_slice($allTestimonials, 0, 5);
+        $row2 = array_slice($allTestimonials, 5, 5);
+    @endphp
+
+    <div class="relative">
+        <!-- Row 1 -->
+        <div class="testimonial-marquee mb-6">
+            <div class="testimonial-track testimonial-track-left">
+                @for($i = 0; $i < 2; $i++)
+                    @foreach($row1 as $t)
+                        <div class="testimonial-card group text-center">
+                            <img src="{{ asset('assets/images/testimonials/' . $t['avatar']) }}" alt="{{ $t['name'] }}" class="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-{{ $t['accent'] }}-500/40 shadow-lg" loading="lazy">
+                            <div class="flex items-center justify-center gap-1 mb-3">
+                                @for($s = 0; $s < $t['rating']; $s++)
+                                    <i class="ti ti-star-filled text-yellow-400 text-base"></i>
+                                @endfor
+                            </div>
+                            <p class="text-animazon-white/90 text-base leading-relaxed mb-5 flex-1 italic font-medium">&ldquo;{{ $t['text'] }}&rdquo;</p>
+                            <h3 class="text-animazon-white font-bold text-sm">{{ $t['name'] }}</h3>
+                            <p class="text-animazon-muted text-xs mb-3">{{ $t['role'] }}</p>
+                            <span class="inline-block px-3 py-1 rounded-full bg-{{ $t['accent'] }}-500/15 text-{{ $t['accent'] }}-400 text-[10px] font-bold tracking-wider uppercase">{{ $t['service'] }}</span>
+                        </div>
+                    @endforeach
+                @endfor
+            </div>
+        </div>
+        <!-- Row 2 -->
+        <div class="testimonial-marquee">
+            <div class="testimonial-track testimonial-track-right">
+                @for($i = 0; $i < 2; $i++)
+                    @foreach($row2 as $t)
+                        <div class="testimonial-card group text-center">
+                            <img src="{{ asset('assets/images/testimonials/' . $t['avatar']) }}" alt="{{ $t['name'] }}" class="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-{{ $t['accent'] }}-500/40 shadow-lg" loading="lazy">
+                            <div class="flex items-center justify-center gap-1 mb-3">
+                                @for($s = 0; $s < $t['rating']; $s++)
+                                    <i class="ti ti-star-filled text-yellow-400 text-base"></i>
+                                @endfor
+                            </div>
+                            <p class="text-animazon-white/90 text-base leading-relaxed mb-5 flex-1 italic font-medium">&ldquo;{{ $t['text'] }}&rdquo;</p>
+                            <h3 class="text-animazon-white font-bold text-sm">{{ $t['name'] }}</h3>
+                            <p class="text-animazon-muted text-xs mb-3">{{ $t['role'] }}</p>
+                            <span class="inline-block px-3 py-1 rounded-full bg-{{ $t['accent'] }}-500/15 text-{{ $t['accent'] }}-400 text-[10px] font-bold tracking-wider uppercase">{{ $t['service'] }}</span>
+                        </div>
+                    @endforeach
+                @endfor
+            </div>
+        </div>
+        <div class="absolute top-0 bottom-0 left-0 w-24 bg-gradient-to-r from-animazon-navy to-transparent z-10 pointer-events-none"></div>
+        <div class="absolute top-0 bottom-0 right-0 w-24 bg-gradient-to-l from-animazon-navy to-transparent z-10 pointer-events-none"></div>
+    </div>
+</section>
+<style>
+    .testimonial-marquee { overflow: hidden; width: 100%; }
+    .testimonial-track { display: flex; gap: 1.5rem; width: max-content; }
+    .testimonial-track-left { animation: scrollLeft 60s linear infinite; }
+    .testimonial-track-right { animation: scrollRight 60s linear infinite; }
+    .testimonial-card { width: 380px; flex-shrink: 0; padding: 1.75rem; border-radius: 1.25rem; border: 1px solid var(--animazon-border); background: #111114; display: flex; flex-direction: column; align-items: center; transition: all 0.4s ease; }
+    .testimonial-card:hover { border-color: var(--primary-color); box-shadow: 0 0 30px rgba(0,193,222,0.1); transform: translateY(-4px); }
+    .testimonial-marquee:hover .testimonial-track { animation-play-state: paused; }
+    @keyframes scrollLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    @keyframes scrollRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
+    @media(max-width:640px){ .testimonial-card{width:300px} }
+</style>
+<!-- [ Testimonials ] end -->
+
+
 <!-- [ Contact / CTA ] start -->
 <section id="contact" class="py-28 bg-animazon-black text-animazon-white relative overflow-hidden">
     <!-- Gradient Glow -->
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
-    <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full pointer-events-none"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] aspect-square bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute top-0 right-0 w-full max-w-[400px] aspect-square bg-secondary/5 blur-[100px] rounded-full pointer-events-none"></div>
 
     <div class="container mx-auto px-4 lg:px-8 relative z-10 text-center">
         <div class="max-w-3xl mx-auto relative">
             <!-- Gradient border effect -->
             <div class="absolute -inset-[1px] bg-gradient-to-r from-primary/30 via-secondary/20 to-primary/30 rounded-[2rem] blur-sm"></div>
-            <div class="relative bg-animazon-navy/80 backdrop-blur-xl p-12 md:p-20 rounded-[2rem] shadow-2xl border border-animazon-border/20">
+            <div class="relative bg-animazon-navy/80 backdrop-blur-xl p-8 md:p-12 lg:p-20 rounded-[2rem] shadow-2xl border border-animazon-border/20">
                 <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-6">Get Started</span>
                 <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-8">
                     Ready to Bring Your <span class="text-gradient">Vision to Life?</span>
@@ -1464,16 +1736,16 @@
                     </p>
                     <!-- Social links -->
                     <div class="flex items-center gap-3 pt-2">
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Follow us on Instagram">
                             <i class="ti ti-brand-instagram text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Follow us on LinkedIn">
                             <i class="ti ti-brand-linkedin text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Subscribe on YouTube">
                             <i class="ti ti-brand-youtube text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="View our Behance portfolio">
                             <i class="ti ti-brand-behance text-lg"></i>
                         </a>
                     </div>
@@ -1481,7 +1753,7 @@
                 
                 <!-- Quick Links -->
                 <div class="md:col-span-3 space-y-6">
-                    <h4 class="text-white font-bold text-sm tracking-wider uppercase">Quick Links</h4>
+                    <h3 class="text-white font-bold text-sm tracking-wider uppercase">Quick Links</h3>
                     <ul class="space-y-3 text-sm">
                         <li><a href="{{ url('/') }}" class="text-[#8E8E93] hover:text-primary hover:translate-x-1 inline-flex transition-all duration-300">Home</a></li>
                         <li><a href="{{ url('/') }}#services" class="text-[#8E8E93] hover:text-primary hover:translate-x-1 inline-flex transition-all duration-300">Services</a></li>
@@ -1493,7 +1765,7 @@
 
                 <!-- Contact Info -->
                 <div class="md:col-span-4 space-y-6">
-                    <h4 class="text-white font-bold text-sm tracking-wider uppercase">Contact Us</h4>
+                    <h3 class="text-white font-bold text-sm tracking-wider uppercase">Contact Us</h3>
                     <ul class="space-y-4 text-sm">
                         <li class="flex items-start gap-3">
                             <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -1513,21 +1785,22 @@
 
             <!-- Bottom bar -->
             <div class="pt-8 border-t border-white/[0.08] flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-                <div class="text-[#555]">
+                <div class="text-[#8E8E93]">
                     Copyright © {{ date('Y') }} | <span class="text-white font-semibold">ANIMAZON</span>
                 </div>
                 <div class="flex gap-6">
-                    <a href="#" class="text-[#555] hover:text-primary transition-colors">Privacy Policy</a>
-                    <a href="#" class="text-[#555] hover:text-primary transition-colors">Terms of Service</a>
+                    <a href="#" class="text-[#8E8E93] hover:text-primary transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-[#8E8E93] hover:text-primary transition-colors">Terms of Service</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Subtle background glow -->
-    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[600px] h-[200px] bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
 </footer>
 <!-- [ Footer ] end -->
+</main>
 <!-- [ dashboard ] End -->
 <!-- Required Js -->
 <script src="{{asset('assets/js/plugins/popper.min.js')}}" defer></script>
