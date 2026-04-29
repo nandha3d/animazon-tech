@@ -1,0 +1,358 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.page{max-width:900px;padding:2rem 1rem;font-family:var(--font-sans);}
+.section-label{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem;}
+.section-title{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.5rem;}
+.section-desc{font-size:14px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:1.5rem;}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:2.5rem 0;}
+.tag{display:inline-block;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:0.6rem;}
+
+.webdev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:2.5rem;}
+.wcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;}
+.wcard-icon{width:36px;height:36px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;}
+.wcard h3{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.35rem;}
+.wcard .sub{font-size:11px;color:var(--color-text-tertiary);margin-bottom:0.6rem;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;}
+.wcard p{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:0.75rem;}
+.wcard ul{list-style:none;}
+.wcard ul li{font-size:12px;color:var(--color-text-secondary);padding:3px 0 3px 14px;position:relative;}
+.wcard ul li::before{content:"—";position:absolute;left:0;color:var(--color-text-tertiary);}
+
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-bottom:2.5rem;}
+.icard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;}
+.icard-header{display:flex;align-items:center;gap:10px;margin-bottom:0.85rem;}
+.icard-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.icard h3{font-size:15px;font-weight:500;color:var(--color-text-primary);}
+.icard .icard-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:0.85rem;}
+.sol-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
+.sol-pills{display:flex;flex-wrap:wrap;gap:6px;}
+.sol-pill{font-size:11px;padding:3px 9px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);background:var(--color-background-secondary);}
+</style>
+
+<div class="page">
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;">Revised website services — web development types and industry solutions</h2>
+
+<div class="section-label">Web development</div>
+<div class="section-title">Every type of website we build</div>
+<div class="section-desc">From simple business websites to complex SaaS platforms — we scope, design, and develop the right solution for your stage and goals.</div>
+
+<div class="webdev-grid">
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#E6F1FB;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    </div>
+    <div class="sub">Business websites</div>
+    <h3>Corporate & business websites</h3>
+    <p>Professional multi-page websites that represent your brand, communicate credibility, and drive enquiries. Built for businesses that need to make a strong first impression.</p>
+    <ul>
+      <li>Home, about, services, and contact pages</li>
+      <li>Team and leadership profiles</li>
+      <li>Case studies and testimonials</li>
+      <li>Lead capture forms and CRM integration</li>
+      <li>Blog and news section</li>
+      <li>Google Analytics and SEO setup</li>
+    </ul>
+  </div>
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#EEEDFE;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.8"><path d="M4 17l6-6-6-6M12 19h8"/></svg>
+    </div>
+    <div class="sub">SaaS & tech products</div>
+    <h3>SaaS marketing & product sites</h3>
+    <p>High-converting websites for software products. Designed to communicate complex value clearly, drive free trial sign-ups, and support the full acquisition funnel.</p>
+    <ul>
+      <li>Product landing pages and feature breakdowns</li>
+      <li>Pricing page strategy and design</li>
+      <li>Interactive demos and product tours</li>
+      <li>Integration and partner pages</li>
+      <li>Changelog and documentation pages</li>
+      <li>Sign-up flow and onboarding CTA design</li>
+    </ul>
+  </div>
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#E1F5EE;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </div>
+    <div class="sub">Online stores</div>
+    <h3>E-commerce websites</h3>
+    <p>Full-featured online stores built to sell. Whether you're launching a DTC brand or scaling an existing catalogue, we build stores optimised for conversion and repeat purchase.</p>
+    <ul>
+      <li>Shopify and WooCommerce development</li>
+      <li>Custom product pages and collections</li>
+      <li>Cart, checkout, and payment integration</li>
+      <li>Inventory and order management setup</li>
+      <li>Discount, coupon, and loyalty systems</li>
+      <li>Abandoned cart and email flow setup</li>
+    </ul>
+  </div>
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#FAEEDA;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#854F0B" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div class="sub">Portals & platforms</div>
+    <h3>Web portals & client portals</h3>
+    <p>Authenticated web applications for clients, members, or internal teams. Built with role-based access, dashboards, and real-time data — replacing manual back-and-forth.</p>
+    <ul>
+      <li>Login, role-based access control</li>
+      <li>Client dashboards and reporting views</li>
+      <li>Document upload and management</li>
+      <li>Booking, scheduling, and approval flows</li>
+      <li>Notifications and activity feeds</li>
+      <li>Admin panel for internal management</li>
+    </ul>
+  </div>
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#FAECE7;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </div>
+    <div class="sub">Content & media</div>
+    <h3>Blog, news & content websites</h3>
+    <p>Content-first websites built for publishers, agencies, and thought-leaders. Optimised for SEO, readability, and audience growth with a CMS your editors will love.</p>
+    <ul>
+      <li>Custom blog and article templates</li>
+      <li>Category, tag, and author pages</li>
+      <li>Newsletter subscription integration</li>
+      <li>Social sharing and Open Graph setup</li>
+      <li>Related content and internal linking logic</li>
+      <li>RSS feed and content syndication</li>
+    </ul>
+  </div>
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#FBEAF0;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+    </div>
+    <div class="sub">Mobile-first</div>
+    <h3>Progressive web apps (PWA)</h3>
+    <p>App-like experiences delivered through the browser — no App Store required. PWAs work offline, load instantly, and can be installed on any device like a native app.</p>
+    <ul>
+      <li>Offline-first architecture with service workers</li>
+      <li>Push notification support</li>
+      <li>Home screen installability (iOS & Android)</li>
+      <li>App-like navigation and transitions</li>
+      <li>Background sync and caching strategy</li>
+      <li>Lighthouse PWA score optimisation</li>
+    </ul>
+  </div>
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#EAF3DE;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <div class="sub">Lead generation</div>
+    <h3>Landing pages & campaign sites</h3>
+    <p>Single-purpose pages engineered to convert. Used for paid campaigns, product launches, event registrations, and lead magnets where every element serves one goal.</p>
+    <ul>
+      <li>Above-the-fold headline and CTA strategy</li>
+      <li>Social proof, trust signals, and counters</li>
+      <li>Multi-step forms and lead scoring</li>
+      <li>A/B testing infrastructure</li>
+      <li>UTM tracking and ad platform pixel setup</li>
+      <li>Thank-you page and email automation</li>
+    </ul>
+  </div>
+
+  <div class="wcard">
+    <div class="wcard-icon" style="background:#E1F5EE;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#085041" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </div>
+    <div class="sub">Redesign & migration</div>
+    <h3>Website redesign & platform migration</h3>
+    <p>Already have a website that's outdated, slow, or holding you back? We audit, redesign, and migrate — preserving your SEO equity and improving everything else.</p>
+    <ul>
+      <li>Full UX and performance audit</li>
+      <li>Content migration and restructuring</li>
+      <li>301 redirect mapping and SEO preservation</li>
+      <li>CMS platform switch (e.g., WordPress to Webflow)</li>
+      <li>Visual refresh with brand alignment</li>
+      <li>Speed and Core Web Vitals improvement</li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<div class="section-label">Industries & solutions</div>
+<div class="section-title">What we build for your industry</div>
+<div class="section-desc">We don't deliver generic websites. Every industry has unique goals, compliance needs, and user behaviours — here's exactly what we solve for each.</div>
+
+<div class="ind-grid">
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#185FA5;"></div>
+      <h3>Professional services</h3>
+    </div>
+    <p class="icard-desc">Law firms, consultancies, accounting, and finance businesses need to convey authority and generate qualified leads online.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Attorney profile pages</span>
+      <span class="sol-pill">Practice area landing pages</span>
+      <span class="sol-pill">Client intake forms</span>
+      <span class="sol-pill">Case study microsites</span>
+      <span class="sol-pill">Secure client portals</span>
+      <span class="sol-pill">GDPR-compliant enquiry flows</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#0F6E56;"></div>
+      <h3>E-commerce & retail</h3>
+    </div>
+    <p class="icard-desc">DTC brands, multi-brand retailers, and marketplaces need fast, conversion-optimised stores that work on every device.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Product catalogue sites</span>
+      <span class="sol-pill">Custom Shopify themes</span>
+      <span class="sol-pill">Subscription commerce</span>
+      <span class="sol-pill">Wishlist & review systems</span>
+      <span class="sol-pill">Loyalty programme integration</span>
+      <span class="sol-pill">Multi-warehouse inventory</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#534AB7;"></div>
+      <h3>SaaS & technology</h3>
+    </div>
+    <p class="icard-desc">Software companies need marketing sites that explain complex products simply and turn visitors into free-trial users.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Product marketing sites</span>
+      <span class="sol-pill">Interactive feature demos</span>
+      <span class="sol-pill">Pricing and comparison pages</span>
+      <span class="sol-pill">Documentation portals</span>
+      <span class="sol-pill">Changelog pages</span>
+      <span class="sol-pill">Free trial sign-up flows</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#993C1D;"></div>
+      <h3>Healthcare & wellness</h3>
+    </div>
+    <p class="icard-desc">Clinics, practitioners, and health platforms need trustworthy, accessible sites that make it easy to book and find care.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Online appointment booking</span>
+      <span class="sol-pill">Doctor/specialist profiles</span>
+      <span class="sol-pill">Symptom checker tools</span>
+      <span class="sol-pill">Patient education content</span>
+      <span class="sol-pill">Telehealth landing pages</span>
+      <span class="sol-pill">HIPAA-aware form design</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#854F0B;"></div>
+      <h3>Real estate & property</h3>
+    </div>
+    <p class="icard-desc">Agencies, developers, and property platforms need listing-rich sites that generate buyer and seller enquiries at scale.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Property listing portals</span>
+      <span class="sol-pill">Search & filter systems</span>
+      <span class="sol-pill">Virtual tour embeds</span>
+      <span class="sol-pill">Agent profile pages</span>
+      <span class="sol-pill">Mortgage calculator tools</span>
+      <span class="sol-pill">Valuation request flows</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#3B6D11;"></div>
+      <h3>Education & e-learning</h3>
+    </div>
+    <p class="icard-desc">Schools, universities, training providers, and course platforms need sites that enrol students and deliver content reliably.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Course catalogue websites</span>
+      <span class="sol-pill">Student enrolment portals</span>
+      <span class="sol-pill">LMS integration (Moodle, Teachable)</span>
+      <span class="sol-pill">Faculty and department pages</span>
+      <span class="sol-pill">Event and webinar pages</span>
+      <span class="sol-pill">Certificate verification tools</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#A32D2D;"></div>
+      <h3>Hospitality & food</h3>
+    </div>
+    <p class="icard-desc">Restaurants, hotels, cafes, and event venues need visually rich sites that drive reservations, orders, and direct bookings.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Online reservation systems</span>
+      <span class="sol-pill">Digital menus and QR codes</span>
+      <span class="sol-pill">Food delivery integration</span>
+      <span class="sol-pill">Room/event booking pages</span>
+      <span class="sol-pill">Gift voucher systems</span>
+      <span class="sol-pill">Loyalty and membership portals</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#72243E;"></div>
+      <h3>Non-profit & NGO</h3>
+    </div>
+    <p class="icard-desc">Charities and foundations need compelling digital presences that communicate impact, build trust, and drive donations.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Online donation pages</span>
+      <span class="sol-pill">Impact reporting microsites</span>
+      <span class="sol-pill">Volunteer sign-up systems</span>
+      <span class="sol-pill">Campaign and fundraiser pages</span>
+      <span class="sol-pill">Event management pages</span>
+      <span class="sol-pill">Grant and partnership pages</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#444441;"></div>
+      <h3>Manufacturing & B2B</h3>
+    </div>
+    <p class="icard-desc">Industrial businesses and B2B companies need sites that support long sales cycles, showcase capabilities, and generate qualified RFQs.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Product specification pages</span>
+      <span class="sol-pill">RFQ and enquiry forms</span>
+      <span class="sol-pill">Distributor / dealer locators</span>
+      <span class="sol-pill">Catalogue download systems</span>
+      <span class="sol-pill">ISO/certification pages</span>
+      <span class="sol-pill">Partner and reseller portals</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header">
+      <div class="icard-dot" style="background:#1D9E75;"></div>
+      <h3>Startups & new ventures</h3>
+    </div>
+    <p class="icard-desc">Early-stage companies need launch-ready websites fast — to attract investors, early customers, and talent while validating the product.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">MVP landing pages</span>
+      <span class="sol-pill">Waitlist and early access pages</span>
+      <span class="sol-pill">Investor pitch decks online</span>
+      <span class="sol-pill">Product teaser sites</span>
+      <span class="sol-pill">Jobs and team pages</span>
+      <span class="sol-pill">Press and media kits</span>
+    </div>
+  </div>
+
+</div>
+</div>

@@ -1,0 +1,83 @@
+Feature Name,Starter (15k),Starter Plus (20k),Pro (25k),Pro Plus (35k),Enterprise
+,,,,,
+📊 LIMITS,,,,,
+Max Products,10,15,25,50,100+
+,,,,,
+🏪 STOREFRONT,,,,,
+Mobile Responsive Design,✓,✓,✓,✓,✓
+"Home, About, Contact Pages",✓,✓,✓,✓,✓
+Search & Filtering,✓,✓,✓,✓,✓
+Guest Checkout,✓,✓,✓,✓,✓
+Product Reviews,✓,✓,✓,✓,✓
+Product Image Gallery,Basic,✓,✓,✓,✓
+Product Variants (Size/Color),✗,✓,✓,✓,✓
+Wishlist/Favorites,✗,✗,✓,✓,✓
+Product Comparison,✗,✗,✗,✓,✓
+Multi-language Support,✗,✗,✗,✗,✓
+,,,,,
+👤 USER ACCOUNTS,,,,,
+User Login/Register,Basic,✓,✓,✓,✓
+Profile Management,✓,✓,✓,✓,✓
+Order History,Basic,Basic,✓,✓,✓
+Saved Addresses,✗,✓,✓,✓,✓
+Loyalty Points/Rewards,✗,✗,✗,✓,✓
+,,,,,
+💳 PAYMENTS,,,,,
+Cash on Delivery,✓,✓,✓,✓,✓
+PDF Invoices,✗,✓,✓,✓,✓
+Razorpay Integration,✗,✓,✓,✓,✓
+Multiple Payment Gateways,✗,✗,✗,✓,✓
+Refund Management,✗,✗,✗,✓,✓
+Partial Payments/EMI,✗,✗,✗,✗,✓
+Wallet Integration,✗,✗,✗,✗,✓
+,,,,,
+📦 INVENTORY,,,,,
+Stock Management,✓,✓,✓,✓,✓
+Low Stock Alerts,✗,✓,✓,✓,✓
+Bulk Product Upload,✗,✗,✓,✓,✓
+Multi-warehouse Support,✗,✗,✗,✗,✓
+,,,,,
+🚚 SHIPPING,,,,,
+Flat Rate Shipping,✗,✗,✗,✓,✓
+Zone-based Shipping,✗,✗,✗,✓,✓
+Real-time Shipping Rates,✗,✗,✗,✓,✓
+Order Tracking,✗,✗,✗,✓,✓
+Shipping Integrations (Webhooks),✗,✗,✗,✗,✓
+Multi-carrier Support,✗,✗,✗,✗,✓
+,,,,,
+📈 MARKETING & SEO,,,,,
+Basic SEO (Meta Tags),✓,✓,✓,✓,✓
+Discount Coupons,✗,✗,✓,✓,✓
+Advanced SEO (Sitemap/Robots),✗,✗,✗,✓,✓
+Abandoned Cart Recovery,✗,✗,✗,✓,✓
+Email Marketing Integration,✗,✗,✗,✓,✓
+Social Media Integration,✗,✗,✓,✓,✓
+Google Analytics Integration,✗,✗,✓,✓,✓
+Referral Program,✗,✗,✗,✗,✓
+Product Recommendations/Upsells,✗,✗,✗,✓,✓
+,,,,,
+🔐 ADMIN & SECURITY,,,,,
+Product Management,✓,✓,✓,✓,✓
+Order Management,✓,✓,✓,✓,✓
+User Management,✗,✓,✓,✓,✓
+Return Requests Management,✗,✗,✗,✓,✓
+Payment Analytics,✗,✗,✗,✓,✓
+Sales Reports & Dashboard,Basic,✓,✓,✓,✓
+Customer Analytics,✗,✗,✗,✓,✓
+Role-based Access Control,✗,✗,✗,✗,✓
+Fraud Detection System,✗,✗,✗,✗,✓
+Data Backup & Recovery,✗,✗,✗,✓,✓
+SSL Certificate,✓,✓,✓,✓,✓
+,,,,,
+🔔 NOTIFICATIONS,,,,,
+Order Confirmation Email,Limited,Limited,Limited,✓*,✓*
+SMS Notifications,✗,✗,✓*,✓*,✓*
+WhatsApp Notifications,✗,✗,✗,✓*,✓*
+Push Notifications,✗,✗,✗,✗,✓*
+,,,,,
+🛟 SUPPORT,,,,,
+Maintenance Support,1 Month,3 Months,6 Months,1 Year,Custom
+Technical Support,Email,Email,Email+Chat,Priority,Dedicated
+Training & Documentation,Basic,Standard,Complete,Complete,Custom
+,,,,,
+,* = Cost calculated based on usage,,,,

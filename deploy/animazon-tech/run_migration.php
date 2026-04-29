@@ -1,0 +1,14 @@
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel->bootstrap();
+
+try {
+    Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+    echo "Success!";
+} catch (\Exception $e) {
+    file_put_contents('migrate_error.txt', $e->getMessage() . "\n\n" . $e->getTraceAsString());
+    echo 'Error caught!';
+}

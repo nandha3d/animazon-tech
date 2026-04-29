@@ -255,8 +255,16 @@
             color: {{ $primary_color }} !important;
         }
         @media (max-width: 768px) {
+            .swiper {
+                height: 70vh;
+            }
             .swiper-button-next, .swiper-button-prev {
                 display: none;
+            }
+            .swiper-pagination-bullet {
+                width: 10px;
+                height: 10px;
+                margin: 0 4px !important;
             }
         }
 
@@ -482,7 +490,7 @@
 @else
 <main>
 <!-- [ Header ] start -->
-<header id="home" class="relative min-h-screen overflow-hidden text-animazon-white">
+<header id="home" class="relative min-h-[70vh] md:min-h-screen overflow-hidden text-animazon-white">
     <div class="swiper hero-swiper">
         <div class="swiper-wrapper">
             <!-- Slide 0: Space Shooter Game -->
@@ -493,10 +501,10 @@
                 <div id="gameSlideOverlay" class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center transition-opacity duration-500">
                     <div class="max-w-3xl">
                         <span class="inline-block px-4 py-1 rounded-full bg-primary/20 text-primary text-sm font-bold mb-6 animate__animated animate__fadeInDown">WE BUILD GAMES TOO</span>
-                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate__animated animate__fadeInUp">
+                        <h1 class="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 md:mb-6 animate__animated animate__fadeInUp">
                             3D & 2D <span class="text-primary italic">Games</span> for Every Platform
                         </h1>
-                        <p class="text-xl text-white/80 mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                        <p class="text-sm sm:text-lg md:text-xl text-white/80 mb-6 md:mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
                             From arcade & simulation games to full-scale Android, iOS, and browser experiences — try what we build, right here.
                         </p>
                         <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
@@ -521,10 +529,10 @@
                 <div class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center">
                     <div class="max-w-3xl">
                         <span class="inline-block px-4 py-1 rounded-full bg-primary/20 text-primary text-sm font-bold mb-6 animate__animated animate__fadeInDown">CINEMATIC 3D PRODUCTION</span>
-                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 animate__animated animate__fadeInUp">
+                        <h1 class="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 md:mb-6 animate__animated animate__fadeInUp">
                             Turn Complex Ideas into <span class="text-primary italic">Stunning 3D</span> Visuals
                         </h1>
-                        <p class="text-xl text-white/80 mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                        <p class="text-sm sm:text-lg md:text-xl text-white/80 mb-6 md:mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
                             Photorealistic 3D product animations and technical visualizations that explain your value in seconds.
                         </p>
                         <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
@@ -549,10 +557,10 @@
                         <!-- Left: Copy -->
                         <div class="max-w-xl">
                             <span class="inline-block px-4 py-1 rounded-full bg-primary/20 text-primary text-sm font-bold mb-6 animate__animated animate__fadeInDown">CUSTOM WEB SOLUTIONS</span>
-                            <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] mb-6 animate__animated animate__fadeInUp">
+                            <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] mb-4 md:mb-6 animate__animated animate__fadeInUp">
                                 Build <span class="text-primary italic">Websites</span> That Convert, Not Just Exist
                             </h1>
-                            <p class="text-lg md:text-xl text-white/70 mb-8 leading-relaxed animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                            <p class="text-sm sm:text-lg md:text-xl text-white/70 mb-6 md:mb-8 leading-relaxed animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
                                 Crafting high-performance web experiences that drive growth, engagement, and real results.
                             </p>
                             <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
@@ -726,10 +734,10 @@
                 <div class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center">
                     <div class="max-w-3xl">
                         <span class="inline-block px-4 py-1 rounded-full bg-primary/20 text-primary text-sm font-bold mb-6">NATIVE MOBILE APPS</span>
-                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
+                        <h1 class="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 md:mb-6">
                             IOS & Android <span class="text-primary italic">Precision</span> at Scale
                         </h1>
-                        <p class="text-xl text-white/80 mb-8">
+                        <p class="text-sm sm:text-lg md:text-xl text-white/80 mb-6 md:mb-8">
                             Custom mobile experiences that live in your users' pockets. Built for engagement and seamless utility.
                         </p>
                         <div class="flex flex-wrap gap-4">
@@ -759,7 +767,7 @@
 <!-- [ Header ] End -->
 <!-- [ Header ] End -->
 <!-- [ Services & Solutions ] start -->
-<section id="services" class="py-24 bg-animazon-navy text-animazon-white relative overflow-hidden">
+<section id="services" class="py-12 md:py-24 bg-animazon-navy text-animazon-white relative overflow-hidden">
     <!-- Background Accents -->
     <div class="absolute inset-0 z-0">
         <div class="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
@@ -767,7 +775,7 @@
     
     <div class="container mx-auto px-4 lg:px-8 relative z-10">
         <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-6">
+            <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold text-animazon-white mb-4 md:mb-6">
                 Solutions Designed For Scale
             </h2>
             <p class="text-lg text-animazon-muted">
@@ -775,7 +783,7 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- 3D Animation -->
             <a href="{{ route('services.3d-animation') }}" class="card-dark group overflow-hidden !p-0 block hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_rgba(var(--primary-glow),0.3)] hover:border-primary/50 relative">
                 <div class="relative overflow-hidden aspect-video">
@@ -784,7 +792,7 @@
                     </picture>
                     <div class="absolute inset-0 bg-blue-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
                 </div>
-                <div class="p-8">
+                <div class="p-5 md:p-8">
                     <h3 class="text-xl font-bold text-animazon-white mb-3 group-hover:text-primary transition-colors">3D Animation</h3>
                     <p class="text-animazon-muted text-sm leading-relaxed mb-6">High-end photorealistic 3D product animations, exploded views, and technical visualizations that explain complex concepts instantly.</p>
                     <div class="text-primary font-semibold text-sm inline-flex items-center group-hover:translate-x-1 transition-transform">
@@ -801,7 +809,7 @@
                     </picture>
                     <div class="absolute inset-0 bg-purple-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
                 </div>
-                <div class="p-8">
+                <div class="p-5 md:p-8">
                     <h3 class="text-xl font-bold text-animazon-white mb-3 group-hover:text-purple-400 transition-colors">Game Development</h3>
                     <p class="text-animazon-muted text-sm leading-relaxed mb-6">Full-scale 3D & 2D game development for PC, Mobile, and Web platforms using industry-standard game engines and bespoke physics.</p>
                     <div class="text-purple-400 font-semibold text-sm inline-flex items-center group-hover:translate-x-1 transition-transform">
@@ -818,7 +826,7 @@
                     </picture>
                     <div class="absolute inset-0 bg-orange-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
                 </div>
-                <div class="p-8">
+                <div class="p-5 md:p-8">
                     <h3 class="text-xl font-bold text-animazon-white mb-3 group-hover:text-orange-400 transition-colors">Web Development</h3>
                     <p class="text-animazon-muted text-sm leading-relaxed mb-6">Custom SaaS platforms, robust e-commerce solutions, and lightning-fast corporate websites engineered for conversion.</p>
                     <div class="text-orange-400 font-semibold text-sm inline-flex items-center group-hover:translate-x-1 transition-transform">
@@ -835,7 +843,7 @@
                     </picture>
                     <div class="absolute inset-0 bg-green-900/20 group-hover:bg-transparent transition-colors duration-500"></div>
                 </div>
-                <div class="p-8">
+                <div class="p-5 md:p-8">
                     <h3 class="text-xl font-bold text-animazon-white mb-3 group-hover:text-green-400 transition-colors">Mobile Applications</h3>
                     <p class="text-animazon-muted text-sm leading-relaxed mb-6">Native iOS, Android, and cross-platform applications built to deliver a buttery-smooth, premium user experience.</p>
                     <div class="text-green-400 font-semibold text-sm inline-flex items-center group-hover:translate-x-1 transition-transform">
@@ -867,7 +875,7 @@
         $orderedCats = ['Websites', '3D Animation', 'Game Development', 'Mobile Applications'];
     @endphp
 
-    <section id="portfolio" class="py-24 bg-animazon-black relative overflow-hidden">
+    <section id="portfolio" class="py-12 md:py-24 bg-animazon-black relative overflow-hidden">
         <!-- Background glow -->
         <div class="absolute top-0 left-1/3 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
         <div class="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-teal-500/5 blur-[100px] rounded-full pointer-events-none"></div>
@@ -911,7 +919,7 @@
                             </div>
 
                             <!-- Items Grid -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8">
                                 @foreach($items as $idx => $item)
                                     @php
                                         $itemType = $item['type'] ?? 'image';

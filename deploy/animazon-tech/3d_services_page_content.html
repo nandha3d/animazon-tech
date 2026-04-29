@@ -1,0 +1,292 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .page { max-width: 900px; padding: 2rem 1rem; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; background: var(--color-background-info); color: var(--color-text-info); margin-bottom: 0.75rem; }
+  .hero { padding: 2.5rem 2rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-secondary); margin-bottom: 2rem; }
+  .hero h1 { font-size: 28px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; margin-bottom: 1rem; }
+  .hero p { font-size: 15px; color: var(--color-text-secondary); line-height: 1.7; max-width: 680px; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 1.5rem; }
+  .stat { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.85rem 1rem; }
+  .stat-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  .section-label { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; }
+  .section-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
+  .section-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 1.5rem; }
+
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 2.5rem; }
+  .service-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; }
+  .service-icon { width: 36px; height: 36px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 0.85rem; }
+  .service-card h3 { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.4rem; }
+  .service-card p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.65; margin-bottom: 0.75rem; }
+  .service-card ul { list-style: none; }
+  .service-card ul li { font-size: 12px; color: var(--color-text-secondary); padding: 3px 0; padding-left: 14px; position: relative; }
+  .service-card ul li::before { content: "—"; position: absolute; left: 0; color: var(--color-text-tertiary); }
+
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 2rem 0; }
+
+  .process-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 2.5rem; }
+  .step { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+  .step-num { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); margin-bottom: 0.4rem; }
+  .step h4 { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.3rem; }
+  .step p { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
+  .industries { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 2.5rem; }
+  .industry { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 0.85rem 1rem; display: flex; align-items: center; gap: 10px; }
+  .industry-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .industry p { font-size: 13px; color: var(--color-text-primary); font-weight: 500; }
+  .industry span { font-size: 11px; color: var(--color-text-secondary); display: block; }
+
+  .tech-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 2.5rem; }
+  .tech-pill { font-size: 12px; color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 99px; padding: 4px 12px; background: var(--color-background-primary); }
+
+  .cta-block { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem; background: var(--color-background-secondary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .cta-block h3 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.4rem; }
+  .cta-block p { font-size: 14px; color: var(--color-text-secondary); max-width: 480px; }
+  .cta-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-primary { font-size: 13px; padding: 8px 18px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-text-primary); color: var(--color-background-primary); cursor: pointer; font-family: var(--font-sans); }
+  .btn-outline { font-size: 13px; padding: 8px 18px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-primary); cursor: pointer; font-family: var(--font-sans); }
+
+  .faq { margin-bottom: 2.5rem; }
+  .faq-item { border-bottom: 0.5px solid var(--color-border-tertiary); padding: 1rem 0; }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-item h4 { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.4rem; }
+  .faq-item p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.65; }
+</style>
+
+<div class="page">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;">3D Services page content blueprint</h2>
+
+  <!-- HERO SECTION -->
+  <div class="hero">
+    <div class="tag">3D Services</div>
+    <h1>Transforming ideas into <br>immersive 3D experiences</h1>
+    <p>We deliver end-to-end 3D solutions — from concept modeling to photorealistic visualization and immersive AR/VR — empowering businesses across every industry to communicate, sell, and innovate with confidence.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Projects delivered</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Industries served</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Client satisfaction</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES SECTION -->
+  <div class="section-label">What we offer</div>
+  <div class="section-title">Our core 3D services</div>
+  <div class="section-desc">A full-spectrum studio for every stage of your 3D journey — from initial model to final delivery.</div>
+
+  <div class="services-grid">
+
+    <div class="service-card">
+      <div class="service-icon" style="background:#E6F1FB;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>3D Modeling</h3>
+      <p>Precision-crafted models built to exact specifications. From concept sketches to production-ready geometry, every mesh is optimized for its intended use.</p>
+      <ul>
+        <li>High-poly and low-poly modeling</li>
+        <li>Organic and hard-surface modeling</li>
+        <li>Retopology and mesh optimization</li>
+        <li>CAD-to-3D conversion</li>
+        <li>File formats: OBJ, FBX, STL, GLTF</li>
+      </ul>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:#EAF3DE;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      </div>
+      <h3>3D Animation</h3>
+      <p>Compelling motion that brings products, characters, and environments to life. We craft frame-perfect animation sequences for broadcast, digital, and interactive use.</p>
+      <ul>
+        <li>Product and explainer animations</li>
+        <li>Character rigging and keyframe animation</li>
+        <li>Mechanical and process simulations</li>
+        <li>Motion graphics integration</li>
+        <li>Loop-ready assets for web and app</li>
+      </ul>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:#FAEEDA;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#854F0B" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <h3>3D Rendering & Visualization</h3>
+      <p>Photorealistic imagery that makes stakeholders feel, not just see. Ideal for pre-launch marketing, investor decks, and design approvals.</p>
+      <ul>
+        <li>Architectural walkthroughs and stills</li>
+        <li>Product lifestyle renders</li>
+        <li>360° panoramic views</li>
+        <li>Day/night and material variants</li>
+        <li>Print-ready and web-ready outputs</li>
+      </ul>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:#EEEDFE;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.8"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </div>
+      <h3>AR / VR Experiences</h3>
+      <p>Interactive immersive environments built for enterprise training, retail, real estate, and branded activations. Deploy across headsets, mobile, and web.</p>
+      <ul>
+        <li>WebAR and mobile AR (iOS/Android)</li>
+        <li>VR training and simulation environments</li>
+        <li>Virtual showrooms and product configurators</li>
+        <li>Oculus, HoloLens, and WebXR support</li>
+        <li>Real-time interaction design</li>
+      </ul>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon" style="background:#FAECE7;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <h3>Product Design & Visualization</h3>
+      <p>A seamless bridge between industrial design and market-ready presentation. We help product teams validate aesthetics, communicate design intent, and accelerate go-to-market.</p>
+      <ul>
+        <li>Concept ideation and 3D sketching</li>
+        <li>Variant and colorway explorations</li>
+        <li>Packaging and label visualization</li>
+        <li>Pre-production prototype renders</li>
+        <li>Design-for-manufacturing review</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <!-- PROCESS SECTION -->
+  <div class="section-label">How we work</div>
+  <div class="section-title">Our delivery process</div>
+  <div class="section-desc">A transparent, milestone-driven workflow so you always know where your project stands.</div>
+
+  <div class="process-steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4>Discovery call</h4>
+      <p>We understand your goals, reference assets, and technical requirements.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4>Proposal & scope</h4>
+      <p>A detailed brief, timeline, and fixed-price quote — no surprises.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4>Concept draft</h4>
+      <p>Early-stage previews shared for feedback before full production begins.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h4>Production</h4>
+      <p>Full modeling, texturing, animation, or rendering with regular check-ins.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">05</div>
+      <h4>Review cycles</h4>
+      <p>Up to 3 rounds of revisions included in every project scope.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">06</div>
+      <h4>Final delivery</h4>
+      <p>Source files, deliverables, and format conversions — all handed over cleanly.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- INDUSTRIES SECTION -->
+  <div class="section-label">Who we serve</div>
+  <div class="section-title">Industries we work with</div>
+  <div class="section-desc">Our 3D expertise spans a broad range of sectors — each with its own standards and visual language.</div>
+
+  <div class="industries">
+    <div class="industry"><div class="industry-dot" style="background:#185FA5;"></div><div><p>Architecture & Real Estate</p><span>Walkthroughs, renders, site plans</span></div></div>
+    <div class="industry"><div class="industry-dot" style="background:#3B6D11;"></div><div><p>Manufacturing & Engineering</p><span>CAD visualization, assembly animations</span></div></div>
+    <div class="industry"><div class="industry-dot" style="background:#534AB7;"></div><div><p>Consumer Products & Retail</p><span>E-commerce renders, AR try-on</span></div></div>
+    <div class="industry"><div class="industry-dot" style="background:#993C1D;"></div><div><p>Healthcare & Medical</p><span>Anatomical models, device visualization</span></div></div>
+    <div class="industry"><div class="industry-dot" style="background:#854F0B;"></div><div><p>Automotive & Aerospace</p><span>Exterior/interior renders, simulations</span></div></div>
+    <div class="industry"><div class="industry-dot" style="background:#0F6E56;"></div><div><p>Education & Training</p><span>VR simulations, interactive 3D</span></div></div>
+    <div class="industry"><div class="industry-dot" style="background:#A32D2D;"></div><div><p>Gaming & Entertainment</p><span>Assets, environments, cut-scenes</span></div></div>
+    <div class="industry"><div class="industry-dot" style="background:#3C3489;"></div><div><p>Fashion & Lifestyle</p><span>Virtual sampling, lookbook renders</span></div></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- TOOLS SECTION -->
+  <div class="section-label">Technology stack</div>
+  <div class="section-title">Software & tools we use</div>
+  <div class="section-desc">Industry-standard pipelines ensure compatibility and quality at every stage.</div>
+
+  <div class="tech-row">
+    <div class="tech-pill">Blender</div>
+    <div class="tech-pill">Autodesk Maya</div>
+    <div class="tech-pill">3ds Max</div>
+    <div class="tech-pill">Cinema 4D</div>
+    <div class="tech-pill">SolidWorks</div>
+    <div class="tech-pill">ZBrush</div>
+    <div class="tech-pill">Substance Painter</div>
+    <div class="tech-pill">V-Ray</div>
+    <div class="tech-pill">Arnold Renderer</div>
+    <div class="tech-pill">KeyShot</div>
+    <div class="tech-pill">Unreal Engine 5</div>
+    <div class="tech-pill">Unity</div>
+    <div class="tech-pill">Adobe After Effects</div>
+    <div class="tech-pill">8th Wall (WebAR)</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- FAQ SECTION -->
+  <div class="section-label">Common questions</div>
+  <div class="section-title">Frequently asked questions</div>
+
+  <div class="faq">
+    <div class="faq-item">
+      <h4>What files do I need to provide to get started?</h4>
+      <p>We can work from sketches, reference photos, CAD files, or a brief description. The more detail you provide, the faster we can move. We'll guide you through exactly what's needed during the discovery call.</p>
+    </div>
+    <div class="faq-item">
+      <h4>How long does a typical 3D project take?</h4>
+      <p>Timelines vary by scope. A single product render takes 3–5 business days; a full AR/VR experience may take 4–8 weeks. You'll receive a clear timeline in your project proposal before work begins.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Do you offer rush delivery?</h4>
+      <p>Yes. Expedited timelines are available for most service types, subject to availability. Rush fees apply and will be noted transparently in your quote.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Will I own the source files?</h4>
+      <p>Full IP ownership and source file transfer is included by default upon project completion. We retain no commercial rights to your deliverables.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Can you integrate with our existing design or dev team?</h4>
+      <p>Absolutely. We regularly collaborate with in-house design teams, developers, and agencies. We're comfortable working within existing pipelines, version control systems, and project management tools.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- CTA SECTION -->
+  <div class="cta-block">
+    <div>
+      <h3>Ready to bring your vision to life?</h3>
+      <p>Tell us about your project — our team will respond within one business day with a tailored proposal.</p>
+    </div>
+    <div class="cta-btns">
+      <button class="btn-primary" onclick="sendPrompt('Help me write a contact form for the 3D services page')">Get a quote ↗</button>
+      <button class="btn-outline" onclick="sendPrompt('Show me a portfolio/case studies section for the 3D services page')">View portfolio ↗</button>
+    </div>
+  </div>
+
+</div>

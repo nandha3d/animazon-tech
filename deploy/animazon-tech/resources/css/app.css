@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@source "../../resources/views";
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+  --color-animazon-black: var(--animazon-black);
+  --color-animazon-navy: var(--animazon-navy);
+  --color-animazon-white: var(--animazon-white);
+  --color-animazon-gray: var(--animazon-gray);
+  --color-animazon-muted: var(--animazon-muted);
+  --color-animazon-border: var(--animazon-border);
+  --font-sans: "Inter", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:opacity-80 transition-colors duration-200 inline-flex items-center justify-center;
+    }
+    .btn-ghost {
+        @apply border border-primary text-primary px-6 py-3 rounded-lg hover:bg-primary hover:text-white transition-colors duration-200 inline-flex items-center justify-center;
+    }
+    .card-dark {
+        @apply bg-animazon-navy border border-animazon-border/50 rounded-xl p-6 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10;
+    }
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+    }
+}

@@ -21,7 +21,7 @@
         @forelse($projectTypes as $type)
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 border-0 shadow-sm hover-shadow transition-all cursor-pointer" 
-                     onclick="location.href='{{ route('cost-calculator.show', $type->id) }}'"
+                     onclick="location.href='{{ route('cost-calculator.show', $type->slug ?? $type->id) }}'"
                      style="cursor: pointer;">
                     <div class="card-body text-center">
                         @if($type->icon)

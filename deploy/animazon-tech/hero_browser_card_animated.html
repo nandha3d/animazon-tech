@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:#020b14;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.noise{position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+.bg-glow{position:fixed;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,180,0.08) 0%,transparent 70%);top:-150px;right:-150px;pointer-events:none;}
+.bg-glow2{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,120,255,0.06) 0%,transparent 70%);bottom:-100px;left:-100px;pointer-events:none;}
+
+/* ===== OUTER 3D WRAPPER ===== */
+.parent{perspective:1400px;cursor:pointer;position:relative;z-index:5;}
+
+.card-3d{
+  width:380px;height:520px;
+  border-radius:28px;
+  background:linear-gradient(145deg,#1e1e1e 0%,#141414 100%);
+  transform-style:preserve-3d;
+  transition:transform .6s ease,box-shadow .6s ease;
+  box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+}
+
+/* glass shimmer overlay */
+.glass-layer{
+  position:absolute;inset:0;border-radius:28px;
+  background:linear-gradient(135deg,rgba(255,255,255,0.07) 0%,rgba(255,255,255,0.01) 50%,transparent 100%);
+  transform:translate3d(0,0,30px);
+  pointer-events:none;z-index:50;
+}
+
+/* animated border glow */
+.card-3d::before{
+  content:'';position:absolute;inset:-1px;border-radius:29px;
+  background:linear-gradient(135deg,rgba(0,255,180,0.35),transparent 40%,transparent 60%,rgba(0,150,255,0.2));
+  z-index:-1;opacity:0;transition:opacity .5s;
+}
+.parent:hover .card-3d::before{opacity:1;}
+
+/* floating circles like original card */
+.circles{position:absolute;top:0;right:0;transform-style:preserve-3d;pointer-events:none;}
+.circle{position:absolute;border-radius:50%;background:rgba(0,255,180,0.12);transition:all .5s ease;}
+.c1{width:180px;height:180px;top:8px;right:8px;transform:translate3d(0,0,15px);}
+.c2{width:148px;height:148px;top:24px;right:24px;transform:translate3d(0,0,30px);transition-delay:.3s;}
+.c3{width:116px;height:116px;top:40px;right:40px;transform:translate3d(0,0,45px);transition-delay:.6s;}
+.c4{width:84px;height:84px;top:56px;right:56px;transform:translate3d(0,0,60px);transition-delay:.9s;}
+.c5{width:52px;height:52px;top:72px;right:72px;transform:translate3d(0,0,75px);display:grid;place-content:center;transition-delay:1.2s;background:rgba(0,255,180,0.2);}
+.c5-inner{width:18px;height:18px;background:rgba(0,255,180,0.9);border-radius:50%;}
+
+.parent:hover .card-3d{transform:rotate3d(1,.8,0,20deg);box-shadow:0 60px 100px rgba(0,0,0,.7),0 0 0 1px rgba(0,255,180,0.15);}
+.parent:hover .c2{transform:translate3d(0,0,50px);}
+.parent:hover .c3{transform:translate3d(0,0,70px);}
+.parent:hover .c4{transform:translate3d(0,0,90px);}
+.parent:hover .c5{transform:translate3d(0,0,110px);}
+
+/* ===== BROWSER CHROME ===== */
+.browser-wrap{position:absolute;inset:14px;border-radius:18px;overflow:hidden;background:#f4f3ef;display:flex;flex-direction:column;transform:translate3d(0,0,18px);}
+
+.tab-bar{background:#252525;height:32px;display:flex;align-items:flex-end;padding-left:12px;flex-shrink:0;}
+.tab{width:88px;height:27px;border-radius:6px 6px 0 0;background:#3a3a3a;display:flex;align-items:center;justify-content:space-between;padding:0 8px;position:relative;}
+.tab span{color:rgba(255,255,255,.75);font-size:8.5px;}
+.tab .x{color:rgba(255,255,255,.45);font-size:7px;padding:2px 4px;border-radius:50%;}
+.tab .x:hover{background:#555;color:white;}
+.tab .rl{position:absolute;background:#3a3a3a;width:14px;height:18px;top:0;right:0;transform:translate(100%);overflow:hidden;}
+.tab .rl .m{width:100%;height:100%;background:#252525;border-radius:0 0 0 6px;}
+.tab .rr{position:absolute;background:#3a3a3a;width:14px;height:18px;top:0;left:0;transform:translate(-100%);overflow:hidden;}
+.tab .rr .m{width:100%;height:100%;background:#252525;border-radius:0 0 6px 0;}
+.win-btns{display:flex;margin-left:auto;margin-bottom:4px;}
+.win-btns button{width:24px;height:24px;border:none;background:transparent;color:rgba(255,255,255,.6);font-size:10px;cursor:pointer;border-radius:3px;transition:background .1s;}
+.win-btns button:hover{background:rgba(255,255,255,.1);}
+.win-btns .wc:hover{background:rgb(200,40,40)!important;color:white;}
+
+.addr-bar{background:#3a3a3a;height:32px;padding:4px 8px;display:flex;gap:4px;align-items:center;flex-shrink:0;position:relative;}
+.nav-btn{width:22px;height:22px;border:none;background:transparent;color:rgba(255,255,255,.6);border-radius:50%;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.nav-btn:hover{background:rgba(255,255,255,.12);}
+.nav-btn:disabled{opacity:.3;}
+.nav-btn:disabled:hover{background:transparent;}
+.url-input{flex:1;background:#2a2a2a;border:1.5px solid transparent;border-radius:14px;height:22px;outline:none;color:rgba(255,255,255,.75);padding:0 28px 0 10px;font-size:9px;font-family:'DM Sans',sans-serif;transition:border-color .2s;}
+.url-input:focus{border-color:rgba(173,214,255,.6);}
+.url-input::placeholder{color:rgba(255,255,255,.45);}
+.star-btn{position:absolute;right:38px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.5);font-size:11px;background:none;border:none;cursor:pointer;}
+.more-btn{width:22px;height:22px;border:none;background:transparent;color:rgba(255,255,255,.6);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s;}
+.more-btn:hover{background:rgba(255,255,255,.12);}
+
+/* ===== SHOP UI ===== */
+.shop{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+.shop-nav{background:#111;padding:7px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.s-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:#00ffd6;letter-spacing:-.3px;}
+.s-links{display:flex;gap:10px;}
+.s-links span{color:rgba(255,255,255,.45);font-size:8px;cursor:pointer;transition:color .15s;}
+.s-links span:hover{color:rgba(255,255,255,.9);}
+.s-cart{display:flex;align-items:center;gap:3px;cursor:pointer;}
+.s-cart-badge{background:#00ffd6;color:#020b14;width:13px;height:13px;border-radius:50%;display:grid;place-content:center;font-size:7px;font-weight:700;}
+
+/* hero banner */
+.shop-banner{background:linear-gradient(135deg,#111 0%,#1a2a1a 100%);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.05);}
+.banner-text{color:white;}
+.banner-text p{font-size:7.5px;color:rgba(255,255,255,.5);margin-bottom:2px;}
+.banner-text h3{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:white;line-height:1.2;}
+.banner-text h3 span{color:#00ffd6;}
+.shop-now-btn{padding:5px 10px;background:#00ffd6;border:none;border-radius:20px;font-size:8px;font-weight:600;color:#020b14;cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform .15s,box-shadow .15s;}
+.shop-now-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,255,180,.3);}
+
+.shop-body{flex:1;padding:10px 10px 8px;overflow:hidden;}
+.sec-label{font-size:8px;font-weight:600;color:#555;letter-spacing:.6px;margin-bottom:7px;font-family:'Syne',sans-serif;}
+
+/* product grid */
+.p-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px;}
+
+.p-card{
+  background:white;border-radius:9px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  cursor:pointer;
+  transform:translateY(0) scale(1);
+  transition:transform .25s ease,box-shadow .25s ease;
+  opacity:0;
+  animation:cardIn .5s ease forwards;
+}
+.p-card:nth-child(1){animation-delay:.1s;}
+.p-card:nth-child(2){animation-delay:.22s;}
+.p-card:nth-child(3){animation-delay:.34s;}
+
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(14px) scale(.95);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+.p-card:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 8px 20px rgba(0,0,0,.15);}
+
+.p-img{height:54px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.p-img::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .2s;}
+.p-card:hover .p-img::after{background:rgba(255,255,255,0.15);}
+.p-img.i1{background:linear-gradient(135deg,#e0f2ff,#b8dcf8);}
+.p-img.i2{background:linear-gradient(135deg,#fff3e0,#ffd59e);}
+.p-img.i3{background:linear-gradient(135deg,#e8ffee,#a6f0bf);}
+.p-icon{font-size:24px;transition:transform .25s;}
+.p-card:hover .p-icon{transform:scale(1.18) rotate(-5deg);}
+
+.sale-badge{position:absolute;top:4px;left:4px;background:#ff4444;color:white;font-size:6.5px;font-weight:700;padding:2px 5px;border-radius:10px;}
+
+.p-info{padding:5px 6px 6px;}
+.p-name{font-size:7.5px;font-weight:500;color:#222;margin-bottom:2px;line-height:1.3;}
+.p-price-row{display:flex;align-items:baseline;gap:3px;}
+.p-price{font-size:9px;font-weight:700;color:#111;}
+.p-old{font-size:7px;color:#bbb;text-decoration:line-through;}
+
+.add-btn{
+  width:100%;margin-top:4px;padding:4px 0;
+  background:#111;border:none;border-radius:5px;
+  color:white;font-size:7.5px;font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:background .2s,transform .15s;
+  position:relative;overflow:hidden;
+}
+.add-btn::after{content:'';position:absolute;inset:0;background:rgba(0,255,180,0);transition:background .2s;}
+.add-btn:hover{background:#222;}
+.add-btn:hover::after{background:rgba(0,255,180,0.08);}
+.add-btn:active{transform:scale(.97);}
+
+/* featured row */
+.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.f-card{
+  background:white;border-radius:9px;padding:7px;
+  display:flex;align-items:center;gap:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,.07);
+  cursor:pointer;
+  transition:transform .25s,box-shadow .25s;
+  opacity:0;
+  animation:cardIn .5s ease forwards;
+}
+.f-card:nth-child(1){animation-delay:.46s;}
+.f-card:nth-child(2){animation-delay:.58s;}
+.f-card:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 6px 16px rgba(0,0,0,.12);}
+.f-img{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:transform .25s;}
+.f-card:hover .f-img{transform:rotate(8deg) scale(1.1);}
+.f-img.i4{background:linear-gradient(135deg,#f3e8ff,#d4aaff);}
+.f-img.i5{background:linear-gradient(135deg,#ffecec,#ffbbbb);}
+.f-detail{flex:1;min-width:0;}
+.f-name{font-size:7.5px;font-weight:500;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.f-price{font-size:9px;font-weight:700;color:#111;margin-top:1px;}
+.stars{display:flex;gap:1px;margin-top:2px;}
+.st{width:7px;height:7px;background:#fbbf24;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
+.st.off{background:#e0e0e0;}
+
+/* floating add-to-cart pulse on hover */
+@keyframes cartPop{0%{transform:scale(1);}40%{transform:scale(1.3);}100%{transform:scale(1);}}
+.parent:hover .s-cart-badge{animation:cartPop .6s ease 1s 1;}
+
+/* bottom bar */
+.shop-footer{background:#111;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-top:1px solid rgba(255,255,255,.05);}
+.footer-links{display:flex;gap:10px;}
+.footer-links span{color:rgba(255,255,255,.3);font-size:7.5px;cursor:pointer;transition:color .15s;}
+.footer-links span:hover{color:#00ffd6;}
+.trust-badge{display:flex;align-items:center;gap:4px;color:rgba(255,255,255,.35);font-size:7.5px;}
+.trust-dot{width:5px;height:5px;border-radius:50%;background:#00ffd6;animation:pulse2 2s infinite;}
+@keyframes pulse2{0%,100%{opacity:1;}50%{opacity:.3;}}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<div class="parent">
+  <div class="card-3d">
+    <div class="glass-layer"></div>
+
+    <!-- floating circles -->
+    <div class="circles">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="circle c3"></div>
+      <div class="circle c4"></div>
+      <div class="circle c5"><div class="c5-inner"></div></div>
+    </div>
+
+    <!-- browser wrap -->
+    <div class="browser-wrap">
+
+      <!-- tab bar -->
+      <div class="tab-bar">
+        <div class="tab">
+          <div class="rr"><div class="m"></div></div>
+          <span>animazon.in</span>
+          <span class="x">&#x2715;</span>
+          <div class="rl"><div class="m"></div></div>
+        </div>
+        <div class="win-btns">
+          <button>&#x2014;</button>
+          <button>&#x25A1;</button>
+          <button class="wc">&#x2715;</button>
+        </div>
+      </div>
+
+      <!-- address bar -->
+      <div class="addr-bar">
+        <button class="nav-btn" disabled>&#8592;</button>
+        <button class="nav-btn">&#8594;</button>
+        <input class="url-input" type="text" placeholder="animazon.in/shop" readonly>
+        <button class="star-btn">&#9733;</button>
+        <button class="more-btn">&#8942;</button>
+      </div>
+
+      <!-- shop -->
+      <div class="shop">
+        <div class="shop-nav">
+          <span class="s-logo">animazon</span>
+          <div class="s-links">
+            <span>New</span><span>Sale</span><span>Brands</span>
+          </div>
+          <div class="s-cart">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <div class="s-cart-badge">3</div>
+          </div>
+        </div>
+
+        <!-- banner -->
+        <div class="shop-banner">
+          <div class="banner-text">
+            <p>Limited time offer</p>
+            <h3>Up to <span>40% off</span><br>top picks</h3>
+          </div>
+          <button class="shop-now-btn">Shop Now</button>
+        </div>
+
+        <div class="shop-body">
+          <div class="sec-label">TRENDING NOW</div>
+          <div class="p-grid">
+            <div class="p-card">
+              <div class="p-img i1">
+                <div class="sale-badge">-24%</div>
+                <span class="p-icon">&#128247;</span>
+              </div>
+              <div class="p-info">
+                <div class="p-name">Pro Camera</div>
+                <div class="p-price-row"><span class="p-price">&#8377;2,499</span><span class="p-old">&#8377;3,299</span></div>
+                <button class="add-btn">+ Add</button>
+              </div>
+            </div>
+            <div class="p-card">
+              <div class="p-img i2">
+                <div class="sale-badge">-33%</div>
+                <span class="p-icon">&#127911;</span>
+              </div>
+              <div class="p-info">
+                <div class="p-name">Studio Buds</div>
+                <div class="p-price-row"><span class="p-price">&#8377;1,199</span><span class="p-old">&#8377;1,799</span></div>
+                <button class="add-btn">+ Add</button>
+              </div>
+            </div>
+            <div class="p-card">
+              <div class="p-img i3">
+                <div class="sale-badge">-29%</div>
+                <span class="p-icon">&#8987;</span>
+              </div>
+              <div class="p-info">
+                <div class="p-name">Smart Watch</div>
+                <div class="p-price-row"><span class="p-price">&#8377;3,899</span><span class="p-old">&#8377;5,499</span></div>
+                <button class="add-btn">+ Add</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec-label">FEATURED PICKS</div>
+          <div class="feat-row">
+            <div class="f-card">
+              <div class="f-img i4"><span>&#128084;</span></div>
+              <div class="f-detail">
+                <div class="f-name">Silk Scarf</div>
+                <div class="f-price">&#8377;899</div>
+                <div class="stars"><div class="st"></div><div class="st"></div><div class="st"></div><div class="st"></div><div class="st off"></div></div>
+              </div>
+            </div>
+            <div class="f-card">
+              <div class="f-img i5"><span>&#128149;</span></div>
+              <div class="f-detail">
+                <div class="f-name">Gift Set</div>
+                <div class="f-price">&#8377;1,299</div>
+                <div class="stars"><div class="st"></div><div class="st"></div><div class="st"></div><div class="st"></div><div class="st"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-footer">
+          <div class="footer-links">
+            <span>About</span><span>Help</span><span>Returns</span>
+          </div>
+          <div class="trust-badge">
+            <div class="trust-dot"></div>
+            <span>Secure checkout</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,418 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.page{max-width:900px;padding:2rem 1rem;font-family:var(--font-sans);}
+.tag{display:inline-block;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:var(--color-background-info);color:var(--color-text-info);margin-bottom:0.75rem;}
+.hero{padding:2.5rem 2rem;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);background:var(--color-background-secondary);margin-bottom:2rem;}
+.hero h1{font-size:28px;font-weight:500;color:var(--color-text-primary);line-height:1.3;margin-bottom:1rem;}
+.hero p{font-size:15px;color:var(--color-text-secondary);line-height:1.7;max-width:680px;}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:1.5rem;}
+.stat{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:0.85rem 1rem;}
+.stat-num{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.stat-label{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
+.section-label{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem;}
+.section-title{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.5rem;}
+.section-desc{font-size:14px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:1.5rem;}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:2.5rem 0;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:2rem;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;}
+.card-icon{width:36px;height:36px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;}
+.card .sub{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.3rem;}
+.card h3{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.4rem;}
+.card p{font-size:13px;color:var(--color-text-secondary);line-height:1.65;margin-bottom:0.75rem;}
+.card ul{list-style:none;}
+.card ul li{font-size:12px;color:var(--color-text-secondary);padding:3px 0 3px 14px;position:relative;}
+.card ul li::before{content:"—";position:absolute;left:0;color:var(--color-text-tertiary);}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-bottom:2rem;}
+.icard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;}
+.icard-header{display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;}
+.icard-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.icard h3{font-size:15px;font-weight:500;color:var(--color-text-primary);}
+.icard-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:0.85rem;}
+.sol-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem;}
+.sol-pills{display:flex;flex-wrap:wrap;gap:6px;}
+.sol-pill{font-size:11px;padding:3px 9px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);background:var(--color-background-secondary);}
+.process-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:2rem;}
+.step{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;}
+.step-num{font-size:11px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:0.4rem;}
+.step h4{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.3rem;}
+.step p{font-size:12px;color:var(--color-text-secondary);line-height:1.5;}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:2rem;}
+.why-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;}
+.why-card h4{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.35rem;}
+.why-card p{font-size:12px;color:var(--color-text-secondary);line-height:1.55;}
+.faq-item{border-bottom:0.5px solid var(--color-border-tertiary);padding:1rem 0;}
+.faq-item:last-child{border-bottom:none;}
+.faq-item h4{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.4rem;}
+.faq-item p{font-size:13px;color:var(--color-text-secondary);line-height:1.65;}
+.cta-block{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;background:var(--color-background-secondary);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.cta-block h3{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.4rem;}
+.cta-block p{font-size:14px;color:var(--color-text-secondary);max-width:480px;}
+.cta-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-primary{font-size:13px;padding:8px 18px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-text-primary);color:var(--color-background-primary);cursor:pointer;font-family:var(--font-sans);}
+.btn-outline{font-size:13px;padding:8px 18px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;font-family:var(--font-sans);}
+</style>
+
+<div class="page">
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;">Game development services page content blueprint</h2>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">Game Development</div>
+  <h1>From concept to launch —<br>games, simulations & immersive experiences</h1>
+  <p>We design, develop, and deploy interactive experiences across every platform — mobile games, PC/console titles, VR/AR applications, training simulations, and gamified enterprise tools. Real-time interactivity. Polished visuals. Built to perform.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Games & apps shipped</div></div>
+    <div class="stat"><div class="stat-num">10+</div><div class="stat-label">Platforms supported</div></div>
+    <div class="stat"><div class="stat-num">8+</div><div class="stat-label">Genres & verticals</div></div>
+  </div>
+</div>
+
+<!-- CORE SERVICES -->
+<div class="section-label">What we build</div>
+<div class="section-title">Our core game development services</div>
+<div class="section-desc">A full-spectrum studio — from original IP to enterprise simulations, AR activations, and serious games.</div>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="card-icon" style="background:#EEEDFE;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01M8 12h.01M16 12h.01M12 8v8"/></svg>
+    </div>
+    <div class="sub">Mobile & casual</div>
+    <h3>Mobile game development</h3>
+    <p>Engaging iOS and Android games built for mass-market appeal. From hyper-casual one-tap mechanics to mid-core strategy — optimised for retention and monetisation.</p>
+    <ul>
+      <li>Hyper-casual and casual game design</li>
+      <li>iOS (Swift/Unity) and Android (Kotlin/Unity) builds</li>
+      <li>In-app purchase and ad monetisation setup</li>
+      <li>Leaderboards, achievements, and social features</li>
+      <li>Push notification and re-engagement systems</li>
+      <li>App Store and Play Store optimisation (ASO)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-icon" style="background:#E6F1FB;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </div>
+    <div class="sub">PC & console</div>
+    <h3>PC & console game development</h3>
+    <p>Premium games built for Steam, Epic, PlayStation, Xbox, and Nintendo Switch. We handle the full pipeline — from pre-production design to platform certification and launch.</p>
+    <ul>
+      <li>Unreal Engine 5 and Unity development</li>
+      <li>Story-driven, open-world, and multiplayer games</li>
+      <li>Platform SDK integration and compliance</li>
+      <li>Controller input and accessibility settings</li>
+      <li>DLC and seasonal content pipelines</li>
+      <li>Steam, Epic, and console store submission</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-icon" style="background:#E1F5EE;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4l3 3"/></svg>
+    </div>
+    <div class="sub">Immersive tech</div>
+    <h3>VR experience development</h3>
+    <p>Fully immersive virtual reality environments for enterprise training, product showcasing, architectural walkthroughs, and entertainment. Built for Meta Quest, SteamVR, and PSVR2.</p>
+    <ul>
+      <li>360° virtual environments and spatial audio</li>
+      <li>6DOF interaction design and hand tracking</li>
+      <li>Meta Quest (standalone) and PC VR builds</li>
+      <li>Multi-user VR rooms and avatar systems</li>
+      <li>VR training modules with scoring and analytics</li>
+      <li>Comfort and motion sickness optimisation</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-icon" style="background:#FAEEDA;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#854F0B" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M2 12h4M18 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    </div>
+    <div class="sub">Immersive tech</div>
+    <h3>AR experience development</h3>
+    <p>Augmented reality experiences that overlay digital content onto the real world — for retail, marketing, education, and industrial use. Web-based and app-based deployments.</p>
+    <ul>
+      <li>WebAR (no app install required)</li>
+      <li>iOS ARKit and Android ARCore apps</li>
+      <li>Marker-based and markerless AR</li>
+      <li>AR product try-on and visualisation</li>
+      <li>Face filters and Instagram/Snapchat effects</li>
+      <li>Location-based AR experiences</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-icon" style="background:#FAECE7;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#993C1D" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+    </div>
+    <div class="sub">Enterprise & training</div>
+    <h3>Simulation & serious game development</h3>
+    <p>Purpose-built interactive simulations for defence, healthcare, manufacturing, and corporate training. We replace costly real-world practice with measurable, repeatable virtual scenarios.</p>
+    <ul>
+      <li>Physics-accurate environment simulations</li>
+      <li>Branching scenario and decision-tree design</li>
+      <li>Scored assessments and performance tracking</li>
+      <li>LMS and SCORM integration</li>
+      <li>Equipment operation and safety training sims</li>
+      <li>Realistic avatar and NPC behaviour systems</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-icon" style="background:#FBEAF0;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </div>
+    <div class="sub">Education & kids</div>
+    <h3>Educational & gamified learning apps</h3>
+    <p>Interactive learning experiences that make education engaging for children, students, and corporate learners. We build curriculum-aligned games with measurable learning outcomes.</p>
+    <ul>
+      <li>Curriculum-based game design (K–12 and beyond)</li>
+      <li>Progress tracking and achievement systems</li>
+      <li>Parent and teacher dashboard integration</li>
+      <li>Age-appropriate UI and content safety</li>
+      <li>Offline play support</li>
+      <li>Multi-language localisation</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-icon" style="background:#EAF3DE;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div class="sub">Multiplayer & social</div>
+    <h3>Multiplayer & online game development</h3>
+    <p>Real-time and turn-based multiplayer experiences with persistent worlds, social systems, and live operations support. Scalable backend built for concurrent users.</p>
+    <ul>
+      <li>Real-time multiplayer (Photon, Mirror, custom)</li>
+      <li>Matchmaking, lobbies, and party systems</li>
+      <li>Persistent player profiles and progression</li>
+      <li>Leaderboards, tournaments, and seasonal events</li>
+      <li>Anti-cheat and player reporting systems</li>
+      <li>Live ops and content update pipelines</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-icon" style="background:#F1EFE8;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F5E5A" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <div class="sub">Brand & marketing</div>
+    <h3>Advergames & branded experiences</h3>
+    <p>Custom mini-games and interactive brand experiences for marketing campaigns, events, and product launches. Playable in browser — no downloads, maximum reach.</p>
+    <ul>
+      <li>Browser-based HTML5 mini-games</li>
+      <li>Brand-integrated game mechanics and visuals</li>
+      <li>Contest, leaderboard, and prize integrations</li>
+      <li>Social share and viral loop mechanics</li>
+      <li>Analytics and engagement tracking</li>
+      <li>Embeddable on websites and social platforms</li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- INDUSTRY SOLUTIONS -->
+<div class="section-label">Industries & solutions</div>
+<div class="section-title">What we build for your industry</div>
+<div class="section-desc">Game development and interactive experiences are transforming every sector. Here's exactly what we deliver — not just technology, but outcomes.</div>
+
+<div class="ind-grid">
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#534AB7;"></div><h3>Gaming & entertainment</h3></div>
+    <p class="icard-desc">Studios and publishers need games that retain players, generate revenue, and compete in saturated app stores and storefronts.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Full game production (mobile/PC/console)</span>
+      <span class="sol-pill">Co-development and porting</span>
+      <span class="sol-pill">Game economy design</span>
+      <span class="sol-pill">LiveOps systems</span>
+      <span class="sol-pill">Player retention mechanics</span>
+      <span class="sol-pill">Game trailers and marketing assets</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#993C1D;"></div><h3>Defence & aerospace</h3></div>
+    <p class="icard-desc">Military and aerospace organisations need high-fidelity simulations for mission rehearsal, equipment training, and strategic decision-making.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Combat and tactical simulations</span>
+      <span class="sol-pill">Vehicle and aircraft operation sims</span>
+      <span class="sol-pill">Mission planning environments</span>
+      <span class="sol-pill">VR situational awareness training</span>
+      <span class="sol-pill">Multi-operator networked sims</span>
+      <span class="sol-pill">Classified-environment ready builds</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#0F6E56;"></div><h3>Healthcare & medical</h3></div>
+    <p class="icard-desc">Hospitals, medical schools, and health platforms need safe practice environments for surgical, diagnostic, and patient interaction training.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Surgical procedure simulations</span>
+      <span class="sol-pill">Anatomy and physiology visualisations</span>
+      <span class="sol-pill">Patient consultation role-play sims</span>
+      <span class="sol-pill">Rehabilitation VR therapy apps</span>
+      <span class="sol-pill">Phobia and PTSD treatment experiences</span>
+      <span class="sol-pill">Medical device training sims</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#3B6D11;"></div><h3>Education & e-learning</h3></div>
+    <p class="icard-desc">Schools, universities, and ed-tech platforms need engaging interactive content that improves knowledge retention and learning outcomes.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Curriculum-aligned learning games</span>
+      <span class="sol-pill">Virtual classroom environments</span>
+      <span class="sol-pill">Science lab simulations</span>
+      <span class="sol-pill">History and geography exploration games</span>
+      <span class="sol-pill">Language learning apps with game loops</span>
+      <span class="sol-pill">Teacher and parent dashboards</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#854F0B;"></div><h3>Manufacturing & industrial</h3></div>
+    <p class="icard-desc">Factories, construction firms, and industrial operators need simulations that reduce on-site risk, onboard faster, and train without downtime.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Heavy equipment operation sims</span>
+      <span class="sol-pill">Factory floor safety training VR</span>
+      <span class="sol-pill">Hazardous environment procedure sims</span>
+      <span class="sol-pill">Digital twin walkthroughs</span>
+      <span class="sol-pill">Assembly line training modules</span>
+      <span class="sol-pill">Incident response simulations</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#185FA5;"></div><h3>Architecture & real estate</h3></div>
+    <p class="icard-desc">Architects, developers, and real estate agencies need immersive presentations that let clients experience spaces before they're built.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Interactive 3D architectural walkthroughs</span>
+      <span class="sol-pill">Real-time VR showrooms</span>
+      <span class="sol-pill">Material and finish configurators</span>
+      <span class="sol-pill">Day/night environment simulations</span>
+      <span class="sol-pill">AR property preview on mobile</span>
+      <span class="sol-pill">Multi-unit floor plan explorers</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#993556;"></div><h3>Retail & consumer brands</h3></div>
+    <p class="icard-desc">Brands and retailers use gamification, AR, and interactive experiences to drive engagement, increase dwell time, and convert across digital and physical.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">AR product try-on (apparel, eyewear, furniture)</span>
+      <span class="sol-pill">Branded mini-games for campaigns</span>
+      <span class="sol-pill">Virtual showrooms and stores</span>
+      <span class="sol-pill">Loyalty gamification systems</span>
+      <span class="sol-pill">Interactive packaging experiences</span>
+      <span class="sol-pill">In-store AR activations</span>
+    </div>
+  </div>
+
+  <div class="icard">
+    <div class="icard-header"><div class="icard-dot" style="background:#444441;"></div><h3>Corporate & HR</h3></div>
+    <p class="icard-desc">Enterprises use gamified learning and simulations to onboard employees, build soft skills, and run compliance training at scale.</p>
+    <div class="sol-label">Solutions we deliver</div>
+    <div class="sol-pills">
+      <span class="sol-pill">Onboarding gamification platforms</span>
+      <span class="sol-pill">Leadership and negotiation sims</span>
+      <span class="sol-pill">Compliance and ethics scenario games</span>
+      <span class="sol-pill">Fire drill and evacuation VR</span>
+      <span class="sol-pill">Sales training simulators</span>
+      <span class="sol-pill">Team-building multiplayer challenges</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- PROCESS -->
+<div class="section-label">How we work</div>
+<div class="section-title">Our game development process</div>
+<div class="section-desc">A proven pipeline from idea to shipped product — balancing creative ambition with delivery discipline.</div>
+
+<div class="process-steps">
+  <div class="step"><div class="step-num">01</div><h4>Discovery & GDD</h4><p>Goals, genre, platform, and mechanics defined in a Game Design Document.</p></div>
+  <div class="step"><div class="step-num">02</div><h4>Concept art</h4><p>Visual direction, character design, environment moodboards, and UI style.</p></div>
+  <div class="step"><div class="step-num">03</div><h4>Prototype</h4><p>A playable core loop built quickly to validate fun and feasibility.</p></div>
+  <div class="step"><div class="step-num">04</div><h4>Pre-production</h4><p>Asset pipeline, technical architecture, and production schedule locked.</p></div>
+  <div class="step"><div class="step-num">05</div><h4>Alpha build</h4><p>Core features and content complete — internal playtesting begins.</p></div>
+  <div class="step"><div class="step-num">06</div><h4>Beta & QA</h4><p>Full QA across platforms, devices, and edge cases. Bug tracking and fixes.</p></div>
+  <div class="step"><div class="step-num">07</div><h4>Launch</h4><p>Store submission, certification, and go-live managed end-to-end.</p></div>
+  <div class="step"><div class="step-num">08</div><h4>Post-launch</h4><p>Analytics review, patches, content updates, and live ops support.</p></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- WHY US -->
+<div class="section-label">Why choose us</div>
+<div class="section-title">What sets our studio apart</div>
+<div class="section-desc">We combine game design craft with enterprise reliability — delivering experiences that are fun, functional, and built to last.</div>
+
+<div class="why-grid">
+  <div class="why-card"><h4>Engine agnostic</h4><p>We work in Unity, Unreal Engine 5, Godot, and custom engines — we pick the right tool for your platform and budget, not our comfort zone.</p></div>
+  <div class="why-card"><h4>Design-first thinking</h4><p>Gameplay always starts with a core loop that is genuinely fun. Technology serves experience — not the other way around.</p></div>
+  <div class="why-card"><h4>Cross-platform delivery</h4><p>One codebase, many platforms. We build with multi-platform deployment in mind from day one — mobile, PC, console, VR, and web.</p></div>
+  <div class="why-card"><h4>Simulation expertise</h4><p>We have deep experience building physics simulations, procedural environments, and AI-driven NPC behaviour for enterprise clients.</p></div>
+  <div class="why-card"><h4>Full team in-house</h4><p>Game designers, 3D artists, animators, developers, and QA engineers all under one roof — no outsourcing, no gaps in communication.</p></div>
+  <div class="why-card"><h4>IP protection</h4><p>Full source code and asset ownership transferred at project close. NDAs available for sensitive enterprise and defence projects.</p></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<div class="section-label">Common questions</div>
+<div class="section-title">Frequently asked questions</div>
+
+<div style="margin-bottom:2.5rem;">
+  <div class="faq-item">
+    <h4>Which game engine do you use?</h4>
+    <p>We primarily work with Unity and Unreal Engine 5, and also build with Godot for lightweight or open-source projects. The choice depends on your platform targets, visual fidelity requirements, and budget. We'll recommend the best fit during scoping.</p>
+  </div>
+  <div class="faq-item">
+    <h4>How long does a game project take?</h4>
+    <p>A hyper-casual mobile game can be delivered in 6–10 weeks. A mid-core mobile or PC game typically runs 4–9 months. VR/AR experiences and enterprise simulations are scoped case by case, usually 2–6 months. You'll receive a detailed milestone timeline in your project proposal.</p>
+  </div>
+  <div class="faq-item">
+    <h4>Can you build a multiplayer game?</h4>
+    <p>Yes. We have experience building real-time and turn-based multiplayer games using Photon, Mirror Networking, and custom socket-based backends. We handle matchmaking, lobby systems, anti-cheat, and scalable server architecture.</p>
+  </div>
+  <div class="faq-item">
+    <h4>What VR headsets do you develop for?</h4>
+    <p>We build for Meta Quest 2/3/Pro (standalone), SteamVR (PC VR including Valve Index and HTC Vive), PlayStation VR2, and WebXR for browser-based VR. We can target multiple headsets from a single codebase where possible.</p>
+  </div>
+  <div class="faq-item">
+    <h4>Do you handle app store submission?</h4>
+    <p>Yes. We manage the full submission process for Google Play, Apple App Store, Steam, Epic Games Store, and console platforms (PlayStation, Xbox, Nintendo). This includes compliance checks, metadata, screenshots, and age ratings.</p>
+  </div>
+  <div class="faq-item">
+    <h4>Can you work with our existing game or add features to it?</h4>
+    <p>Absolutely. We take on co-development, feature additions, platform ports, and game rescue projects. We'll start with a codebase audit to understand the existing architecture before scoping any changes.</p>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-block">
+  <div>
+    <h3>Ready to build your next interactive experience?</h3>
+    <p>Share your idea — our team will respond within one business day with a tailored scope and estimate.</p>
+  </div>
+  <div class="cta-btns">
+    <button class="btn-primary" onclick="sendPrompt('Help me write a project inquiry form for the game development services page')">Start a project ↗</button>
+    <button class="btn-outline" onclick="sendPrompt('Create a pricing packages section for game development services with Basic, Studio, and Enterprise tiers')">View pricing ↗</button>
+  </div>
+</div>
+
+</div>
