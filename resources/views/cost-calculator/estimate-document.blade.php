@@ -110,6 +110,13 @@
                             </tr>
                         </thead>
                         <tbody class="text-animazon-white text-sm">
+                            <tr class="border-b border-animazon-border/30 hover:bg-animazon-black/20 transition-colors">
+                                <td class="py-3 pr-4 text-animazon-muted">Base Project Cost ({{ $estimate->category->name ?? 'Standard Setup' }})</td>
+                                <td class="py-3 pr-4 font-medium">Core Development</td>
+                                <td class="py-3 text-right text-primary font-medium whitespace-nowrap">
+                                    {{ $currencyCode }} {{ number_format($estimate->base_cost * $clientRate * $internationalMultiplier, 2) }}
+                                </td>
+                            </tr>
                             @foreach($estimate->answers as $ans)
                             <tr class="border-b border-animazon-border/30 hover:bg-animazon-black/20 transition-colors">
                                 <td class="py-3 pr-4 text-animazon-muted">{{ $ans->question->question ?? 'Question' }}</td>
@@ -284,9 +291,15 @@
                         <p class="text-animazon-white font-bold text-lg mb-1">Advance Payment: <span class="text-primary">₹{{ number_format($advanceInr, 0) }}</span></p>
                         <p class="text-animazon-muted text-xs mb-5">({{ $advancePercent }}% of {{ $currencyCode }} {{ number_format($estimate->grand_total, 2) }})</p>
 
-                        <button id="rzpPayBtn" class="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-10 rounded-full hover:opacity-90 transition-all shadow-lg shadow-primary/25 text-lg">
-                            <i class="ti ti-shield-check"></i> Accept & Pay ₹{{ number_format($advanceInr, 0) }} Advance
-                        </button>
+                        @if(isset($razorpayKey) && $razorpayKey)
+                            <button id="rzpPayBtn" class="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-10 rounded-full hover:opacity-90 transition-all shadow-lg shadow-primary/25 text-lg">
+                                <i class="ti ti-shield-check"></i> Accept & Pay ₹{{ number_format($advanceInr, 0) }} Advance
+                            </button>
+                        @else
+                            <button onclick="alert('Payment Gateway Error: Razorpay Key is not configured on the server. Please contact support.')" class="inline-flex items-center gap-2 bg-animazon-black border border-red-500/50 text-red-400 font-bold py-3 px-10 rounded-full hover:bg-red-500/10 transition-all text-lg">
+                                <i class="ti ti-alert-triangle"></i> Payment Gateway Offline
+                            </button>
+                        @endif
                         <p class="text-animazon-muted text-xs mt-3"><i class="ti ti-lock mr-1"></i>Secured by Razorpay. 256-bit SSL encrypted.</p>
                     </div>
                 @endif
