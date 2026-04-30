@@ -15,7 +15,8 @@
     $metsdesc = isset($getseo['meta_desc']) ? $getseo['meta_desc'] : '';
     $meta_image = \App\Models\Utility::get_file('uploads/meta/');
     $meta_logo = isset($getseo['meta_image']) && !empty($getseo['meta_image']) ? $getseo['meta_image'] : '';
-    $seo_image_url = $meta_logo ? $meta_image . $meta_logo : $logo . '/' . (isset($company_logo) && !empty($company_logo) ? $company_logo : 'logo-dark.png');
+    // WhatsApp strictly requires .png or .jpg! AVIF and ICO formats are universally rejected by social previews.
+    $seo_image_url = $meta_logo ? $meta_image . $meta_logo : asset('assets/images/favicon.png');
     $get_cookie = Utility::getCookieSetting();
 
     $primary_color = !empty($settings['primary_color']) ? $settings['primary_color'] : '#00c1de';
@@ -52,8 +53,8 @@
 
 
     <!-- Favicon icon -->
-    <link rel="icon" href="{{asset('assets/images/favicon.png?v=2')}}" type="image/x-icon" />
-    <link rel="apple-touch-icon" href="{{asset('assets/images/favicon.png?v=2')}}">
+    <link rel="icon" href="{{asset('assets/images/favicon.png.avif')}}" type="image/avif" />
+    <link rel="apple-touch-icon" href="{{asset('assets/images/favicon.png')}}">
 
     <!-- Preconnect to critical origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
