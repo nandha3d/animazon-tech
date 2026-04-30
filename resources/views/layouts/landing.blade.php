@@ -14,7 +14,8 @@
     $metatitle = isset($getseo['meta_title']) ? $getseo['meta_title'] : '';
     $metsdesc = isset($getseo['meta_desc']) ? $getseo['meta_desc'] : '';
     $meta_image = \App\Models\Utility::get_file('uploads/meta/');
-    $meta_logo = isset($getseo['meta_image']) ? $getseo['meta_image'] : '';
+    $meta_logo = isset($getseo['meta_image']) && !empty($getseo['meta_image']) ? $getseo['meta_image'] : '';
+    $seo_image_url = $meta_logo ? $meta_image . $meta_logo : $logo . '/' . (isset($company_logo) && !empty($company_logo) ? $company_logo : 'logo-dark.png');
     $get_cookie = Utility::getCookieSetting();
 
     $primary_color = !empty($settings['primary_color']) ? $settings['primary_color'] : '#00c1de';
@@ -39,14 +40,14 @@
     <meta property="og:url" content="{{ config('app.url') }}">
     <meta property="og:title" content="{{$metatitle}}">
     <meta property="og:description" content="{{$metsdesc}}">
-    <meta property="og:image" content="{{$meta_image.$meta_logo}}">
+    <meta property="og:image" content="{{$seo_image_url}}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ config('app.url') }}">
     <meta property="twitter:title" content="{{$metatitle}}">
     <meta property="twitter:description" content="{{$metsdesc}}">
-    <meta property="twitter:image" content="{{$meta_image.$meta_logo}}">
+    <meta property="twitter:image" content="{{$seo_image_url}}">
 
 
 
