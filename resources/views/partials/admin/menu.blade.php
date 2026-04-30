@@ -1101,7 +1101,7 @@
                                 @can('manage lead')
                                     <li
                                         class="dash-item {{ Request::route()->getName() == 'leads.list' || Request::route()->getName() == 'leads.index' || Request::route()->getName() == 'leads.show' ? ' active' : '' }}">
-                                        <a class="dash-link" href="{{ route('leads.index') }}">{{ __('Leads') }}</a>
+                                        <a class="dash-link" href="{{ route('leads.list') }}">{{ __('Leads') }}</a>
                                     </li>
                                 @endcan
                                 @can('manage deal')

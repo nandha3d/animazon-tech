@@ -87,7 +87,21 @@ class LeadController extends Controller
             }
 
             $pipelines = Pipeline::where('created_by', '=', $usr->creatorId())->get()->pluck('name', 'id');
-            $leads     = Lead::select('leads.*')->join('user_leads', 'user_leads.lead_id', '=', 'leads.id')->where('user_leads.user_id', '=', $usr->id)->where('leads.pipeline_id', '=', $pipeline->id)->orderBy('leads.order')->get();
+
+            if($usr->type == 'company') {
+                $leads = Lead::select('leads.*')
+                    ->where('leads.created_by', '=', $usr->creatorId())
+                    ->where('leads.pipeline_id', '=', $pipeline->id)
+                    ->orderBy('leads.order')
+                    ->get();
+            } else {
+                $leads = Lead::select('leads.*')
+                    ->join('user_leads', 'user_leads.lead_id', '=', 'leads.id')
+                    ->where('user_leads.user_id', '=', $usr->id)
+                    ->where('leads.pipeline_id', '=', $pipeline->id)
+                    ->orderBy('leads.order')
+                    ->get();
+            }
 
             return view('leads.list', compact('pipelines', 'pipeline', 'leads'));
         }
@@ -299,6 +313,7 @@ class LeadController extends Controller
         {
             $calenderTasks = [];
             $deal          = Deal::where('id', '=', $lead->is_converted)->first();
+            $estimate      = \App\Models\CostEstimate::where('visitor_email', $lead->email)->latest()->first();
             $stageCnt      = LeadStage::where('pipeline_id', '=', $lead->pipeline_id)->where('created_by', '=', $lead->created_by)->get();
             $i             = 0;
             foreach($stageCnt as $stage)
@@ -311,7 +326,7 @@ class LeadController extends Controller
             }
             $precentage = number_format(($i * 100) / count($stageCnt));
 
-            return view('leads.show', compact('lead', 'calenderTasks', 'deal', 'precentage'));
+            return view('leads.show', compact('lead', 'calenderTasks', 'deal', 'precentage', 'estimate'));
         }
         else
         {

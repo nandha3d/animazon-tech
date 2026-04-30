@@ -46,9 +46,12 @@
                                 <thead>
                                 <tr>
                                     <th>{{__('Name')}}</th>
+                                    <th>{{__('Email')}}</th>
+                                    <th>{{__('Phone')}}</th>
                                     <th>{{__('Subject')}}</th>
                                     <th>{{__('Stage')}}</th>
-                                    <th>{{__('Users')}}</th>
+                                    <th>{{__('Source')}}</th>
+                                    <th>{{__('Date')}}</th>
                                     <th>{{__('Action')}}</th>
                                 </tr>
                                 </thead>
@@ -57,22 +60,25 @@
                                     @foreach ($leads as $lead)
                                         <tr>
                                             <td>{{ $lead->name }}</td>
-                                            <td>{{ $lead->subject }}</td>
-                                            <td>{{  !empty($lead->stage)?$lead->stage->name:'-' }}</td>
+                                            <td><a href="mailto:{{ $lead->email }}">{{ $lead->email }}</a></td>
+                                            <td>{{ $lead->phone ?? '-' }}</td>
+                                            <td>{{ Str::limit($lead->subject, 30) }}</td>
                                             <td>
-                                                @foreach($lead->users as $user)
-                                                    <a href="#" class="btn btn-sm mr-1 p-0 rounded-circle">
-                                                        <img alt="image" data-toggle="tooltip" data-original-title="{{$user->name}}" @if($user->avatar) src="{{asset('/storage/uploads/avatar/'.$user->avatar)}}" @else src="{{asset('/storage/uploads/avatar/avatar.png')}}" @endif class="rounded-circle " width="25" height="25">
-                                                    </a>
-                                                @endforeach
+                                                @if(!empty($lead->stage))
+                                                    <span class="badge bg-primary p-2">{{ $lead->stage->name }}</span>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
+                                            <td>{{ $lead->sources ?? '-' }}</td>
+                                            <td>{{ $lead->date ? \Carbon\Carbon::parse($lead->date)->format('d M Y') : '-' }}</td>
                                             @if(Auth::user()->type != 'client')
                                                 <td class="Action">
                                                     <span>
                                                     @can('view lead')
                                                             @if($lead->is_active)
                                                                 <div class="action-btn me-2">
-                                                                <a href="{{route('leads.show',$lead->id)}}" class="mx-3 btn btn-sm align-items-center bg-warning"  data-size="xl" data-bs-toggle="tooltip" title="{{__('View')}}" data-title="{{__('Lead Detail')}}">
+                                                                <a href="{{route('leads.show',$lead->id)}}" class="mx-3 btn btn-sm align-items-center bg-warning"  data-size="xl" data-bs-toggle="tooltip" title="{{__('View')}}">
                                                                     <i class="ti ti-eye text-white"></i>
                                                                 </a>
                                                             </div>
@@ -80,7 +86,7 @@
                                                         @endcan
                                                         @can('edit lead')
                                                             <div class="action-btn me-2">
-                                                                <a href="#" class="mx-3 btn btn-sm align-items-center bg-info" data-url="{{ route('leads.edit',$lead->id) }}" data-ajax-popup="true" data-size="xl" data-bs-toggle="tooltip" title="{{__('Edit')}}" data-title="{{__('Lead Edit')}}">
+                                                                <a href="#" class="mx-3 btn btn-sm align-items-center bg-info" data-url="{{ route('leads.edit',$lead->id) }}" data-ajax-popup="true" data-size="xl" data-bs-toggle="tooltip" title="{{__('Edit')}}">
                                                                     <i class="ti ti-pencil text-white"></i>
                                                                 </a>
                                                             </div>
@@ -101,7 +107,7 @@
                                     @endforeach
                                 @else
                                     <tr class="font-style">
-                                        <td colspan="6" class="text-center">{{ __('No data available in table') }}</td>
+                                        <td colspan="8" class="text-center">{{ __('No data available in table') }}</td>
                                     </tr>
                                 @endif
 

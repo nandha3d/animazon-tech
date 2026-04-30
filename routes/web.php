@@ -341,6 +341,7 @@ Route::get('/pricing/currency', [CostCalculatorController::class, 'getCurrency']
 Route::get('/pricing/detect-country', [CostCalculatorController::class, 'detectCountry'])->name('cost-calculator.detect-country')->middleware(['XSS']);
 Route::get('/pricing/{projectType}', [CostCalculatorController::class, 'publicCalculator'])->name('cost-calculator.show')->middleware(['XSS']);
 Route::get('/cost-estimate/{id}', [CostCalculatorController::class, 'viewEstimate'])->name('cost-estimate.view')->middleware(['XSS']);
+Route::post('/cost-estimate/{id}/accept-and-pay', [CostCalculatorController::class, 'acceptAndPay'])->name('cost-estimate.accept')->middleware(['XSS']);
 
 // Terms and Conditions
 Route::get('/terms-and-conditions', function () {

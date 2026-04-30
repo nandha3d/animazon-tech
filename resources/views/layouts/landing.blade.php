@@ -268,160 +268,6 @@
             }
         }
 
-        /* === Stacked Card Deck (nth-last-child fan) === */
-        .ws-carousel {
-            position: relative;
-            width: 560px;
-            height: 440px;
-        }
-        .ws-card {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            top: 50%;
-            left: 50%;
-            width: 480px;
-            height: 380px;
-            border-radius: 20px;
-            overflow: hidden;
-            background: #1a1a1f;
-            box-shadow: 0 5px 10px 0 rgba(0,0,0,.25),
-                        0 15px 20px 0 rgba(0,0,0,.125);
-            transition: transform 0.6s;
-            display: flex;
-            flex-direction: column;
-            user-select: none;
-        }
-        /* Stack positions — fan out to the right, front is largest */
-        .ws-card:nth-last-child(n + 4) {
-            --x: calc(-50% + 70px);
-            transform: translate(var(--x), -50%) scale(0.85);
-            box-shadow: 0 0 1px 1px rgba(0,0,0,.01);
-        }
-        .ws-card:nth-last-child(3) {
-            --x: calc(-50% + 50px);
-            transform: translate(var(--x), -50%) scale(0.9);
-            opacity: .55;
-        }
-        .ws-card:nth-last-child(2) {
-            --x: calc(-50% + 25px);
-            transform: translate(var(--x), -50%) scale(0.95);
-            opacity: .8;
-        }
-        .ws-card:nth-last-child(1) {
-            --x: calc(-50%);
-            transform: translate(var(--x), -50%) scale(1);
-            opacity: 1;
-        }
-        /* Glow on front card */
-        .ws-card:nth-last-child(1)::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 21px;
-            background: linear-gradient(135deg, rgba(0,193,222,.35), transparent 40%, transparent 60%, rgba(0,193,222,.18));
-            z-index: -1;
-            pointer-events: none;
-            box-shadow: 0 0 20px 2px rgba(0,193,222,.15);
-        }
-        /* Shine overlay */
-        .ws-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(255,255,255,.06), transparent 50%);
-            pointer-events: none;
-            z-index: 5;
-        }
-        /* Swap animation — swing left, rotate, shrink behind */
-        .ws-swap {
-            animation: wsSwap 0.8s ease-out forwards;
-        }
-        @keyframes wsSwap {
-            30% {
-                transform: translate(calc(var(--x) - 220px), -50%) scale(0.85) rotate(-5deg) rotateY(65deg);
-            }
-            100% {
-                transform: translate(calc(var(--x) - 30px), -50%) scale(0.5);
-                z-index: -1;
-            }
-        }
-        /* Browser chrome bar */
-        .ws-browser-bar {
-            background: #1e1e24;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-            gap: 8px;
-            flex-shrink: 0;
-            border-bottom: 1px solid rgba(255,255,255,.06);
-        }
-        .ws-dots { display: flex; gap: 5px; }
-        .ws-dots span { width: 8px; height: 8px; border-radius: 50%; }
-        .ws-url {
-            flex: 1;
-            background: rgba(255,255,255,.06);
-            border-radius: 8px;
-            height: 20px;
-            padding: 0 10px;
-            font-size: 9px;
-            color: rgba(255,255,255,.45);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-family: 'Inter', monospace;
-        }
-        .ws-url-lock { color: #28c840; font-size: 9px; }
-        /* Category label */
-        .ws-label {
-            position: absolute;
-            top: 44px; right: 12px;
-            background: rgba(0,0,0,.65);
-            backdrop-filter: blur(12px);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
-            color: #00c1de;
-            letter-spacing: .4px;
-            z-index: 6;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .ws-label-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #00c1de;
-            animation: wsDotPulse 2s ease infinite;
-        }
-        @keyframes wsDotPulse {
-            0%,100% { opacity: 1; }
-            50% { opacity: .4; }
-        }
-        /* Carousel indicator dots */
-        .ws-nav {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 28px;
-        }
-        .ws-nav-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.2);
-            border: none;
-            cursor: pointer;
-            transition: all .3s ease;
-            padding: 0;
-        }
-        .ws-nav-dot.active {
-            background: #00c1de;
-            box-shadow: 0 0 8px rgba(0,193,222,.4);
-            width: 24px;
-            border-radius: 4px;
-        }
     </style>
 </head>
 
@@ -455,9 +301,6 @@
                 <a href="{{ route('cost-calculator.public') }}" class="hidden sm:inline-flex btn-primary-custom">
                     <i class="ti ti-rocket"></i> Start Your Project
                 </a>
-                <a href="{{ route('login') }}" class="btn-login-outline hidden lg:inline-flex" rel="nofollow">
-                    <i class="ti ti-login"></i> Login
-                </a>
                 
                 <button id="mobile-menu-toggle" class="lg:hidden text-animazon-white p-2" aria-label="Open navigation menu" aria-expanded="false">
                     <i class="ti ti-menu-2 text-2xl"></i>
@@ -479,7 +322,6 @@
     <a href="{{ route('blog.index') }}" class="mobile-link text-2xl {{ request()->routeIs('blog.index') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Blog</a>
     <a href="{{ route('cost-calculator.public') }}" class="mobile-link text-2xl {{ request()->routeIs('cost-calculator.*') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Pricing</a>
     <a href="{{ url('/') }}#contact" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors" rel="nofollow">Contact</a>
-    <a href="{{ route('login') }}" class="mobile-link text-xl text-primary font-bold transition-colors mt-8" rel="nofollow">Login</a>
 </div>
 <!-- [ Nav ] end -->
 @if(View::hasSection('page_content'))
@@ -521,9 +363,9 @@
             <div class="swiper-slide">
                 <div class="absolute inset-0 z-0">
                     <picture>
-                        <source srcset="{{ asset('assets/images/landing/hero/hero-3d1.avif') }}" type="image/avif">
-                        <source srcset="{{ asset('assets/images/landing/hero/hero-3d1.jpg.avif') }}" type="image/avif">
-                        <img src="{{ asset('assets/images/landing/hero/hero-3d1.jpg') }}" class="w-full h-full object-cover" alt="3D Animation" width="1920" height="1080" fetchpriority="high">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-3d.avif') }}" type="image/avif">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-3d.jpg.avif') }}" type="image/avif">
+                        <img src="{{ asset('assets/images/landing/hero/hero-3d.jpg') }}" class="w-full h-full object-cover" alt="3D Animation" width="1920" height="1080" fetchpriority="high">
                     </picture>
                 </div>
                 <div class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center">
@@ -543,182 +385,35 @@
                 </div>
             </div>
 
-            <!-- Slide 2: Web App Development — Split Layout with 3D Browser Card -->
+            <!-- Slide 2: Web App Development -->
             <div class="swiper-slide">
-                <div class="absolute inset-0 z-0 bg-[#020b14]">
-                    <!-- Ambient glow effects -->
-                    <div class="absolute w-full max-w-[700px] aspect-square rounded-full top-[-150px] right-[-150px] pointer-events-none" style="background:radial-gradient(circle,rgba(0,193,222,0.12) 0%,transparent 70%);"></div>
-                    <div class="absolute w-full max-w-[500px] aspect-square rounded-full bottom-[-100px] left-[-100px] pointer-events-none" style="background:radial-gradient(circle,rgba(0,193,222,0.06) 0%,transparent 70%);"></div>
-                    <!-- Noise texture -->
-                    <div class="absolute inset-0 pointer-events-none opacity-[0.035]" style="background-image:url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E&quot;);"></div>
+                <div class="absolute inset-0 z-0">
+                    <picture>
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-web.avif') }}" type="image/avif">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-web.jpg.avif') }}" type="image/avif">
+                        <img src="{{ asset('assets/images/landing/hero/hero-web.jpg') }}" class="w-full h-full object-cover" alt="Web Development" width="1920" height="1080" loading="lazy">
+                    </picture>
                 </div>
                 <div class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center w-full">
-                        <!-- Left: Copy -->
-                        <div class="max-w-xl">
-                            <span class="inline-block px-4 py-1 rounded-full bg-primary/20 text-primary text-sm font-bold mb-6 animate__animated animate__fadeInDown">CUSTOM WEB SOLUTIONS</span>
-                            <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] mb-4 md:mb-6 animate__animated animate__fadeInUp">
-                                Build <span class="text-primary italic">Websites</span> That Convert, Not Just Exist
-                            </h1>
-                            <p class="text-sm sm:text-lg md:text-xl text-white/70 mb-6 md:mb-8 leading-relaxed animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-                                Crafting high-performance web experiences that drive growth, engagement, and real results.
-                            </p>
-                            <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
-                                <a href="#services" class="btn-primary">Our Capabilities</a>
-                                <a href="#contact" class="btn-ghost !text-white hover:!bg-primary">Start Building</a>
-                            </div>
-                            <!-- Trust bar -->
-                            <div class="flex flex-wrap items-center gap-5 mt-10 text-white/40 text-xs uppercase tracking-widest font-medium animate__animated animate__fadeIn" style="animation-delay:0.8s">
-                                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span> Laravel</span>
-                                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block"></span> React</span>
-                                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span> Next.js</span>
-                                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span> Vue</span>
-                                <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block"></span> Node</span>
-                            </div>
+                    <div class="max-w-3xl">
+                        <span class="inline-block px-4 py-1 rounded-full bg-primary/20 text-primary text-sm font-bold mb-6 animate__animated animate__fadeInDown">CUSTOM WEB SOLUTIONS</span>
+                        <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] mb-4 md:mb-6 animate__animated animate__fadeInUp">
+                            Build <span class="text-primary italic">Websites</span> That Convert, Not Just Exist
+                        </h1>
+                        <p class="text-sm sm:text-lg md:text-xl text-white/80 mb-6 md:mb-8 leading-relaxed animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                            Crafting high-performance web experiences that drive growth, engagement, and real results.
+                        </p>
+                        <div class="flex flex-wrap gap-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                            <a href="#services" class="btn-primary">Our Capabilities</a>
+                            <a href="#contact" class="btn-ghost !text-white hover:!bg-primary">Start Building</a>
                         </div>
-                        <!-- Right: Auto-Rotating Website Showcase -->
-                        <div class="hidden lg:flex flex-col items-center justify-center">
-                            <div class="ws-carousel" id="wsCarousel">
-
-                                <!-- Card 1 — E-Commerce Store -->
-                                <div class="ws-card" data-ws="0">
-                                    <div class="ws-browser-bar">
-                                        <div class="ws-dots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c840"></span></div>
-                                        <div class="ws-url"><span class="ws-url-lock">🔒</span> shopwave.io/store</div>
-                                    </div>
-                                    <div style="flex:1;background:#f8f7f4;display:flex;flex-direction:column;overflow:hidden;">
-                                        <!-- Store nav -->
-                                        <div style="background:#0a0a0f;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;">
-                                            <span style="font-weight:800;font-size:12px;color:#00c1de;font-family:'Montserrat',sans-serif;">ShopWave</span>
-                                            <div style="display:flex;gap:14px;"><span style="color:rgba(255,255,255,.5);font-size:9px;font-weight:500;">New</span><span style="color:rgba(255,255,255,.5);font-size:9px;font-weight:500;">Sale</span><span style="color:rgba(255,255,255,.5);font-size:9px;font-weight:500;">Brands</span></div>
-                                            <div style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><div style="background:#00c1de;color:#020b14;width:16px;height:16px;border-radius:50%;display:grid;place-content:center;font-size:8px;font-weight:700;">3</div></div>
-                                        </div>
-                                        <!-- Products grid -->
-                                        <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;flex:1;">
-                                            <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-                                                <div style="height:80px;background:linear-gradient(135deg,#e0f7fa,#b2ebf2);display:flex;align-items:center;justify-content:center;font-size:28px;">👟</div>
-                                                <div style="padding:8px;"><div style="font-size:9px;font-weight:600;color:#222;">Air Max Pro</div><div style="font-size:8px;color:#00c1de;font-weight:700;margin-top:3px;">$189.00</div><div style="margin-top:5px;background:#111;color:white;text-align:center;padding:4px;border-radius:6px;font-size:7px;font-weight:600;">Add to Cart</div></div>
-                                            </div>
-                                            <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-                                                <div style="height:80px;background:linear-gradient(135deg,#fff3e0,#ffe0b2);display:flex;align-items:center;justify-content:center;font-size:28px;">⌨️</div>
-                                                <div style="padding:8px;"><div style="font-size:9px;font-weight:600;color:#222;">Mech KB</div><div style="font-size:8px;color:#00c1de;font-weight:700;margin-top:3px;">$129.00</div><div style="margin-top:5px;background:#111;color:white;text-align:center;padding:4px;border-radius:6px;font-size:7px;font-weight:600;">Add to Cart</div></div>
-                                            </div>
-                                            <div style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-                                                <div style="height:80px;background:linear-gradient(135deg,#f3e5f5,#e1bee7);display:flex;align-items:center;justify-content:center;font-size:28px;">🎧</div>
-                                                <div style="padding:8px;"><div style="font-size:9px;font-weight:600;color:#222;">Studio Pod</div><div style="font-size:8px;color:#00c1de;font-weight:700;margin-top:3px;">$249.00</div><div style="margin-top:5px;background:#111;color:white;text-align:center;padding:4px;border-radius:6px;font-size:7px;font-weight:600;">Add to Cart</div></div>
-                                            </div>
-                                        </div>
-                                        <!-- Store footer -->
-                                        <div style="background:#0a0a0f;padding:6px 16px;display:flex;justify-content:space-between;align-items:center;">
-                                            <span style="color:rgba(255,255,255,.35);font-size:8px;">© ShopWave 2025</span>
-                                            <div style="display:flex;align-items:center;gap:4px;"><div style="width:5px;height:5px;border-radius:50%;background:#28c840;"></div><span style="color:rgba(255,255,255,.35);font-size:8px;">Secure Checkout</span></div>
-                                        </div>
-                                    </div>
-                                    <div class="ws-label"><div class="ws-label-dot"></div>E-Commerce</div>
-                                </div>
-
-                                <!-- Card 2 — SaaS Dashboard -->
-                                <div class="ws-card" data-ws="1">
-                                    <div class="ws-browser-bar">
-                                        <div class="ws-dots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c840"></span></div>
-                                        <div class="ws-url"><span class="ws-url-lock">🔒</span> dashboard.saaspro.io</div>
-                                    </div>
-                                    <div style="flex:1;background:#0d1117;display:flex;overflow:hidden;">
-                                        <!-- Sidebar -->
-                                        <div style="width:52px;background:#161b22;padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:12px;border-right:1px solid rgba(255,255,255,.06);">
-                                            <div style="width:26px;height:26px;border-radius:8px;background:rgba(0,193,222,.15);display:grid;place-content:center;font-size:12px;">🏠</div>
-                                            <div style="width:26px;height:26px;border-radius:8px;display:grid;place-content:center;font-size:11px;color:rgba(255,255,255,.35);">📊</div>
-                                            <div style="width:26px;height:26px;border-radius:8px;display:grid;place-content:center;font-size:11px;color:rgba(255,255,255,.35);">👥</div>
-                                            <div style="width:26px;height:26px;border-radius:8px;display:grid;place-content:center;font-size:11px;color:rgba(255,255,255,.35);">⚙️</div>
-                                        </div>
-                                        <!-- Main content -->
-                                        <div style="flex:1;padding:12px 14px;overflow:hidden;">
-                                            <div style="font-size:11px;font-weight:700;color:white;margin-bottom:10px;">Dashboard <span style="color:rgba(255,255,255,.3);font-weight:400;font-size:9px;">/ Overview</span></div>
-                                            <!-- Stats row -->
-                                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
-                                                <div style="background:#161b22;border-radius:10px;padding:8px 10px;border:1px solid rgba(255,255,255,.06);">
-                                                    <div style="font-size:7px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;">Revenue</div>
-                                                    <div style="font-size:14px;font-weight:700;color:#00c1de;margin-top:3px;">$48.2K</div>
-                                                    <div style="font-size:7px;color:#28c840;margin-top:2px;">▲ 12.5%</div>
-                                                </div>
-                                                <div style="background:#161b22;border-radius:10px;padding:8px 10px;border:1px solid rgba(255,255,255,.06);">
-                                                    <div style="font-size:7px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;">Users</div>
-                                                    <div style="font-size:14px;font-weight:700;color:white;margin-top:3px;">2,847</div>
-                                                    <div style="font-size:7px;color:#28c840;margin-top:2px;">▲ 8.3%</div>
-                                                </div>
-                                                <div style="background:#161b22;border-radius:10px;padding:8px 10px;border:1px solid rgba(255,255,255,.06);">
-                                                    <div style="font-size:7px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;">MRR</div>
-                                                    <div style="font-size:14px;font-weight:700;color:white;margin-top:3px;">$12.4K</div>
-                                                    <div style="font-size:7px;color:#28c840;margin-top:2px;">▲ 5.1%</div>
-                                                </div>
-                                            </div>
-                                            <!-- Chart -->
-                                            <div style="background:#161b22;border-radius:10px;padding:8px 10px;border:1px solid rgba(255,255,255,.06);flex:1;">
-                                                <div style="font-size:8px;color:rgba(255,255,255,.4);margin-bottom:8px;">Monthly Traffic</div>
-                                                <div style="display:flex;align-items:flex-end;gap:5px;height:60px;">
-                                                    <div style="flex:1;background:rgba(0,193,222,.15);border-radius:3px 3px 0 0;height:30%;"></div>
-                                                    <div style="flex:1;background:rgba(0,193,222,.2);border-radius:3px 3px 0 0;height:45%;"></div>
-                                                    <div style="flex:1;background:rgba(0,193,222,.25);border-radius:3px 3px 0 0;height:35%;"></div>
-                                                    <div style="flex:1;background:rgba(0,193,222,.3);border-radius:3px 3px 0 0;height:60%;"></div>
-                                                    <div style="flex:1;background:rgba(0,193,222,.4);border-radius:3px 3px 0 0;height:50%;"></div>
-                                                    <div style="flex:1;background:rgba(0,193,222,.5);border-radius:3px 3px 0 0;height:72%;"></div>
-                                                    <div style="flex:1;background:rgba(0,193,222,.6);border-radius:3px 3px 0 0;height:85%;"></div>
-                                                    <div style="flex:1;background:#00c1de;border-radius:3px 3px 0 0;height:95%;"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ws-label"><div class="ws-label-dot"></div>SaaS Dashboard</div>
-                                </div>
-
-                                <!-- Card 3 — CMS / Blog -->
-                                <div class="ws-card" data-ws="2">
-                                    <div class="ws-browser-bar">
-                                        <div class="ws-dots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c840"></span></div>
-                                        <div class="ws-url"><span class="ws-url-lock">🔒</span> contentflow.io/blog</div>
-                                    </div>
-                                    <div style="flex:1;background:#fafafa;display:flex;flex-direction:column;overflow:hidden;">
-                                        <!-- Blog nav -->
-                                        <div style="background:white;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee;">
-                                            <span style="font-weight:800;font-size:12px;color:#111;font-family:'Montserrat',sans-serif;">Content<span style="color:#00c1de;">Flow</span></span>
-                                            <div style="display:flex;gap:14px;"><span style="color:#666;font-size:9px;">Articles</span><span style="color:#666;font-size:9px;">Guides</span><span style="color:#666;font-size:9px;">About</span></div>
-                                            <div style="background:#00c1de;color:#020b14;padding:4px 12px;border-radius:14px;font-size:8px;font-weight:600;">Subscribe</div>
-                                        </div>
-                                        <!-- Featured article -->
-                                        <div style="padding:14px 16px 8px;">
-                                            <div style="background:linear-gradient(135deg,#0a1a22,#0d2b3a);border-radius:12px;padding:18px;margin-bottom:10px;">
-                                                <div style="font-size:7px;color:#00c1de;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;font-weight:600;">Featured</div>
-                                                <div style="font-size:12px;font-weight:700;color:white;line-height:1.3;margin-bottom:5px;">Building Scalable APIs with Modern Architecture</div>
-                                                <div style="font-size:8px;color:rgba(255,255,255,.5);">5 min read · Dec 2025 · By Sarah Chen</div>
-                                            </div>
-                                        </div>
-                                        <!-- Post list -->
-                                        <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;flex:1;">
-                                            <div style="display:flex;gap:10px;align-items:center;">
-                                                <div style="width:40px;height:32px;border-radius:6px;background:linear-gradient(135deg,#e8eaf6,#c5cae9);flex-shrink:0;display:grid;place-content:center;font-size:14px;">📦</div>
-                                                <div><div style="font-size:9px;font-weight:600;color:#222;">Headless CMS Best Practices</div><div style="font-size:7px;color:#999;">3 min · Nov 2025</div></div>
-                                            </div>
-                                            <div style="display:flex;gap:10px;align-items:center;">
-                                                <div style="width:40px;height:32px;border-radius:6px;background:linear-gradient(135deg,#e0f2f1,#b2dfdb);flex-shrink:0;display:grid;place-content:center;font-size:14px;">⚡</div>
-                                                <div><div style="font-size:9px;font-weight:600;color:#222;">Performance Optimization Tips</div><div style="font-size:7px;color:#999;">4 min · Oct 2025</div></div>
-                                            </div>
-                                        </div>
-                                        <!-- Blog footer -->
-                                        <div style="background:white;padding:6px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee;">
-                                            <span style="color:#999;font-size:7px;">© ContentFlow 2025</span>
-                                            <span style="color:#00c1de;font-size:8px;font-weight:600;">View all posts →</span>
-                                        </div>
-                                    </div>
-                                    <div class="ws-label"><div class="ws-label-dot"></div>CMS / Blog</div>
-                                </div>
-
-                            </div>
-                            <!-- Carousel Navigation Dots -->
-                            <div class="ws-nav" id="wsNav">
-                                <button class="ws-nav-dot active" data-target="0" aria-label="Show E-Commerce showcase"></button>
-                                <button class="ws-nav-dot" data-target="1" aria-label="Show SaaS Dashboard showcase"></button>
-                                <button class="ws-nav-dot" data-target="2" aria-label="Show CMS Blog showcase"></button>
-                            </div>
+                        <!-- Trust bar -->
+                        <div class="flex flex-wrap items-center gap-5 mt-10 text-white/40 text-xs uppercase tracking-widest font-medium animate__animated animate__fadeIn" style="animation-delay:0.8s">
+                            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span> Laravel</span>
+                            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block"></span> React</span>
+                            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span> Next.js</span>
+                            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span> Vue</span>
+                            <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block"></span> Node</span>
                         </div>
                     </div>
                 </div>
@@ -727,8 +422,9 @@
             <div class="swiper-slide">
                 <div class="absolute inset-0 z-0">
                     <picture>
-                        <source srcset="{{ asset('assets/images/landing/hero/hero-mobile1.avif') }}" type="image/avif">
-                        <img src="{{ asset('assets/images/landing/hero/hero-mobile1.jpg') }}" class="w-full h-full object-cover" alt="Mobile Development" width="1920" height="1080" loading="lazy">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-mobile.avif') }}" type="image/avif">
+                        <source srcset="{{ asset('assets/images/landing/hero/hero-mobile.jpg.avif') }}" type="image/avif">
+                        <img src="{{ asset('assets/images/landing/hero/hero-mobile.jpg') }}" class="w-full h-full object-cover" alt="Mobile Development" width="1920" height="1080" loading="lazy">
                     </picture>
                 </div>
                 <div class="container mx-auto px-4 lg:px-8 relative z-10 h-full flex items-center">
@@ -1890,86 +1586,7 @@
             link.addEventListener('click', closeMobileMenu);
         });
 
-        // === Stacked Card Deck — DOM Reorder ===
-        (function() {
-            const stack = document.getElementById('wsCarousel');
-            if (!stack) return;
 
-            // Reverse DOM order so nth-last-child(1) = front card
-            const cards = Array.from(stack.children)
-                .reverse()
-                .filter(el => el.classList.contains('ws-card'));
-            cards.forEach(card => stack.appendChild(card));
-
-            function moveCard() {
-                const lastCard = stack.lastElementChild;
-                if (lastCard && lastCard.classList.contains('ws-card')) {
-                    lastCard.classList.add('ws-swap');
-
-                    setTimeout(() => {
-                        lastCard.classList.remove('ws-swap');
-                        stack.insertBefore(lastCard, stack.firstElementChild);
-                        updateDots();
-                    }, 750);
-                }
-            }
-
-            // Update nav dots to reflect current front card
-            const dots = document.querySelectorAll('#wsNav .ws-nav-dot');
-            function updateDots() {
-                const front = stack.lastElementChild;
-                if (!front) return;
-                const wsIdx = front.dataset.ws;
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', String(i) === wsIdx);
-                });
-            }
-
-            let autoTimer = setInterval(moveCard, 3000);
-
-            // Click front card to manually rotate
-            stack.addEventListener('click', function(e) {
-                const card = e.target.closest('.ws-card');
-                if (card && card === stack.lastElementChild) {
-                    clearInterval(autoTimer);
-                    card.classList.add('ws-swap');
-                    setTimeout(() => {
-                        card.classList.remove('ws-swap');
-                        stack.insertBefore(card, stack.firstElementChild);
-                        updateDots();
-                        autoTimer = setInterval(moveCard, 3000);
-                    }, 750);
-                }
-            });
-
-            // Dot clicks
-            dots.forEach(dot => {
-                dot.addEventListener('click', () => {
-                    const target = dot.dataset.target;
-                    const front = stack.lastElementChild;
-                    if (front && front.dataset.ws === target) return;
-                    // Rotate until the target is at front
-                    clearInterval(autoTimer);
-                    const rotateToTarget = () => {
-                        const current = stack.lastElementChild;
-                        if (current.dataset.ws === target) {
-                            updateDots();
-                            autoTimer = setInterval(moveCard, 3000);
-                            return;
-                        }
-                        stack.insertBefore(current, stack.firstElementChild);
-                        setTimeout(rotateToTarget, 80);
-                    };
-                    rotateToTarget();
-                });
-            });
-
-            // Pause on hover
-            stack.addEventListener('mouseenter', () => clearInterval(autoTimer));
-            stack.addEventListener('mouseleave', () => { autoTimer = setInterval(moveCard, 3000); });
-
-            updateDots();
-        })();
     });
 </script>
 @yield('page_scripts')

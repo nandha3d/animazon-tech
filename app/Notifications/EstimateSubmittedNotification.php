@@ -35,13 +35,13 @@ class EstimateSubmittedNotification extends Notification
         $projectType = $estimate->projectType;
 
         return (new MailMessage)
-            ->subject('🚀 New Project Estimate Request - ' . ($projectType->name ?? 'Unknown'))
-            ->greeting('New Lead from Project Calculator!')
+            ->subject('New Project Estimate Request - ' . ($projectType->name ?? 'Unknown'))
+            ->greeting('New Lead from Project Calculator')
             ->line('**Visitor:** ' . $estimate->visitor_name)
             ->line('**Email:** ' . $estimate->visitor_email)
             ->line('**Phone:** ' . ($estimate->visitor_phone ?: 'Not provided'))
             ->line('**Project Type:** ' . ($projectType->name ?? 'N/A'))
-            ->line('**Estimated Cost:** $' . number_format($estimate->grand_total, 2) . ' USD')
+            ->line('**Estimated Cost:** ' . $estimate->currency_code . ' ' . number_format($estimate->grand_total, 2))
             ->line('**Timeline:** ' . $estimate->timeline_weeks . ' weeks')
             ->line('**Team Size:** ' . $estimate->team_size . ' members')
             ->line('**Notes:** ' . ($estimate->notes ?: 'None'))

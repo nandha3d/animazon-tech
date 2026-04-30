@@ -50,11 +50,11 @@ function Test-Excluded($filePath) {
 }
 
 function Invoke-Remote($cmd) {
-    & $PLINK -P $SSH_PORT -pw $SSH_PASS "$SSH_USER@$SSH_HOST" $cmd 2>&1
+    & $PLINK -batch -P $SSH_PORT -pw $SSH_PASS "$SSH_USER@$SSH_HOST" $cmd 2>&1
 }
 
 function Upload-File($localFile, $remoteFile) {
-    & $PSCP -P $SSH_PORT -pw $SSH_PASS -q $localFile "${SSH_USER}@${SSH_HOST}:$remoteFile" 2>&1
+    & $PSCP -batch -P $SSH_PORT -pw $SSH_PASS -q $localFile "${SSH_USER}@${SSH_HOST}:$remoteFile" 2>&1
 }
 
 # ─── PRE-FLIGHT ───────────────────────────────────────

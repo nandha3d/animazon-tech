@@ -1,7 +1,7 @@
 @extends('layouts.landing')
 
 @section('page_content')
-<section class="py-12 bg-animazon-black text-animazon-white min-h-screen">
+<section class="py-12 bg-animazon-black text-animazon-white min-h-screen pb-28 lg:pb-12">
     <div class="container mx-auto px-4 lg:px-8">
 
         {{-- Breadcrumb + Service Nav --}}
@@ -421,7 +421,7 @@
             </div>
 
             {{-- Right: Live Estimate Sidebar --}}
-            <div class="lg:col-span-1">
+            <div class="hidden lg:block lg:col-span-1">
                 <div class="sticky top-24 bg-animazon-navy border border-animazon-border/30 rounded-2xl p-6 space-y-5">
                     <div class="flex items-center justify-between">
                         <h3 class="font-bold text-animazon-white text-lg">Live Estimate</h3>
@@ -522,6 +522,39 @@
         </div>
     </div>
 </section>
+
+<!-- Mobile Sticky Bottom Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-[60] bg-animazon-navy/95 backdrop-blur-md border-t border-animazon-border/50 p-4 lg:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.5)] flex items-center justify-between transition-transform duration-300 transform translate-y-0" id="mobileBottomBar">
+    <div class="flex flex-col">
+        <span class="text-[10px] uppercase tracking-wider text-animazon-muted">Est. Total</span>
+        <div class="flex items-baseline gap-1">
+            @if($projectType->base_cost > 0)
+                <span class="text-xl font-bold text-primary" id="mobileTotal" data-usd="{{ $projectType->base_cost }}">
+                    ${{ number_format($projectType->base_cost, 0) }}
+                </span>
+                <span class="text-[10px] text-animazon-muted" id="mobileCurrencyLabel">USD</span>
+            @else
+                <span class="text-xl font-bold text-primary" id="mobileTotal" data-usd="0">
+                    Custom
+                </span>
+                <span class="text-[10px] text-animazon-muted" id="mobileCurrencyLabel">Quote</span>
+            @endif
+        </div>
+    </div>
+    
+    <div class="flex gap-2">
+        <button id="mobilePrevBtn" onclick="prevStep()" class="w-10 h-10 rounded-xl bg-animazon-black border border-animazon-border/30 text-animazon-white flex items-center justify-center hidden">
+            <i class="ti ti-arrow-left"></i>
+        </button>
+        <button id="mobileNextBtn" onclick="nextStep()" class="px-5 h-10 rounded-xl bg-primary text-white font-semibold hover:opacity-90 transition-all flex items-center gap-2">
+            Next <i class="ti ti-arrow-right"></i>
+        </button>
+        <button id="mobileSubmitBtn" onclick="submitEstimate()" class="px-5 h-10 rounded-xl bg-secondary text-white font-semibold hover:opacity-90 transition-all flex items-center gap-2 hidden">
+            <i class="ti ti-send mr-1"></i> Submit
+        </button>
+    </div>
+</div>
+
 @endsection
 
 @section('page_scripts')
@@ -560,12 +593,16 @@
 
     const isCustom = {{ $projectType->base_cost == 0 ? 'true' : 'false' }};
 
+    function getEffectiveBaseCostUsd() {
+        const isIndia = (currentCountry === 'IN');
+        const margin = isIndia ? 1 : 2;
+        return baseCostUsd * margin;
+    }
+
     // Update multiplier tags to show the actual additional amount
     function updateMultiplierAmounts() {
         const c = getCurrency();
-        const isIndia = (currentCountry === 'IN');
-        const margin = isIndia ? 1 : 2;
-        const effectiveBase = baseCostUsd * margin;
+        const effectiveBase = getEffectiveBaseCostUsd();
 
         document.querySelectorAll('.multiplier-tag').forEach(el => {
             const mult = parseFloat(el.dataset.multiplier);
@@ -583,11 +620,13 @@
         localStorage.setItem('animazon_country', countryCode);
 
         const c = getCurrency();
+        const effectiveBase = getEffectiveBaseCostUsd();
 
         // Always update sidebar base cost and total
         if (!isCustom) {
-            document.getElementById('sidebarBaseCost').textContent = formatPrice(baseCostUsd);
+            document.getElementById('sidebarBaseCost').textContent = formatPrice(effectiveBase);
             document.getElementById('currencyLabel').textContent = c.code;
+            if (document.getElementById('mobileCurrencyLabel')) document.getElementById('mobileCurrencyLabel').textContent = c.code;
         } else {
             // Render the hourly rate!
             let hrDisplay = "";
@@ -605,7 +644,9 @@
         // Update additional cost tags on answer options
         document.querySelectorAll('.additional-cost-tag').forEach(el => {
             const usd = parseFloat(el.dataset.usd);
-            el.textContent = '+' + formatPrice(usd);
+            const isIndia = (currentCountry === 'IN');
+            const margin = isIndia ? 1 : 2;
+            el.textContent = '+' + formatPrice(usd * margin);
         });
 
         // Update multiplier amount displays
@@ -616,8 +657,12 @@
             recalculate();
         } else {
             // No answers yet — total = base cost
-            document.getElementById('sidebarTotal').textContent = formatPrice(baseCostUsd);
-            document.getElementById('sidebarTotal').dataset.usd = baseCostUsd;
+            document.getElementById('sidebarTotal').textContent = formatPrice(effectiveBase);
+            document.getElementById('sidebarTotal').dataset.usd = effectiveBase;
+            if (document.getElementById('mobileTotal')) {
+                document.getElementById('mobileTotal').textContent = formatPrice(effectiveBase);
+                document.getElementById('mobileTotal').dataset.usd = effectiveBase;
+            }
         }
     }
 
@@ -643,6 +688,10 @@
         document.getElementById('backToServices').classList.toggle('hidden', step > 0);
         document.getElementById('nextBtn').classList.toggle('hidden', step >= totalSteps);
         document.getElementById('submitBtn').classList.toggle('hidden', step < totalSteps);
+        
+        if (document.getElementById('mobilePrevBtn')) document.getElementById('mobilePrevBtn').classList.toggle('hidden', step === 0);
+        if (document.getElementById('mobileNextBtn')) document.getElementById('mobileNextBtn').classList.toggle('hidden', step >= totalSteps);
+        if (document.getElementById('mobileSubmitBtn')) document.getElementById('mobileSubmitBtn').classList.toggle('hidden', step < totalSteps);
     }
 
     function nextStep() {
@@ -755,6 +804,9 @@
                 document.getElementById('sidebarWeeks').textContent = '—';
                 document.getElementById('sidebarTeam').textContent = '—';
                 
+                if (document.getElementById('mobileTotal')) document.getElementById('mobileTotal').textContent = 'Custom Quote';
+                if (document.getElementById('mobileCurrencyLabel')) document.getElementById('mobileCurrencyLabel').textContent = 'Consultation Required';
+                
                 // Also update the final step title
                 const submitHeadline = document.querySelector('#submitStep h2');
                 if(submitHeadline) submitHeadline.textContent = 'Request Custom Quote';
@@ -764,10 +816,14 @@
                 document.getElementById('sidebarWeeks').textContent = data.timeline_weeks;
                 document.getElementById('sidebarTeam').textContent = data.team_size;
                 
+                if (document.getElementById('mobileTotal')) document.getElementById('mobileTotal').textContent = formatPrice(data.total_cost_usd);
+                if (document.getElementById('mobileCurrencyLabel')) document.getElementById('mobileCurrencyLabel').textContent = c.code;
+                
                 const submitHeadline = document.querySelector('#submitStep h2');
                 if(submitHeadline) submitHeadline.textContent = 'Get Your Detailed Estimate';
             }
             document.getElementById('sidebarTotal').dataset.usd = data.total_cost_usd;
+            if (document.getElementById('mobileTotal')) document.getElementById('mobileTotal').dataset.usd = data.total_cost_usd;
 
             // Build breakdown
             const list = document.getElementById('breakdownList');
@@ -836,6 +892,8 @@
 
         const totalUsd = parseFloat(document.getElementById('sidebarTotal').dataset.usd) || baseCostUsd;
         const c = getCurrency();
+        
+        const totalLocal = totalUsd * c.rate;
 
         const formData = new FormData();
         formData.append('project_type_id', projectTypeId);
@@ -843,8 +901,8 @@
         formData.append('visitor_email', email);
         formData.append('visitor_phone', document.getElementById('visitorPhone').value.trim());
         formData.append('notes', document.getElementById('visitorNotes').value.trim());
-        formData.append('total_cost', totalUsd);
-        formData.append('grand_total', totalUsd);
+        formData.append('total_cost', totalLocal);
+        formData.append('grand_total', totalLocal);
         formData.append('currency_code', c.code);
         formData.append('country_code', currentCountry);
         
@@ -917,6 +975,7 @@
                 document.getElementById('questionsContainer').querySelectorAll('.question-step').forEach(el => el.classList.add('hidden'));
                 document.getElementById('successMessage').classList.remove('hidden');
                 document.getElementById('navButtons').classList.add('hidden');
+                if (document.getElementById('mobileBottomBar')) document.getElementById('mobileBottomBar').classList.add('hidden');
             } else {
                 alert(data.message || 'Something went wrong. Please try again.');
                 btn.disabled = false;

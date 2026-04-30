@@ -21,7 +21,7 @@ class CostCalculatorController extends Controller
     /**
      * Currency rates relative to USD (base = 1 USD)
      */
-    private const CURRENCY_MAP = [
+    public const CURRENCY_MAP = [
         'US' => ['code' => 'USD', 'symbol' => '$', 'rate' => 1.00, 'name' => 'US Dollar'],
         'GB' => ['code' => 'GBP', 'symbol' => '£', 'rate' => 0.79, 'name' => 'British Pound'],
         'EU' => ['code' => 'EUR', 'symbol' => '€', 'rate' => 0.92, 'name' => 'Euro'],
@@ -203,6 +203,9 @@ class CostCalculatorController extends Controller
         $projectType = ProjectType::findOrFail($projectTypeId);
         $baseCost = (float)$projectType->base_cost;
 
+        // India gets base pricing; all other countries get 2x
+        $internationalMultiplier = ($countryCode !== 'IN') ? 2.0 : 1.0;
+
         $totalMultiplier = 1.0;
         $additionalCosts = 0;
         $costBreakdown = [];
@@ -225,7 +228,7 @@ class CostCalculatorController extends Controller
                         'question' => $question->question,
                         'answer' => $answerObj->answer_text,
                         'multiplier' => $answerObj->cost_multiplier,
-                        'additional_cost' => $answerObj->additional_cost,
+                        'additional_cost' => $answerObj->additional_cost * $internationalMultiplier,
                     ];
 
                     $totalMultiplier *= (float)$answerObj->cost_multiplier;
@@ -246,7 +249,7 @@ class CostCalculatorController extends Controller
                             'question' => $question->question,
                             'answer' => $val . ' × ' . $answerObj->answer_text,
                             'multiplier' => $answerObj->cost_multiplier > 0 ? ($answerObj->cost_multiplier * $val) : 1,
-                            'additional_cost' => $answerObj->additional_cost * $val,
+                            'additional_cost' => $answerObj->additional_cost * $val * $internationalMultiplier,
                         ];
 
                         if ((float)$answerObj->cost_multiplier > 0) {
@@ -261,8 +264,6 @@ class CostCalculatorController extends Controller
         $totalCostUsd = ($baseCost * $totalMultiplier) + $additionalCosts;
 
         // Apply 2x international margin on USD total BEFORE currency conversion
-        // India gets base pricing; all other countries get 2x
-        $internationalMultiplier = ($countryCode !== 'IN') ? 2.0 : 1.0;
         $totalCostUsd *= $internationalMultiplier;
         $baseCostEffective = $baseCost * $internationalMultiplier;
 
@@ -371,7 +372,7 @@ class CostCalculatorController extends Controller
                             'cost_estimate_id' => $estimate->id,
                             'question_id' => $questionId,
                             'answer_id' => $answerId,
-                            'cost_contribution' => ($estimate->base_cost * $answerObj->cost_multiplier) + $answerObj->additional_cost,
+                            'cost_contribution' => ($estimate->base_cost * ($answerObj->cost_multiplier - 1)) + $answerObj->additional_cost,
                         ]);
                     }
                 } else {
@@ -441,6 +442,43 @@ class CostCalculatorController extends Controller
 
         // Send notifications
         try {
+            // Configure SMTP mailer from database settings (same pattern as Utility::sendEmailTemplate)
+            // This is required because public routes don't trigger the DB mail config automatically
+            $mailSettings = \App\Models\Utility::settingsById($adminId);
+            
+            // Use DB settings if available, otherwise fall back to .env values
+            $mailDriver = !empty($mailSettings['mail_driver']) ? $mailSettings['mail_driver'] : env('MAIL_DRIVER', 'smtp');
+            $mailHost = !empty($mailSettings['mail_host']) ? $mailSettings['mail_host'] : env('MAIL_HOST', 'smtp.hostinger.com');
+            $mailPort = !empty($mailSettings['mail_port']) ? $mailSettings['mail_port'] : env('MAIL_PORT', 465);
+            $mailEncryption = !empty($mailSettings['mail_encryption']) ? $mailSettings['mail_encryption'] : env('MAIL_ENCRYPTION', 'ssl');
+            $mailUsername = !empty($mailSettings['mail_username']) ? $mailSettings['mail_username'] : env('MAIL_USERNAME');
+            $mailPassword = !empty($mailSettings['mail_password']) ? $mailSettings['mail_password'] : env('MAIL_PASSWORD');
+            $mailFromAddress = !empty($mailSettings['mail_from_address']) ? $mailSettings['mail_from_address'] : env('MAIL_FROM_ADDRESS', 'info@animazon.in');
+            $mailFromName = !empty($mailSettings['mail_from_name']) ? $mailSettings['mail_from_name'] : env('MAIL_FROM_NAME', 'ANIMAZON');
+
+            config([
+                'mail.default' => $mailDriver,
+                'mail.mailers.smtp.transport' => $mailDriver,
+                'mail.mailers.smtp.host' => $mailHost,
+                'mail.mailers.smtp.port' => $mailPort,
+                'mail.mailers.smtp.encryption' => $mailEncryption,
+                'mail.mailers.smtp.username' => $mailUsername,
+                'mail.mailers.smtp.password' => $mailPassword,
+                'mail.from.address' => $mailFromAddress,
+                'mail.from.name' => $mailFromName,
+                'mail.mailers.smtp.verify_peer' => false,
+                'mail.mailers.smtp.stream' => [
+                    'ssl' => [
+                        'allow_self_signed' => true,
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                    ],
+                ],
+            ]);
+
+            // Force Laravel to create a fresh mailer instance with the new config
+            app()->forgetInstance('mail.manager');
+
             // 1. Notify the Company/Admin
             $notifyEmail = env('ESTIMATE_NOTIFY_EMAIL', 'info@animazon.in');
             Notification::route('mail', $notifyEmail)->notify(new EstimateSubmittedNotification($estimate));
@@ -547,7 +585,7 @@ class CostCalculatorController extends Controller
      */
     public function viewEstimate($id)
     {
-        $estimate = CostEstimate::with(['answers.question', 'answers.answerDef', 'projectType'])->findOrFail($id);
+        $estimate = CostEstimate::with(['answers.question', 'answers.answer', 'projectType'])->findOrFail($id);
 
         // If admin is logged in, mark any related notifications as read
         if (\Auth::check()) {
@@ -559,8 +597,151 @@ class CostCalculatorController extends Controller
             }
         }
 
-        $settings = \App\Models\Utility::settings();
+        // Fetch settings explicitly by admin user (works for public/unauthenticated visitors)
+        $adminUser = User::where('type', 'owner')->first() ?? User::where('type', 'company')->first() ?? User::where('type', 'super admin')->first();
+        $adminId = $adminUser ? $adminUser->id : 1;
 
-        return view('cost-calculator.estimate-document', compact('estimate', 'settings'));
+        // Get company settings - use settingsById to avoid Auth dependency
+        $settingsData = \App\Models\Utility::getSettingById($adminId);
+        $settings = [];
+        foreach ($settingsData as $row) {
+            $settings[$row->name] = $row->value;
+        }
+
+        // Get Razorpay public key directly from admin_payment_settings table
+        $paymentRows = \DB::table('admin_payment_settings')->where('created_by', $adminId)->get();
+        if ($paymentRows->isEmpty()) {
+            // Fallback to searching without created_by if specific admin has no settings
+            $paymentRows = \DB::table('admin_payment_settings')->get();
+        }
+        
+        $paymentSettings = [];
+        foreach ($paymentRows as $row) {
+            $paymentSettings[$row->name] = $row->value;
+        }
+        
+        $razorpayKey = null;
+        if (isset($paymentSettings['is_razorpay_enabled']) && $paymentSettings['is_razorpay_enabled'] === 'on') {
+            $razorpayKey = $paymentSettings['razorpay_public_key'] ?? null;
+        }
+        
+        // Fallback to env if DB is empty
+        if (!$razorpayKey) {
+            $razorpayKey = env('RAZORPAY_KEY');
+        }
+
+        // Calculate conversion factors for itemized pricing display
+        $currencyCode = $estimate->currency_code ?? 'USD';
+        $clientRate = 1;
+        $isInternational = true;
+        foreach (self::CURRENCY_MAP as $key => $val) {
+            if ($val['code'] === $currencyCode) { 
+                $clientRate = $val['rate']; 
+                if ($key === 'IN') $isInternational = false;
+                break; 
+            }
+        }
+        $internationalMultiplier = $isInternational ? 2.0 : 1.0;
+
+        return view('cost-calculator.estimate-document', compact(
+            'estimate', 
+            'settings', 
+            'razorpayKey', 
+            'clientRate', 
+            'internationalMultiplier'
+        ));
+    }
+
+    /**
+     * Accept estimate and process Razorpay advance payment
+     */
+    public function acceptAndPay(Request $request, $id)
+    {
+        $estimate = CostEstimate::findOrFail($id);
+
+        // Prevent double-acceptance
+        if ($estimate->status === 'Accepted') {
+            return redirect()->back()->with('error', 'This estimate has already been accepted.');
+        }
+
+        // Validate Razorpay payment
+        $request->validate([
+            'razorpay_payment_id' => 'required|string',
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        $paymentSettings = \App\Models\Utility::getAdminPaymentSetting();
+        $secretKey = $paymentSettings['razorpay_secret_key'] ?? '';
+        $publicKey = $paymentSettings['razorpay_public_key'] ?? '';
+
+        // Verify payment with Razorpay API
+        try {
+            $ch = curl_init('https://api.razorpay.com/v1/payments/' . $request->razorpay_payment_id);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_USERPWD, $publicKey . ':' . $secretKey);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = json_decode(curl_exec($ch));
+            curl_close($ch);
+
+            if (!$response || !isset($response->status) || !in_array($response->status, ['authorized', 'captured'])) {
+                Log::warning('Razorpay payment verification failed for estimate #' . $id, [
+                    'payment_id' => $request->razorpay_payment_id,
+                    'response' => $response,
+                ]);
+                return redirect()->back()->with('error', 'Payment verification failed. Please contact support.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Razorpay verification error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Payment verification error. Please contact support.');
+        }
+
+        // Update estimate status
+        $estimate->update([
+            'status' => 'Accepted',
+            'accepted_at' => now(),
+            'notes' => ($estimate->notes ? $estimate->notes . "\n\n" : '') .
+                       "--- Payment Record ---\n" .
+                       "Razorpay Payment ID: " . $request->razorpay_payment_id . "\n" .
+                       "Amount Paid: ₹" . number_format($request->amount, 2) . "\n" .
+                       "Paid At: " . now()->format('M d, Y h:i A'),
+        ]);
+
+        // Notify admin about acceptance
+        try {
+            $adminUser = User::where('type', 'owner')->first();
+            $adminId = $adminUser ? $adminUser->id : 1;
+            $mailSettings = \App\Models\Utility::settingsById($adminId);
+
+            $mailDriver = !empty($mailSettings['mail_driver']) ? $mailSettings['mail_driver'] : env('MAIL_DRIVER', 'smtp');
+            $mailHost = !empty($mailSettings['mail_host']) ? $mailSettings['mail_host'] : env('MAIL_HOST');
+            $mailPort = !empty($mailSettings['mail_port']) ? $mailSettings['mail_port'] : env('MAIL_PORT');
+            $mailEncryption = !empty($mailSettings['mail_encryption']) ? $mailSettings['mail_encryption'] : env('MAIL_ENCRYPTION');
+            $mailUsername = !empty($mailSettings['mail_username']) ? $mailSettings['mail_username'] : env('MAIL_USERNAME');
+            $mailPassword = !empty($mailSettings['mail_password']) ? $mailSettings['mail_password'] : env('MAIL_PASSWORD');
+            $mailFromAddress = !empty($mailSettings['mail_from_address']) ? $mailSettings['mail_from_address'] : env('MAIL_FROM_ADDRESS');
+            $mailFromName = !empty($mailSettings['mail_from_name']) ? $mailSettings['mail_from_name'] : env('MAIL_FROM_NAME');
+
+            config([
+                'mail.default' => $mailDriver,
+                'mail.mailers.smtp.transport' => $mailDriver,
+                'mail.mailers.smtp.host' => $mailHost,
+                'mail.mailers.smtp.port' => $mailPort,
+                'mail.mailers.smtp.encryption' => $mailEncryption,
+                'mail.mailers.smtp.username' => $mailUsername,
+                'mail.mailers.smtp.password' => $mailPassword,
+                'mail.from.address' => $mailFromAddress,
+                'mail.from.name' => $mailFromName,
+            ]);
+            app()->forgetInstance('mail.manager');
+
+            $notifyEmail = env('ESTIMATE_NOTIFY_EMAIL', $mailFromAddress);
+            \Illuminate\Support\Facades\Notification::route('mail', $notifyEmail)
+                ->notify(new \App\Notifications\EstimateAcceptedNotification($estimate, $request->razorpay_payment_id, $request->amount));
+        } catch (\Exception $e) {
+            Log::warning('Estimate acceptance notification failed: ' . $e->getMessage());
+        }
+
+        return redirect()->route('cost-estimate.view', $id)
+            ->with('success', 'Payment successful! Agreement accepted. Our team will begin work shortly.');
     }
 }

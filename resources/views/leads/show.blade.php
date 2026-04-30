@@ -203,6 +203,12 @@
                                     class="list-group-item list-group-item-action border-0">{{ __('General') }}
                                     <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                                 </a>
+                                @if(isset($estimate) && $estimate)
+                                    <a href="#cost_estimate"
+                                        class="list-group-item list-group-item-action border-0">{{ __('Cost Estimate') }}
+                                        <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+                                    </a>
+                                @endif
                             @endif
 
                             @if (Auth::user()->type != 'client')
@@ -395,6 +401,84 @@
                             </div>
                         </div>
                     </div>
+                    
+                    @if(isset($estimate) && $estimate)
+                    <div id="cost_estimate" class="mb-4">
+                        <div class="card h-100 mb-0 border-primary shadow-sm" style="border-width: 2px;">
+                            <div class="card-header bg-primary-subtle text-primary d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h5 class="mb-0 text-primary">
+                                        <i class="ti ti-receipt me-2"></i>{{ __('Cost Estimate Details') }}
+                                    </h5>
+                                </div>
+                                <div class="float-end">
+                                    <a href="{{ url('/cost-estimate/' . $estimate->id) }}" target="_blank" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="{{__('View Full Estimate Document')}}">
+                                        <i class="ti ti-external-link"></i> {{__('View Document')}}
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-3 col-6 mb-3">
+                                        <p class="text-muted text-sm mb-0">{{ __('Project Type') }}</p>
+                                        <h6 class="mb-0">{{ $estimate->projectType->name ?? 'N/A' }}</h6>
+                                    </div>
+                                    <div class="col-md-3 col-6 mb-3">
+                                        <p class="text-muted text-sm mb-0">{{ __('Grand Total') }}</p>
+                                        @php
+                                            $inrRate = \App\Http\Controllers\CostCalculatorController::CURRENCY_MAP['IN']['rate'] ?? 83;
+                                            $countryKey = collect(\App\Http\Controllers\CostCalculatorController::CURRENCY_MAP)->where('code', $estimate->currency_code)->keys()->first();
+                                            $clientRate = $countryKey ? \App\Http\Controllers\CostCalculatorController::CURRENCY_MAP[$countryKey]['rate'] : 1;
+                                            $inrTotal = ($estimate->grand_total / $clientRate) * $inrRate;
+                                        @endphp
+                                        <h6 class="mb-0 text-primary font-weight-bold">
+                                            INR {{ number_format($inrTotal, 2) }}
+                                            <span class="text-muted text-xs ms-1">({{ $estimate->currency_code }} {{ number_format($estimate->grand_total, 2) }})</span>
+                                        </h6>
+                                    </div>
+                                    <div class="col-md-3 col-6 mb-3">
+                                        <p class="text-muted text-sm mb-0">{{ __('Estimated Timeline') }}</p>
+                                        <h6 class="mb-0">{{ $estimate->timeline_weeks ? $estimate->timeline_weeks . ' Weeks' : 'N/A' }}</h6>
+                                    </div>
+                                    <div class="col-md-3 col-6 mb-3">
+                                        <p class="text-muted text-sm mb-0">{{ __('Team Size') }}</p>
+                                        <h6 class="mb-0">{{ $estimate->team_size ? $estimate->team_size . ' Experts' : 'N/A' }}</h6>
+                                    </div>
+                                </div>
+
+                                <h6 class="mb-3">{{ __('Requirements Breakdown') }}</h6>
+                                <div class="table-responsive border rounded">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>{{ __('Requirement / Question') }}</th>
+                                                <th class="text-end">{{ __('Selection') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($estimate->answers as $ans)
+                                                <tr>
+                                                    <td>{{ $ans->question->question ?? 'Question' }}</td>
+                                                    <td class="text-end font-weight-bold text-dark">
+                                                        {{ $ans->answer_id ? ($ans->answer->answer ?? 'Selected') : $ans->answer_value }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                @if($estimate->notes)
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6 class="text-muted text-sm mb-2">{{ __('Client Notes') }}</h6>
+                                    <p class="mb-0 text-sm">{{ $estimate->notes }}</p>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <div id="users_products">
                         <div class="row">
                             <div class="col-md-6 col-12 mb-4">

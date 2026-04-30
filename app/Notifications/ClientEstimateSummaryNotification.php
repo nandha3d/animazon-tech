@@ -28,32 +28,20 @@ class ClientEstimateSummaryNotification extends Notification
     {
         $estimate = $this->estimate;
         $projectType = $estimate->projectType;
-        
-        $answersHtml = '';
-        foreach($estimate->answers as $ans) {
-            $questionText = $ans->question->question ?? 'Question';
-            if ($ans->answer_id) {
-                $answerText = $ans->answerDef->answer ?? 'Selected';
-            } else {
-                $answerText = $ans->answer_value;
-            }
-            $answersHtml .= "- **{$questionText}**: {$answerText}\n";
-        }
+        $settings = \App\Models\Utility::settings();
+        $companyName = $settings['company_name'] ?? 'Animazon';
 
         return (new MailMessage)
-            ->subject('Your Animazon Project Estimate - ' . ($projectType->name ?? 'Project'))
+            ->subject('Your ' . $companyName . ' Project Estimate - ' . ($projectType->name ?? 'Project'))
             ->greeting('Hello ' . $estimate->visitor_name . ',')
-            ->line('Thank you for requesting an estimate with Animazon! Here is a summary of your project details:')
+            ->line('Thank you for requesting an estimate with ' . $companyName . '! Here is a summary of your project details:')
             ->line('**Project Type:** ' . ($projectType->name ?? 'N/A'))
-            ->line('**Estimated Cost:** $' . number_format($estimate->grand_total, 2) . ' USD')
+            ->line('**Estimated Cost:** ' . $estimate->currency_code . ' ' . number_format($estimate->grand_total, 2))
             ->line('**Estimated Timeline:** ' . $estimate->timeline_weeks . ' weeks')
             ->line('**Team Size Needed:** ' . $estimate->team_size . ' members')
             ->line('---')
-            ->line('**Your Requirements:**')
-            ->line($answersHtml)
-            ->line('---')
             ->line('Our team will review these details and get back to you shortly with next steps and a formal proposal.')
-            ->action('View Full Estimate Document', url('/cost-estimate/' . $estimate->id))
+            ->action('View Estimate & Pay Advance', url('/cost-estimate/' . $estimate->id))
             ->line('We look forward to working with you!');
     }
 
