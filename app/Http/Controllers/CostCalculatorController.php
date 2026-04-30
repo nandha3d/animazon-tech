@@ -608,16 +608,12 @@ class CostCalculatorController extends Controller
             $settings[$row->name] = $row->value;
         }
 
-        // Get Razorpay public key directly from admin_payment_settings table
-        $paymentRows = \DB::table('admin_payment_settings')->where('created_by', $adminId)->get();
-        if ($paymentRows->isEmpty()) {
-            // Fallback to searching without created_by if specific admin has no settings
-            $paymentRows = \DB::table('admin_payment_settings')->get();
-        }
+        // Get Razorpay details using the Utility class which handles company/admin logic
+        $paymentSettings = \App\Models\Utility::getCompanyPaymentSetting($adminId);
         
-        $paymentSettings = [];
-        foreach ($paymentRows as $row) {
-            $paymentSettings[$row->name] = $row->value;
+        // If company settings are empty, fallback to admin settings
+        if (empty($paymentSettings) || !isset($paymentSettings['is_razorpay_enabled'])) {
+            $paymentSettings = \App\Models\Utility::getAdminPaymentSetting();
         }
         
         $razorpayKey = null;
@@ -670,7 +666,14 @@ class CostCalculatorController extends Controller
             'amount' => 'required|numeric|min:1',
         ]);
 
-        $paymentSettings = \App\Models\Utility::getAdminPaymentSetting();
+        $adminUser = User::where('type', 'owner')->first() ?? User::where('type', 'company')->first() ?? User::where('type', 'super admin')->first();
+        $adminId = $adminUser ? $adminUser->id : 1;
+
+        $paymentSettings = \App\Models\Utility::getCompanyPaymentSetting($adminId);
+        if (empty($paymentSettings) || !isset($paymentSettings['is_razorpay_enabled'])) {
+            $paymentSettings = \App\Models\Utility::getAdminPaymentSetting();
+        }
+
         $secretKey = $paymentSettings['razorpay_secret_key'] ?? '';
         $publicKey = $paymentSettings['razorpay_public_key'] ?? '';
 
