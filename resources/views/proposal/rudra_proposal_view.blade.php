@@ -368,11 +368,7 @@
                           </p>
                           <div style="display: flex; justify-content: center; align-items: center; min-height: 50px;">
                               <form>
-                                  <script src="https://cdn.razorpay.com/static/widget/subscription-button.js" 
-                                          data-subscription_button_id="{{ $subBtnId }}" 
-                                          data-button_theme="brand-color" 
-                                          async>
-                                  </script>
+                                  <script src="https://cdn.razorpay.com/static/widget/subscription-button.js" data-subscription_button_id="pl_T9j7p5Gbk0YDsG" data-button_theme="brand-color" async> </script>
                               </form>
                           </div>
                       </div>
@@ -614,11 +610,7 @@
                           </p>
                           <div style="display: flex; justify-content: center; align-items: center; min-height: 50px;">
                               <form>
-                                  <script src="https://cdn.razorpay.com/static/widget/subscription-button.js" 
-                                          data-subscription_button_id="{{ $subBtnId }}" 
-                                          data-button_theme="brand-color" 
-                                          async>
-                                  </script>
+                                  <script src="https://cdn.razorpay.com/static/widget/subscription-button.js" data-subscription_button_id="pl_T9j7p5Gbk0YDsG" data-button_theme="brand-color" async> </script>
                               </form>
                           </div>
                       </div>
