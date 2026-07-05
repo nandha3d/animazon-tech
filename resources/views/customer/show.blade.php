@@ -39,7 +39,7 @@
 @section('action-btn')
     <div class="float-end d-flex">
         @can('create invoice')
-            <a href="{{ route('invoice.create',$customer->id) }}" class="btn btn-sm bg-light-green-subtitle text-white me-2">
+            <a href="{{ route('invoice.create.for.customer',$customer->id) }}" class="btn btn-sm bg-light-green-subtitle text-white me-2">
                 {{__('Create Invoice')}}
             </a>
         @endcan

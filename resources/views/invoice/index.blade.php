@@ -32,7 +32,7 @@
         </a>
 
         @can('create invoice')
-            <a href="{{ route('invoice.create', 0) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="{{__('Create')}}">
+            <a href="{{ route('invoice.create.for.customer', 0) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="{{__('Create')}}">
                 <i class="ti ti-plus"></i>
             </a>
         @endcan
