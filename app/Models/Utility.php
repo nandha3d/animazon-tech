@@ -282,6 +282,13 @@ class Utility extends Model
             'auth_token' => '',
             'primary_color' => '#00c1de',
             'secondary_color' => '#ff6122',
+            'menu_hrm' => 'on',
+            'menu_account' => 'on',
+            'menu_crm' => 'on',
+            'menu_project' => 'on',
+            'menu_pos' => 'on',
+            'menu_user' => 'on',
+            'menu_product' => 'on',
         ];
 
         foreach ($data as $row) {
@@ -489,6 +496,13 @@ class Utility extends Model
             'currency_symbol' => 'withcurrencysymbol',
             'primary_color' => '#00c1de',
             'secondary_color' => '#ff6122',
+            'menu_hrm' => 'on',
+            'menu_account' => 'on',
+            'menu_crm' => 'on',
+            'menu_project' => 'on',
+            'menu_pos' => 'on',
+            'menu_user' => 'on',
+            'menu_product' => 'on',
         ];
 
         foreach ($data as $row) {

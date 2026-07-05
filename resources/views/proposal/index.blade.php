@@ -49,6 +49,12 @@
                 done();
             }
         });
+
+        $(document).on('change', '.status_change', function () {
+            var status = this.value;
+            var url = $(this).data('url');
+            window.location.href = url + '?status=' + status;
+        });
     </script>
 @endpush
 @section('content')
@@ -118,16 +124,24 @@
                                     <td>{{ !empty($proposal->category)?$proposal->category->name:''}}</td>
                                     <td>{{ Auth::user()->dateFormat($proposal->issue_date) }}</td>
                                     <td>
-                                        @if($proposal->status == 0)
-                                            <span class="status_badge badge bg-primary p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
-                                        @elseif($proposal->status == 1)
-                                            <span class="status_badge badge bg-info p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
-                                        @elseif($proposal->status == 2)
-                                            <span class="status_badge badge bg-success p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
-                                        @elseif($proposal->status == 3)
-                                            <span class="status_badge badge bg-warning p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
-                                        @elseif($proposal->status == 4)
-                                            <span class="status_badge badge bg-danger p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
+                                        @if(Gate::check('edit proposal') || Gate::check('send proposal') || \Auth::user()->type == 'company')
+                                            <select class="form-select form-select-sm status_change" data-url="{{ route('proposal.status.change', $proposal->id) }}" style="width: auto; font-weight: 600; cursor: pointer; display: inline-block;">
+                                                @foreach ($status as $k => $val)
+                                                    <option value="{{ $k }}" {{ $proposal->status == $k ? 'selected' : '' }}>{{ __($val) }}</option>
+                                                @endforeach
+                                            </select>
+                                        @else
+                                            @if($proposal->status == 0)
+                                                <span class="status_badge badge bg-primary p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
+                                            @elseif($proposal->status == 1)
+                                                <span class="status_badge badge bg-info p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
+                                            @elseif($proposal->status == 2)
+                                                <span class="status_badge badge bg-success p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
+                                            @elseif($proposal->status == 3)
+                                                <span class="status_badge badge bg-warning p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
+                                            @elseif($proposal->status == 4)
+                                                <span class="status_badge badge bg-danger p-2 px-3 rounded">{{ __(\App\Models\Proposal::$statues[$proposal->status]) }}</span>
+                                            @endif
                                         @endif
                                     </td>
                                     @if(Gate::check('edit proposal') || Gate::check('delete proposal') || Gate::check('show proposal'))
@@ -165,7 +179,7 @@
                                                 </div>
                                             @endcan
                                             <div class="action-btn me-2">
-                                                <a href="#" class="mx-3 btn btn-sm align-items-center bg-success copy-client-link" data-bs-toggle="tooltip" title="{{__('Copy Client Link')}}" data-original-title="{{__('Copy Client Link')}}" data-link="{{ route('proposal.link.copy', \Crypt::encrypt($proposal->id)) }}">
+                                                <a href="#" class="mx-3 btn btn-sm align-items-center bg-success copy-client-link" data-bs-toggle="tooltip" title="{{__('Copy Client Link')}}" data-original-title="{{__('Copy Client Link')}}" data-link="{{ $proposal->getPublicUrl() }}">
                                                     <i class="ti ti-link text-white"></i>
                                                 </a>
                                             </div>

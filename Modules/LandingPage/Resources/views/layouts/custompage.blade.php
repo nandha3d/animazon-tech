@@ -111,6 +111,14 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{url('/#features')}}">{{ $settings['feature_title'] }}</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProducts" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Products
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownProducts">
+                                <li><a class="dropdown-item" href="https://app.animazon.in/home" target="_blank">Loan Track</a></li>
+                            </ul>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{url('/#plan')}}">{{ $settings['plan_title'] }}</a>
                         </li>

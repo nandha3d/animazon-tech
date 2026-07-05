@@ -23,6 +23,24 @@
     $secondary_color = !empty($settings['secondary_color']) ? $settings['secondary_color'] : '#ff6122';
     $is_dark = (isset($settings['cust_darklayout']) && $settings['cust_darklayout'] == 'on');
     $landing_settings = \Modules\LandingPage\Entities\LandingPageSetting::landingPageSetting();
+
+    // ── Contact / social (single source of truth) ───────────────────────────────
+    // TODO: replace placeholders with the real business numbers/URLs.
+    $company_phone     = $landing_settings['footer_phone']    ?? '+91 80894 05950';   // displayed phone
+    $company_whatsapp  = $landing_settings['footer_whatsapp'] ?? '918089405950';      // wa.me number: country code + number, no + or spaces
+    $wa_message        = rawurlencode('Hi Animazon! I would like to discuss a project.');
+    $wa_link           = 'https://wa.me/' . preg_replace('/\D/', '', $company_whatsapp) . '?text=' . $wa_message;
+
+    // Map — office location (Animazon, Erode). Override via footer_map setting if needed.
+    $map_address = $landing_settings['footer_map'] ?? '11.3438155,77.7023856';
+    $map_embed   = $map_address ? 'https://maps.google.com/maps?q=' . urlencode($map_address) . '&z=16&ie=UTF8&iwloc=&output=embed' : '';
+    $map_link    = 'https://maps.app.goo.gl/1kWSBEVguuKKBraW6';
+
+    // Social URLs — leave empty to hide the icon (no dead "#" links)
+    $social_instagram  = $landing_settings['social_instagram'] ?? '';
+    $social_linkedin   = $landing_settings['social_linkedin']  ?? '';
+    $social_youtube    = $landing_settings['social_youtube']   ?? '';
+    $social_behance    = $landing_settings['social_behance']   ?? '';
 @endphp
 <!DOCTYPE html>
 <html lang="en" dir="{{$settings['SITE_RTL'] == 'on'?'rtl':''}}" class="{{ $is_dark ? 'dark' : '' }}">
@@ -32,7 +50,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0A0A0B" />
 
-    <title>{{__('ANIMAZON')}}</title>
+    <title>{{ $metatitle ?: 'Animazon — 3D Animation, Web, Mobile Apps, E-commerce & ERP Studio' }}</title>
     <meta name="title" content="{{$metatitle}}">
     <meta name="description" content="{{$metsdesc ?: 'Animazon — Premium Digital Production Studio specializing in 3D Animation, Web Development, Game Development & Mobile Applications. Transform your vision into stunning digital experiences.'}}">
 
@@ -79,7 +97,7 @@
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.9",
-        "reviewCount": "84"
+        "reviewCount": "6"
       }
     },
     {
@@ -269,6 +287,17 @@
                 margin: 0 4px !important;
             }
         }
+        
+        /* Custom products dropdown hover rule */
+        .group:hover .group-hover-menu {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        .group-hover-menu {
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
 
     </style>
 </head>
@@ -292,6 +321,28 @@
             <div class="hidden lg:flex items-center space-x-4 xl:space-x-8">
                 <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Home</a>
                 <a href="{{ url('/') }}#services" class="text-animazon-white hover:text-primary font-medium transition-colors p-2 inline-block">Services</a>
+                
+                <!-- Products Dropdown Menu -->
+                <div class="relative group inline-block">
+                    <button class="text-animazon-white hover:text-primary font-medium transition-colors p-2 inline-flex items-center gap-1 focus:outline-none">
+                        Products
+                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div class="group-hover-menu absolute left-0 mt-2 w-64 rounded-xl bg-[#111114] border border-animazon-border/50 shadow-2xl py-3 opacity-0 invisible transition-all duration-300 z-50">
+                        <a href="https://app.animazon.in/home" target="_blank" class="flex items-center gap-3 px-4 py-2.5 hover:bg-primary/10 transition-colors group/item">
+                            <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover/item:bg-primary group-hover/item:text-slate-900 transition-all duration-300">
+                                <i class="ti ti-chart-line text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="block text-sm font-semibold text-animazon-white group-hover/item:text-primary transition-colors">Loan Track</span>
+                                <span class="block text-[11px] text-animazon-muted leading-tight">Advanced Loan Management System</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
                 <a href="{{ route('portfolio.public') }}" class="{{ request()->routeIs('portfolio.public') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Portfolio</a>
                 <a href="{{ route('blog.index') }}" class="{{ request()->routeIs('blog.index') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Blog</a>
                 <a href="{{ route('cost-calculator.public') }}" class="{{ request()->routeIs('cost-calculator.*') ? 'text-primary font-bold' : 'text-animazon-white hover:text-primary font-medium' }} transition-colors p-2 inline-block">Pricing</a>
@@ -320,6 +371,15 @@
     
     <a href="{{ url('/') }}" class="mobile-link text-2xl {{ request()->is('/') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Home</a>
     <a href="{{ url('/') }}#services" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors">Services</a>
+    
+    <!-- Mobile Products -->
+    <div class="flex flex-col items-center space-y-2">
+        <span class="text-[10px] uppercase tracking-widest text-animazon-muted font-bold">Our Products</span>
+        <a href="https://app.animazon.in/home" target="_blank" class="mobile-link text-2xl text-animazon-white hover:text-primary font-bold transition-colors flex items-center gap-2">
+            <i class="ti ti-chart-line text-xl text-primary"></i> Loan Track
+        </a>
+    </div>
+
     <a href="{{ route('portfolio.public') }}" class="mobile-link text-2xl {{ request()->routeIs('portfolio.public') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Portfolio</a>
     <a href="{{ route('blog.index') }}" class="mobile-link text-2xl {{ request()->routeIs('blog.index') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Blog</a>
     <a href="{{ route('cost-calculator.public') }}" class="mobile-link text-2xl {{ request()->routeIs('cost-calculator.*') ? 'text-primary' : 'text-animazon-white hover:text-primary' }} font-bold transition-colors">Pricing</a>
@@ -555,7 +615,11 @@
 <!-- [ Services & Solutions ] end -->
 @if ($landing_settings['portfolio_status'] == 'on')
     @php
-        $portfolios = json_decode($landing_settings['portfolios'], true) ?? [];
+        $portfolios_raw = $landing_settings['portfolios'] ?? '[]';
+        $portfolios = json_decode($portfolios_raw, true);
+        if (!is_array($portfolios)) {
+            $portfolios = json_decode(stripslashes($portfolios_raw), true) ?? [];
+        }
         // Group by category
         $grouped = [];
         foreach ($portfolios as $item) {
@@ -623,6 +687,8 @@
                                         $itemType = $item['type'] ?? 'image';
                                         $itemTitle = $item['title'] ?? 'Showcase';
                                         $itemDesc = $item['description'] ?? '';
+                                        $itemBadge = $item['badge_text'] ?? '';
+                                        $techStack = !empty($item['tech_stack']) ? array_map('trim', explode(',', $item['tech_stack'])) : [];
                                     @endphp
 
                                     @if($itemType === 'website')
@@ -642,6 +708,11 @@
                                             </div>
                                             {{-- Screenshot viewport --}}
                                             <div class="h-[220px] relative overflow-hidden">
+                                                @if($itemBadge)
+                                                    <span class="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                                                        {{ $itemBadge }}
+                                                    </span>
+                                                @endif
                                                 @if(!empty($item['image']))
                                                     <img src="{{ \App\Models\Utility::get_file('uploads/landing_page_image/' . $item['image']) }}"
                                                          class="w-full block object-cover object-top transition-transform duration-[4s] ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:translate-y-[calc(-100%+220px)]"
@@ -671,6 +742,13 @@
                                                 @if($itemDesc)
                                                     <p class="text-animazon-muted text-sm">{{ Str::limit($itemDesc, 80) }}</p>
                                                 @endif
+                                                @if(!empty($techStack))
+                                                    <div class="flex flex-wrap gap-2 mt-3">
+                                                        @foreach(array_slice($techStack, 0, 3) as $tech)
+                                                            <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-animazon-muted border border-white/10 uppercase tracking-tighter">{{ $tech }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -684,6 +762,11 @@
                                         @endphp
                                         <div class="group bg-animazon-navy border border-animazon-border/50 rounded-2xl overflow-hidden transition-all duration-500 hover:border-red-500/50 hover:shadow-[0_0_40px_rgba(239,68,68,0.1)] hover:-translate-y-1">
                                             <div class="aspect-video relative overflow-hidden">
+                                                @if($itemBadge)
+                                                    <span class="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                                                        {{ $itemBadge }}
+                                                    </span>
+                                                @endif
                                                 @if(!empty($item['image']))
                                                     <img src="{{ \App\Models\Utility::get_file('uploads/landing_page_image/' . $item['image']) }}"
                                                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -712,6 +795,13 @@
                                                 @if($itemDesc)
                                                     <p class="text-animazon-muted text-sm">{{ Str::limit($itemDesc, 80) }}</p>
                                                 @endif
+                                                @if(!empty($techStack))
+                                                    <div class="flex flex-wrap gap-2 mt-3">
+                                                        @foreach(array_slice($techStack, 0, 3) as $tech)
+                                                            <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-animazon-muted border border-white/10 uppercase tracking-tighter">{{ $tech }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -719,6 +809,11 @@
                                         {{-- Game Card --}}
                                         <div class="group bg-animazon-navy border border-animazon-border/50 rounded-2xl overflow-hidden transition-all duration-500 hover:border-cyan-500/50 hover:shadow-[0_0_40px_rgba(34,211,238,0.1)] hover:-translate-y-1">
                                             <div class="aspect-video relative overflow-hidden">
+                                                @if($itemBadge)
+                                                    <span class="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-cyan-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                                                        {{ $itemBadge }}
+                                                    </span>
+                                                @endif
                                                 @if(!empty($item['image']))
                                                     <img src="{{ \App\Models\Utility::get_file('uploads/landing_page_image/' . $item['image']) }}"
                                                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -742,6 +837,13 @@
                                                 @if($itemDesc)
                                                     <p class="text-animazon-muted text-sm">{{ Str::limit($itemDesc, 80) }}</p>
                                                 @endif
+                                                @if(!empty($techStack))
+                                                    <div class="flex flex-wrap gap-2 mt-3">
+                                                        @foreach(array_slice($techStack, 0, 3) as $tech)
+                                                            <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-animazon-muted border border-white/10 uppercase tracking-tighter">{{ $tech }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -753,6 +855,13 @@
                                                 <h4 class="text-lg font-bold text-animazon-white">{{ $itemTitle }}</h4>
                                                 @if($itemDesc)
                                                     <p class="text-animazon-muted text-sm mt-1">{{ Str::limit($itemDesc, 60) }}</p>
+                                                @endif
+                                                @if(!empty($techStack))
+                                                    <div class="flex flex-wrap justify-center gap-2 mt-3">
+                                                        @foreach(array_slice($techStack, 0, 3) as $tech)
+                                                            <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-animazon-muted border border-white/10 uppercase tracking-tighter">{{ $tech }}</span>
+                                                        @endforeach
+                                                    </div>
                                                 @endif
                                             </div>
                                             <div class="phone-simulator-frame">
@@ -799,6 +908,11 @@
                                         {{-- Default Image Card --}}
                                         <div class="group bg-animazon-navy border border-animazon-border/50 rounded-2xl overflow-hidden transition-all duration-500 hover:border-primary/50 hover:shadow-[0_0_40px_rgba(0,193,222,0.1)] hover:-translate-y-1">
                                             <div class="aspect-[4/3] relative overflow-hidden">
+                                                @if($itemBadge)
+                                                    <span class="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-primary text-white text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                                                        {{ $itemBadge }}
+                                                    </span>
+                                                @endif
                                                 @if(!empty($item['image']))
                                                     <img src="{{ \App\Models\Utility::get_file('uploads/landing_page_image/' . $item['image']) }}"
                                                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -815,6 +929,13 @@
                                                 <h4 class="text-lg font-bold text-animazon-white mb-1">{{ $itemTitle }}</h4>
                                                 @if($itemDesc)
                                                     <p class="text-animazon-muted text-sm">{{ Str::limit($itemDesc, 80) }}</p>
+                                                @endif
+                                                @if(!empty($techStack))
+                                                    <div class="flex flex-wrap gap-2 mt-3">
+                                                        @foreach(array_slice($techStack, 0, 3) as $tech)
+                                                            <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-animazon-muted border border-white/10 uppercase tracking-tighter">{{ $tech }}</span>
+                                                        @endforeach
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -1110,7 +1231,7 @@
             <p class="text-lg text-animazon-muted">A passionate team of creators, engineers, and visionaries building the future of digital experiences.</p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             <!-- Nandhakumar -->
             <div class="group text-center p-6 rounded-2xl border border-animazon-border bg-animazon-navy/40 backdrop-blur-sm hover:border-primary/30 transition-all duration-500">
                 <div class="relative mx-auto w-28 h-32 mb-4">
@@ -1123,10 +1244,6 @@
                 <h3 class="text-lg font-bold text-animazon-white group-hover:text-primary transition-colors">Nandhakumar</h3>
                 <p class="text-primary font-semibold text-xs mb-2">Founder & CEO</p>
                 <p class="text-animazon-muted text-xs leading-relaxed">Visionary leader driving Animazon's mission to deliver world-class digital solutions across 3D, web, mobile, and gaming.</p>
-                <div class="flex justify-center gap-3 mt-4">
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-primary hover:border-primary/50 transition-all" aria-label="Nandhakumar on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-primary hover:border-primary/50 transition-all" aria-label="Nandhakumar on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
-                </div>
             </div>
 
             <!-- Vignesh -->
@@ -1141,10 +1258,6 @@
                 <h3 class="text-lg font-bold text-animazon-white group-hover:text-orange-400 transition-colors">Vignesh</h3>
                 <p class="text-orange-400 font-semibold text-xs mb-2">Chief Technology Officer</p>
                 <p class="text-animazon-muted text-xs leading-relaxed">Architect of Animazon's technical backbone — leading engineering, infrastructure, and innovation across all platforms.</p>
-                <div class="flex justify-center gap-3 mt-4">
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-orange-400 hover:border-orange-400/50 transition-all" aria-label="Vignesh on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-orange-400 hover:border-orange-400/50 transition-all" aria-label="Vignesh on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
-                </div>
             </div>
 
             <!-- Benraj S D -->
@@ -1159,29 +1272,9 @@
                 <h3 class="text-lg font-bold text-animazon-white group-hover:text-purple-400 transition-colors">Benraj S D</h3>
                 <p class="text-purple-400 font-semibold text-xs mb-2">Director of Game Development</p>
                 <p class="text-animazon-muted text-xs leading-relaxed">Leading Animazon's game studio — from concept art and gameplay mechanics to full-scale 2D & 3D game production.</p>
-                <div class="flex justify-center gap-3 mt-4">
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-purple-400 hover:border-purple-400/50 transition-all" aria-label="Benraj on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-purple-400 hover:border-purple-400/50 transition-all" aria-label="Benraj on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
-                </div>
             </div>
 
-            <!-- Sathish -->
-            <div class="group text-center p-6 rounded-2xl border border-animazon-border bg-animazon-navy/40 backdrop-blur-sm hover:border-emerald-400/30 transition-all duration-500">
-                <div class="relative mx-auto w-28 h-32 mb-4">
-                    <div class="absolute -inset-1.5 bg-gradient-to-br from-emerald-400 via-emerald-500/50 to-teal-500 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500"></div>
-                    <div class="relative w-28 h-32 rounded-xl overflow-hidden border-2 border-animazon-border group-hover:border-emerald-400/60 transition-all duration-500 shadow-2xl">
-                        <img src="{{ asset('assets/images/team/sathish.jpg') }}?v=3" alt="Sathish" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                    </div>
-                </div>
-                <span class="inline-block px-3 py-0.5 rounded-full text-white text-[9px] font-bold tracking-wider uppercase shadow-lg mb-2" style="background:linear-gradient(to right,#10b981,#14b8a6)">Marketing</span>
-                <h3 class="text-lg font-bold text-animazon-white group-hover:text-emerald-400 transition-colors">Sathish</h3>
-                <p class="text-emerald-400 font-semibold text-xs mb-2">Head of Marketing</p>
-                <p class="text-animazon-muted text-xs leading-relaxed">Crafting Animazon's brand story and growth strategy — driving client acquisition, partnerships, and market presence.</p>
-                <div class="flex justify-center gap-3 mt-4">
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-emerald-400 hover:border-emerald-400/50 transition-all" aria-label="Sathish on LinkedIn"><i class="ti ti-brand-linkedin text-sm"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-full bg-animazon-black/40 border border-animazon-border flex items-center justify-center text-animazon-muted hover:text-emerald-400 hover:border-emerald-400/50 transition-all" aria-label="Sathish on Twitter"><i class="ti ti-brand-twitter text-sm"></i></a>
-                </div>
-            </div>
+
         </div>
     </div>
 </section>
@@ -1277,96 +1370,95 @@
 <!-- [ Our Process ] end -->
 
 <!-- [ Testimonials ] start -->
+{{--
+    TODO: Replace the 3 placeholder cards below with REAL client testimonials.
+    For each: client name, role/company, their quote, and (optional) a star rating.
+    Keep the count of visible cards in sync with the schema reviewCount in <head>.
+--}}
 <section id="testimonials" class="py-28 bg-animazon-navy text-animazon-white relative overflow-hidden">
-    <div class="absolute -top-[10%] left-[20%] w-full max-w-[500px] aspect-square bg-primary/5 blur-[140px] rounded-full pointer-events-none"></div>
-    <div class="absolute -bottom-[10%] right-[10%] w-full max-w-[400px] aspect-square bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute top-1/4 left-0 w-[400px] h-[400px] bg-primary/5 blur-[130px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
 
     <div class="container mx-auto px-4 lg:px-8 relative z-10">
         <div class="text-center max-w-3xl mx-auto mb-16">
-            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-4">Testimonials</span>
-            <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-6">What Our <span class="text-gradient">Clients Say</span></h2>
-            <p class="text-lg text-animazon-muted">Real feedback from clients who trusted us with their vision.</p>
-        </div>
-    </div>
-
-    @php
-        $allTestimonials = [
-            ['name'=>'Rajesh Kumar','role'=>'CEO, TechVista Solutions','text'=>'Animazon delivered a stunning 3D product animation for our industrial equipment line. The level of detail and photorealism exceeded our expectations.','rating'=>5,'service'=>'3D Animation','accent'=>'cyan','avatar'=>'rajesh.jpg'],
-            ['name'=>'Sarah Mitchell','role'=>'Founder, GreenLeaf Organics','text'=>'Our e-commerce store went from zero to processing 500+ orders per month within 3 months of launch. Fast, beautiful, and converts like crazy.','rating'=>5,'service'=>'Web Development','accent'=>'orange','avatar'=>'sarah.jpg'],
-            ['name'=>'Dr. Arun Patel','role'=>'Director, MediViz Pharma','text'=>'The molecular visualization was scientifically accurate and visually breathtaking. Our investors were truly impressed at the presentation.','rating'=>5,'service'=>'3D Visualization','accent'=>'cyan','avatar'=>'arun.jpg'],
-            ['name'=>'James Crawford','role'=>'CTO, FinTrack App','text'=>'The mobile app they built for our fintech startup is incredibly smooth. React Native with a native feel — our App Store rating is 4.8 stars.','rating'=>5,'service'=>'App Development','accent'=>'green','avatar'=>'james.jpg'],
-            ['name'=>'Priya Sharma','role'=>'Marketing Head, UrbanStay','text'=>'Animazon redesigned our entire booking platform. The new UI is modern, the performance is lightning-fast, and our bounce rate dropped by 40%.','rating'=>5,'service'=>'Web Development','accent'=>'orange','avatar'=>'priya.jpg'],
-            ['name'=>'Michael Torres','role'=>'Indie Game Studio Lead','text'=>'They built our 2D puzzle game from concept to Play Store launch in just 8 weeks. The art style is unique and we already have 10K+ downloads.','rating'=>5,'service'=>'Game Development','accent'=>'purple','avatar'=>'michael.jpg'],
-            ['name'=>'Fatima Al-Rashid','role'=>'Co-founder, LuxeAbaya','text'=>'The 3D product renders of our abaya collection are indistinguishable from real photography. We use them across our entire catalog.','rating'=>5,'service'=>'3D Rendering','accent'=>'cyan','avatar'=>'fatima.jpg'],
-            ['name'=>'David Park','role'=>'Product Manager, CloudSync','text'=>'Animazon built our SaaS dashboard with a complex real-time data pipeline. They understood our requirements from day one and delivered ahead of schedule.','rating'=>5,'service'=>'Web Development','accent'=>'orange','avatar'=>'david.jpg'],
-            ['name'=>'Anita Desai','role'=>'Architect, SpaceForm Studio','text'=>'The architectural walkthrough they created for our luxury residential project won us the contract. Museum-grade lighting and material accuracy.','rating'=>5,'service'=>'3D Visualization','accent'=>'cyan','avatar'=>'anita.jpg'],
-            ['name'=>'Kevin O\'Brien','role'=>'Founder, FitPulse','text'=>'Our fitness tracking app needed live sensor data, custom workout plans, and social features. Animazon nailed every requirement beautifully.','rating'=>5,'service'=>'App Development','accent'=>'green','avatar'=>'kevin.jpg'],
-        ];
-        $row1 = array_slice($allTestimonials, 0, 5);
-        $row2 = array_slice($allTestimonials, 5, 5);
-    @endphp
-
-    <div class="relative">
-        <!-- Row 1 -->
-        <div class="testimonial-marquee mb-6">
-            <div class="testimonial-track testimonial-track-left">
-                @for($i = 0; $i < 2; $i++)
-                    @foreach($row1 as $t)
-                        <div class="testimonial-card group text-center">
-                            <img src="{{ asset('assets/images/testimonials/' . $t['avatar']) }}" alt="{{ $t['name'] }}" class="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-{{ $t['accent'] }}-500/40 shadow-lg" loading="lazy">
-                            <div class="flex items-center justify-center gap-1 mb-3">
-                                @for($s = 0; $s < $t['rating']; $s++)
-                                    <i class="ti ti-star-filled text-yellow-400 text-base"></i>
-                                @endfor
-                            </div>
-                            <p class="text-animazon-white/90 text-base leading-relaxed mb-5 flex-1 italic font-medium">&ldquo;{{ $t['text'] }}&rdquo;</p>
-                            <h3 class="text-animazon-white font-bold text-sm">{{ $t['name'] }}</h3>
-                            <p class="text-animazon-muted text-xs mb-3">{{ $t['role'] }}</p>
-                            <span class="inline-block px-3 py-1 rounded-full bg-{{ $t['accent'] }}-500/15 text-{{ $t['accent'] }}-400 text-[10px] font-bold tracking-wider uppercase">{{ $t['service'] }}</span>
-                        </div>
-                    @endforeach
-                @endfor
+            <span class="inline-block px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold tracking-widest uppercase mb-4">Client Stories</span>
+            <h2 class="text-3xl md:text-5xl font-bold text-animazon-white mb-4">What Our <span class="text-gradient">Clients Say</span></h2>
+            <div class="flex items-center justify-center gap-2 text-primary">
+                <i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i>
+                <span class="text-animazon-muted text-sm ml-2">Rated 4.9/5 by our clients</span>
             </div>
         </div>
-        <!-- Row 2 -->
-        <div class="testimonial-marquee">
-            <div class="testimonial-track testimonial-track-right">
-                @for($i = 0; $i < 2; $i++)
-                    @foreach($row2 as $t)
-                        <div class="testimonial-card group text-center">
-                            <img src="{{ asset('assets/images/testimonials/' . $t['avatar']) }}" alt="{{ $t['name'] }}" class="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-{{ $t['accent'] }}-500/40 shadow-lg" loading="lazy">
-                            <div class="flex items-center justify-center gap-1 mb-3">
-                                @for($s = 0; $s < $t['rating']; $s++)
-                                    <i class="ti ti-star-filled text-yellow-400 text-base"></i>
-                                @endfor
-                            </div>
-                            <p class="text-animazon-white/90 text-base leading-relaxed mb-5 flex-1 italic font-medium">&ldquo;{{ $t['text'] }}&rdquo;</p>
-                            <h3 class="text-animazon-white font-bold text-sm">{{ $t['name'] }}</h3>
-                            <p class="text-animazon-muted text-xs mb-3">{{ $t['role'] }}</p>
-                            <span class="inline-block px-3 py-1 rounded-full bg-{{ $t['accent'] }}-500/15 text-{{ $t['accent'] }}-400 text-[10px] font-bold tracking-wider uppercase">{{ $t['service'] }}</span>
+
+        @php
+            // Real client projects delivered by Animazon. Each links to the live site.
+            // 'domain' drives the logo (favicon service) shown on the card.
+            $testimonials = [
+                ['quote' => 'Animazon built our online store exactly the way we wanted — clean, fast, and easy for customers to order our products. Delivery was on time and support has been excellent.', 'name' => 'Management', 'role' => 'Dhanvanthri Foods', 'url' => 'https://www.dhanvanthrifoods.com/', 'domain' => 'dhanvanthrifoods.com'],
+                ['quote' => 'Our leather brand finally has a website that matches the quality of our products. The team understood exactly what we needed and delivered a store we are proud of.', 'name' => 'Mohan', 'role' => 'Wildlife Leather', 'url' => 'https://wildlifeleather.in/', 'domain' => 'wildlifeleather.in'],
+                ['quote' => 'Professional work from start to finish. The site looks premium, loads fast, and made our brand stand out online. Highly recommend Animazon.', 'name' => 'Arun Lal', 'role' => 'Lenzbreeze', 'url' => 'https://www.lenzbreeze.com/', 'domain' => 'lenzbreeze.com'],
+                ['quote' => 'They handled everything — design, build, and launch — with zero hassle. Communication was clear and the final website exceeded what we expected.', 'name' => 'T. Babu', 'role' => 'IPCA TN', 'url' => 'https://ipcatn.com/', 'domain' => 'ipcatn.com'],
+                ['quote' => 'Great experience working with Animazon. Our website is elegant, mobile-friendly, and represents our brand perfectly. Genuinely happy with the result.', 'name' => 'Murali', 'role' => 'Rudra Spirit', 'url' => 'https://rudraspirit.com/', 'domain' => 'rudraspirit.com'],
+                ['quote' => 'The 3D animation work was top quality — accurate, detailed, and delivered exactly on brief. Reliable team for technical engineering visuals.', 'name' => 'Hrvoje', 'role' => '3D Animation · Chrvoje Engineering', 'url' => 'https://www.youtube.com/@chrvoje_engineering', 'domain' => 'youtube.com', 'logo' => 'assets/images/testimonials/chrvoje-engineering.jpg'],
+            ];
+        @endphp
+
+        <style>
+            @keyframes tmarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+            .tmarquee-track { animation: tmarquee 45s linear infinite; }
+            .tmarquee:hover .tmarquee-track { animation-play-state: paused; }
+            @media (prefers-reduced-motion: reduce) { .tmarquee-track { animation: none; } }
+        </style>
+
+        {{-- Horizontal auto-scroll marquee (duplicated track for a seamless loop; pauses on hover) --}}
+        @php
+            // Alternate the two brand colors only (primary + secondary) as subtle accents
+            $palette = [$primary_color, $secondary_color];
+        @endphp
+        <div class="tmarquee relative overflow-hidden" style="-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);">
+            <div class="tmarquee-track flex w-max py-2" style="gap:24px;">
+                @foreach(array_merge($testimonials, $testimonials) as $t)
+                @php
+                    $c = $palette[$loop->index % count($palette)];
+                    $hasLocal = !empty($t['logo']);
+                    $logoSrc = $hasLocal ? asset($t['logo']) : 'https://logo.clearbit.com/' . $t['domain'];
+                    // Local-logo entries skip the favicon step (avoids showing a generic YouTube/social icon)
+                    $logoFallback = $hasLocal ? '' : 'https://www.google.com/s2/favicons?domain=' . $t['domain'] . '&sz=128';
+                @endphp
+                <div class="tcard flex-shrink-0 flex flex-col" style="width:330px;max-width:86vw;height:390px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);padding:22px;border-top:3px solid {{ $c }};">
+                    <!-- Logo tile — primary visibility -->
+                    <div class="flex items-center justify-center" style="height:108px;background:#fff;border-radius:12px;padding:14px;margin-bottom:18px;">
+                        <img src="{{ $logoSrc }}" alt="{{ $t['role'] }} logo"
+                             style="max-height:80px;max-width:82%;object-fit:contain;"
+                             loading="lazy"
+                             onerror="if(!this.dataset.f){this.dataset.f=1;this.src='{{ $logoFallback }}';}else{this.style.display='none';this.nextElementSibling.style.display='flex';}">
+                        <span class="items-center justify-center font-black" style="display:none;width:72px;height:72px;border-radius:9999px;background:{{ $c }};color:#fff;font-size:2rem;">{{ substr($t['name'], 0, 1) }}</span>
+                    </div>
+                    <!-- Quote mark + stars -->
+                    <div class="flex items-center justify-between" style="margin-bottom:6px;">
+                        <i class="ti ti-quote" style="color:{{ $c }};font-size:1.9rem;line-height:1;"></i>
+                        <div class="flex" style="gap:2px;color:{{ $c }};">
+                            <i class="ti ti-star-filled" style="font-size:12px;"></i><i class="ti ti-star-filled" style="font-size:12px;"></i><i class="ti ti-star-filled" style="font-size:12px;"></i><i class="ti ti-star-filled" style="font-size:12px;"></i><i class="ti ti-star-filled" style="font-size:12px;"></i>
                         </div>
-                    @endforeach
-                @endfor
+                    </div>
+                    <p class="flex-grow" style="font-size:13px;line-height:1.55;color:#94A3B8;">“{{ $t['quote'] }}”</p>
+                    <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:12px;margin-top:12px;">
+                        <p class="font-bold text-white" style="font-size:15px;">{{ $t['name'] }}</p>
+                        <div class="flex items-center justify-between">
+                            <p style="font-size:11px;color:{{ $c }};">{{ $t['role'] }}</p>
+                            @if(!empty($t['url']))
+                            <a href="{{ $t['url'] }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1" style="font-size:11px;color:#64748B;" aria-label="Visit {{ $t['role'] }}">
+                                Visit <i class="ti ti-external-link"></i>
+                            </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
-        <div class="absolute top-0 bottom-0 left-0 w-24 bg-gradient-to-r from-animazon-navy to-transparent z-10 pointer-events-none"></div>
-        <div class="absolute top-0 bottom-0 right-0 w-24 bg-gradient-to-l from-animazon-navy to-transparent z-10 pointer-events-none"></div>
     </div>
 </section>
-<style>
-    .testimonial-marquee { overflow: hidden; width: 100%; }
-    .testimonial-track { display: flex; gap: 1.5rem; width: max-content; }
-    .testimonial-track-left { animation: scrollLeft 60s linear infinite; }
-    .testimonial-track-right { animation: scrollRight 60s linear infinite; }
-    .testimonial-card { width: 380px; flex-shrink: 0; padding: 1.75rem; border-radius: 1.25rem; border: 1px solid var(--animazon-border); background: #111114; display: flex; flex-direction: column; align-items: center; transition: all 0.4s ease; }
-    .testimonial-card:hover { border-color: var(--primary-color); box-shadow: 0 0 30px rgba(0,193,222,0.1); transform: translateY(-4px); }
-    .testimonial-marquee:hover .testimonial-track { animation-play-state: paused; }
-    @keyframes scrollLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-    @keyframes scrollRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
-    @media(max-width:640px){ .testimonial-card{width:300px} }
-</style>
 <!-- [ Testimonials ] end -->
-
 
 <!-- [ Contact / CTA ] start -->
 <section id="contact" class="py-28 bg-animazon-black text-animazon-white relative overflow-hidden">
@@ -1386,21 +1478,50 @@
                 <p class="text-xl text-animazon-muted mb-12">
                     Whether it's a complex medical visualization, a high-performance web app, or a cinematic product reveal, we have the expertise to deliver beyond expectations.
                 </p>
-                <div class="flex flex-wrap justify-center gap-6">
+                <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6">
                     <a href="{{ route('cost-calculator.public') }}" class="btn-primary-custom group">
                         <i class="ti ti-send mr-2 group-hover:translate-x-1 transition-transform"></i> Start Your Project
                     </a>
-                    <a href="{{ route('portfolio.public') }}" class="btn-ghost">
-                        See Our Recent Work
+                    <a href="{{ $wa_link }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold py-3 px-7 rounded-full hover:bg-[#1ebe57] transition-colors shadow-lg shadow-[#25D366]/20">
+                        <i class="ti ti-brand-whatsapp text-lg"></i> WhatsApp Us
+                    </a>
+                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $company_phone) }}" class="btn-ghost">
+                        <i class="ti ti-phone mr-2"></i> {{ $company_phone }}
                     </a>
                 </div>
-                
+
+                <!-- Trust badges -->
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-animazon-black/30 border border-animazon-border/20">
+                        <i class="ti ti-shield-check text-primary text-2xl"></i>
+                        <span class="text-xs text-animazon-muted leading-tight">Secure online payments</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-animazon-black/30 border border-animazon-border/20">
+                        <i class="ti ti-clock-check text-primary text-2xl"></i>
+                        <span class="text-xs text-animazon-muted leading-tight">On-time, milestone delivery</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-animazon-black/30 border border-animazon-border/20">
+                        <i class="ti ti-lock text-primary text-2xl"></i>
+                        <span class="text-xs text-animazon-muted leading-tight">NDA & confidentiality</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-animazon-black/30 border border-animazon-border/20">
+                        <i class="ti ti-message-2-bolt text-primary text-2xl"></i>
+                        <span class="text-xs text-animazon-muted leading-tight">Reply within 24 hours</span>
+                    </div>
+                </div>
+
                 <div class="mt-12 pt-12 border-t border-animazon-border/30 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-animazon-muted">
                     <div class="flex flex-col items-center group">
                         <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                             <i class="ti ti-mail text-primary text-lg"></i>
                         </div>
-                        <span>{{ $landing_settings['footer_email'] }}</span>
+                        <a href="mailto:{{ $landing_settings['footer_email'] }}" class="hover:text-primary transition-colors">{{ $landing_settings['footer_email'] }}</a>
+                    </div>
+                    <div class="flex flex-col items-center group">
+                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                            <i class="ti ti-phone text-primary text-lg"></i>
+                        </div>
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $company_phone) }}" class="hover:text-primary transition-colors">{{ $company_phone }}</a>
                     </div>
                     <div class="flex flex-col items-center group">
                         <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
@@ -1408,14 +1529,31 @@
                         </div>
                         <span>{{ $landing_settings['footer_address'] }}</span>
                     </div>
-                    <div class="flex flex-col items-center group">
-                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                            <i class="ti ti-device-laptop text-primary text-lg"></i>
-                        </div>
-                        <span>Global Remote Studio</span>
-                    </div>
                 </div>
             </div>
+
+            @if($map_embed)
+            <!-- Location map -->
+            <div class="max-w-5xl mx-auto mt-16">
+                <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-animazon-muted text-sm mb-4">
+                    <span class="inline-flex items-center gap-2">
+                        <i class="ti ti-map-pin text-primary"></i>
+                        {{ $landing_settings['footer_address'] ?: 'Visit our office — Animazon' }}
+                    </span>
+                    <a href="{{ $map_link }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-primary hover:text-white transition-colors font-medium">
+                        <i class="ti ti-navigation"></i> Get directions
+                    </a>
+                </div>
+                <div class="rounded-2xl overflow-hidden border border-animazon-border/30 shadow-2xl shadow-primary/10">
+                    <iframe
+                        src="{{ $map_embed }}"
+                        width="100%" height="360" style="border:0;"
+                        loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                        title="Animazon office location on Google Maps" allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </section>
@@ -1440,21 +1578,31 @@
                     <p class="text-[#8E8E93] text-sm leading-relaxed max-w-sm">
                         Premium Digital Production Studio specialized in 3D Animations, Web Applications, and Mobile Solutions.
                     </p>
-                    <!-- Social links -->
+                    <!-- Social links (only shown when a real URL is configured) -->
+                    @if($social_instagram || $social_linkedin || $social_youtube || $social_behance)
                     <div class="flex items-center gap-3 pt-2">
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Follow us on Instagram">
+                        @if($social_instagram)
+                        <a href="{{ $social_instagram }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Follow us on Instagram">
                             <i class="ti ti-brand-instagram text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Follow us on LinkedIn">
+                        @endif
+                        @if($social_linkedin)
+                        <a href="{{ $social_linkedin }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Follow us on LinkedIn">
                             <i class="ti ti-brand-linkedin text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Subscribe on YouTube">
+                        @endif
+                        @if($social_youtube)
+                        <a href="{{ $social_youtube }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="Subscribe on YouTube">
                             <i class="ti ti-brand-youtube text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="View our Behance portfolio">
+                        @endif
+                        @if($social_behance)
+                        <a href="{{ $social_behance }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8E8E93] hover:bg-primary/20 hover:border-primary/30 hover:text-primary transition-all duration-300" aria-label="View our Behance portfolio">
                             <i class="ti ti-brand-behance text-lg"></i>
                         </a>
+                        @endif
                     </div>
+                    @endif
                 </div>
                 
                 <!-- Quick Links -->
@@ -1485,6 +1633,18 @@
                             </div>
                             <a href="mailto:{{ $landing_settings['footer_email'] }}" class="text-[#8E8E93] hover:text-primary transition-colors">{{ $landing_settings['footer_email'] }}</a>
                         </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <i class="ti ti-phone text-primary text-sm"></i>
+                            </div>
+                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $company_phone) }}" class="text-[#8E8E93] hover:text-primary transition-colors">{{ $company_phone }}</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-[#25D366]/15 flex items-center justify-center flex-shrink-0">
+                                <i class="ti ti-brand-whatsapp text-[#25D366] text-sm"></i>
+                            </div>
+                            <a href="{{ $wa_link }}" target="_blank" rel="noopener" class="text-[#8E8E93] hover:text-[#25D366] transition-colors">Chat on WhatsApp</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -1495,8 +1655,7 @@
                     Copyright © {{ date('Y') }} | <span class="text-white font-semibold">ANIMAZON</span>
                 </div>
                 <div class="flex gap-6">
-                    <a href="#" class="text-[#8E8E93] hover:text-primary transition-colors">Privacy Policy</a>
-                    <a href="#" class="text-[#8E8E93] hover:text-primary transition-colors">Terms of Service</a>
+                    <a href="{{ route('terms') }}" class="text-[#8E8E93] hover:text-primary transition-colors">Terms of Service</a>
                 </div>
             </div>
         </div>
@@ -1609,6 +1768,165 @@
     });
 </script>
 
+<!-- On-site Live Chat widget (all pages) -->
+<div id="acw" style="position:fixed;bottom:20px;right:20px;z-index:9999;font-family:inherit;">
+    <!-- Chat panel -->
+    <div id="acwPanel" style="display:none;flex-direction:column;width:350px;max-width:92vw;height:470px;max-height:72vh;background:#0F1020;border:1px solid #1E293B;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);margin-bottom:14px;">
+        <!-- Header -->
+        <div style="background:{{ $primary_color }};padding:14px 16px;display:flex;align-items:center;gap:11px;color:#fff;">
+            <div style="width:38px;height:38px;border-radius:9999px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="ti ti-messages" style="font-size:20px;"></i>
+            </div>
+            <div style="flex:1;line-height:1.2;">
+                <div style="font-weight:700;font-size:15px;">Animazon Support</div>
+                <div style="font-size:11px;opacity:.9;"><span style="display:inline-block;width:7px;height:7px;border-radius:9999px;background:#4ade80;margin-right:5px;"></span>Online · replies in minutes</div>
+            </div>
+            <button type="button" onclick="acwToggle(false)" aria-label="Close chat" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;line-height:1;"><i class="ti ti-x"></i></button>
+        </div>
+        <!-- Messages -->
+        <div id="acwMsgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#0A0A0F;"></div>
+        <!-- Input -->
+        <form id="acwForm" style="display:flex;gap:8px;padding:10px;border-top:1px solid #1E293B;background:#0F1020;">
+            <input id="acwInput" type="text" autocomplete="off" placeholder="Type your message…" style="flex:1;background:#0A0A0F;border:1px solid #1E293B;border-radius:9999px;padding:9px 14px;color:#fff;font-size:13px;outline:none;">
+            <button type="submit" aria-label="Send" style="background:{{ $primary_color }};border:none;color:#fff;width:40px;height:40px;border-radius:9999px;cursor:pointer;flex-shrink:0;"><i class="ti ti-send" style="font-size:17px;"></i></button>
+        </form>
+    </div>
+    <!-- Bubble -->
+    <button type="button" id="acwToggle" onclick="acwToggle()" aria-label="Open live chat"
+        style="background:{{ $primary_color }};color:#fff;border:none;cursor:pointer;display:flex;align-items:center;gap:9px;border-radius:9999px;padding:12px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35);margin-left:auto;">
+        <i id="acwIcon" class="ti ti-message-circle" style="font-size:22px;"></i>
+        <span style="font-weight:700;font-size:14px;white-space:nowrap;">Chat with us</span>
+    </button>
+</div>
+<script>
+(function () {
+    var WA = @json($wa_link);
+    var WA_BASE = 'https://wa.me/' + @json(preg_replace('/\D/', '', $company_whatsapp));
+    var TEL = @json('tel:' . preg_replace('/[^0-9+]/', '', $company_phone));
+    var EMAIL = @json('mailto:' . ($landing_settings['footer_email'] ?? ''));
+    var BRIDGE = @json((bool) config('whatsapp.enabled'));   // WhatsApp Cloud API bridge on?
+    var CSRF = @json(csrf_token());
+    var SEND_URL = @json(url('/chat/send'));
+    var POLL_URL = @json(url('/chat/poll'));
+    var opened = false, greeted = false;
+
+    // Persistent per-visitor session id
+    var SID = localStorage.getItem('acw_sid');
+    if (!SID) { SID = 'web-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8); localStorage.setItem('acw_sid', SID); }
+    var lastId = 0, pollTimer = null;
+
+    window.acwToggle = function (force) {
+        var panel = document.getElementById('acwPanel');
+        var icon = document.getElementById('acwIcon');
+        opened = (typeof force === 'boolean') ? force : !opened;
+        panel.style.display = opened ? 'flex' : 'none';
+        icon.className = opened ? 'ti ti-chevron-down' : 'ti ti-message-circle';
+        if (opened && !greeted) { greeted = true; greet(); }
+        if (opened) { setTimeout(function(){ var i=document.getElementById('acwInput'); if(i) i.focus(); }, 50); if (BRIDGE) startPoll(); }
+        else { stopPoll(); }
+    };
+
+    function startPoll() { if (pollTimer) return; poll(); pollTimer = setInterval(poll, 4000); }
+    function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+
+    function poll() {
+        fetch(POLL_URL + '?session_id=' + encodeURIComponent(SID) + '&after=' + lastId, { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data || !data.messages) return;
+                data.messages.forEach(function (m) { lastId = m.id; bubble(esc(m.body), 'bot'); });
+            })
+            .catch(function () {});
+    }
+
+    function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+    function bubble(text, who) {
+        var m = document.getElementById('acwMsgs');
+        var b = document.createElement('div');
+        if (who === 'user') {
+            b.style.cssText = 'align-self:flex-end;max-width:80%;background:{{ $primary_color }};color:#fff;padding:9px 13px;border-radius:14px 14px 4px 14px;font-size:13px;line-height:1.45;';
+        } else {
+            b.style.cssText = 'align-self:flex-start;max-width:85%;background:#1A1B2E;color:#E2E8F0;padding:9px 13px;border-radius:14px 14px 14px 4px;font-size:13px;line-height:1.45;';
+        }
+        b.innerHTML = text;
+        m.appendChild(b);
+        m.scrollTop = m.scrollHeight;
+        return b;
+    }
+
+    function actions() {
+        var m = document.getElementById('acwMsgs');
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;margin-top:2px;';
+        wrap.innerHTML =
+            '<a href="'+WA+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;padding:8px 13px;border-radius:9999px;font-size:12px;font-weight:600;text-decoration:none;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>'+
+            '<a href="'+TEL+'" style="display:inline-flex;align-items:center;gap:6px;background:#1A1B2E;color:#E2E8F0;padding:8px 13px;border-radius:9999px;font-size:12px;font-weight:600;text-decoration:none;"><i class="ti ti-phone"></i> Call</a>'+
+            '<a href="'+EMAIL+'" style="display:inline-flex;align-items:center;gap:6px;background:#1A1B2E;color:#E2E8F0;padding:8px 13px;border-radius:9999px;font-size:12px;font-weight:600;text-decoration:none;"><i class="ti ti-mail"></i> Email</a>';
+        m.appendChild(wrap);
+        m.scrollTop = m.scrollHeight;
+    }
+
+    function chips() {
+        var m = document.getElementById('acwMsgs');
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:7px;align-self:flex-start;';
+        ['E-commerce','Business Website','3D Animation','ERP','Custom App'].forEach(function(t){
+            var c = document.createElement('button');
+            c.type='button'; c.textContent=t;
+            c.style.cssText='background:none;border:1px solid {{ $primary_color }};color:{{ $primary_color }};padding:6px 11px;border-radius:9999px;font-size:12px;cursor:pointer;';
+            c.onclick=function(){ send(t); };
+            wrap.appendChild(c);
+        });
+        m.appendChild(wrap);
+        m.scrollTop = m.scrollHeight;
+    }
+
+    function greet() {
+        bubble('👋 Hi! Welcome to Animazon. How can we help your business today?', 'bot');
+        setTimeout(chips, 250);
+    }
+
+    function botReply(topic) {
+        var t = topic ? ('<strong>'+esc(topic)+'</strong> — great choice! ') : '';
+        bubble(t + 'Our team can help with that. Tap below to talk to us directly — we reply fast.', 'bot');
+        setTimeout(actions, 200);
+    }
+
+    var noteShown = false;
+    function send(text) {
+        text = (text || '').trim();
+        if (!text) return;
+        bubble(esc(text), 'user');
+        var i = document.getElementById('acwInput'); if (i) i.value = '';
+
+        if (BRIDGE) {
+            // Seamless: relay to owner's WhatsApp, replies come back via poll()
+            startPoll();
+            fetch(SEND_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ session_id: SID, message: text })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data && data.bridged === false) { WA = WA_BASE + '?text=' + encodeURIComponent(text); setTimeout(function(){ botReply(''); }, 200); return; }
+                if (!noteShown) { noteShown = true; setTimeout(function(){ bubble('✅ Sent! Our team will reply right here in a moment.', 'bot'); }, 300); }
+            })
+            .catch(function () { WA = WA_BASE + '?text=' + encodeURIComponent(text); setTimeout(function(){ botReply(''); }, 200); });
+        } else {
+            // Fallback: wa.me handoff
+            WA = WA_BASE + '?text=' + encodeURIComponent(text + ' — sent from animazon.tech');
+            setTimeout(function(){ botReply(text.length < 24 ? text : ''); }, 350);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var f = document.getElementById('acwForm');
+        if (f) f.addEventListener('submit', function (e) { e.preventDefault(); send(document.getElementById('acwInput').value); });
+    });
+})();
+</script>
 
 </body>
 </html>

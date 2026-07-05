@@ -1007,7 +1007,11 @@
     <div class="container mx-auto px-4 lg:px-8 relative z-10 mt-12">
         @php
             $settings = \Modules\LandingPage\Entities\LandingPageSetting::settings();
-            $portfolios = json_decode($settings['portfolios'] ?? '[]', true) ?? [];
+            $portfolios_raw = $settings['portfolios'] ?? '[]';
+            $portfolios = json_decode($portfolios_raw, true);
+            if (!is_array($portfolios)) {
+                $portfolios = json_decode(stripslashes($portfolios_raw), true) ?? [];
+            }
             
             // Bucket the posts by type
             $websites = [];

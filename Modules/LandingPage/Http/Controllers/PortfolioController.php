@@ -14,7 +14,11 @@ class PortfolioController extends Controller
         if(\Auth::user()->type == 'super admin')
         {
             $settings = LandingPageSetting::landingPageSetting();
-            $portfolios = json_decode($settings['portfolios'], true) ?? [];
+            $port_raw = $settings['portfolios'] ?? '[]';
+            $portfolios = json_decode($port_raw, true);
+            if (!is_array($portfolios)) {
+                $portfolios = json_decode(stripslashes($port_raw), true) ?? [];
+            }
             return view('landingpage::landingpage.portfolio.index', compact('settings', 'portfolios'));
         }
         else

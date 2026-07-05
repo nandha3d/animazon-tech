@@ -116,7 +116,11 @@ class LandingPageSetting extends Model
 
         foreach($data as $row)
         {
-            $settings[$row->name] = $row->value;
+            $val = $row->value;
+            if (is_string($val) && strpos($val, '\"') !== false && in_array(substr(trim($val), 0, 1), ['[', '{'])) {
+                $val = stripslashes($val);
+            }
+            $settings[$row->name] = $val;
         }
 
         return $settings;

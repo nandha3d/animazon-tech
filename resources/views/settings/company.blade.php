@@ -404,6 +404,10 @@
                                 class="list-group-item list-group-item-action border-0">{{ __('Brand Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
+                            <a href="#menu-settings"
+                                class="list-group-item list-group-item-action border-0">{{ __('Menu Settings') }}
+                                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+                            </a>
                             <a href="#system-settings"
                                 class="list-group-item list-group-item-action border-0">{{ __('System Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
@@ -779,6 +783,123 @@
                             <div class="form-group mb-0">
                                 <input class="btn btn-print-invoice btn-primary" type="submit"
                                     value="{{ __('Save Changes') }}">
+                            </div>
+                        </div>
+                        {{ Form::close() }}
+                    </div>
+
+                    <!--Menu Settings-->
+                    <div id="menu-settings" class="card">
+                        <div class="card-header p-3">
+                            <h5>{{ __('Menu Settings') }}</h5>
+                            <small class="text-muted">{{ __('Enable or disable sidebar modules for your company') }}</small>
+                        </div>
+                        {{ Form::model($setting, ['route' => 'system.settings', 'method' => 'post']) }}
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card h-100 mb-0 border shadow-none">
+                                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1">{{ __('HRM System') }}</h6>
+                                                <small class="text-muted">{{ __('Human Resource & Payroll') }}</small>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input type="hidden" name="menu_hrm" value="off">
+                                                <input type="checkbox" name="menu_hrm" value="on" class="form-check-input mx-0" id="menu_hrm" {{ (!isset($setting['menu_hrm']) || $setting['menu_hrm'] == 'on') ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card h-100 mb-0 border shadow-none">
+                                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1">{{ __('Account System') }}</h6>
+                                                <small class="text-muted">{{ __('Accounting & Banking') }}</small>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input type="hidden" name="menu_account" value="off">
+                                                <input type="checkbox" name="menu_account" value="on" class="form-check-input mx-0" id="menu_account" {{ (!isset($setting['menu_account']) || $setting['menu_account'] == 'on') ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card h-100 mb-0 border shadow-none">
+                                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1">{{ __('CRM System') }}</h6>
+                                                <small class="text-muted">{{ __('Leads, Deals & Sales') }}</small>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input type="hidden" name="menu_crm" value="off">
+                                                <input type="checkbox" name="menu_crm" value="on" class="form-check-input mx-0" id="menu_crm" {{ (!isset($setting['menu_crm']) || $setting['menu_crm'] == 'on') ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card h-100 mb-0 border shadow-none">
+                                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1">{{ __('Project System') }}</h6>
+                                                <small class="text-muted">{{ __('Projects, Tasks & Estimates') }}</small>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input type="hidden" name="menu_project" value="off">
+                                                <input type="checkbox" name="menu_project" value="on" class="form-check-input mx-0" id="menu_project" {{ (!isset($setting['menu_project']) || $setting['menu_project'] == 'on') ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card h-100 mb-0 border shadow-none">
+                                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1">{{ __('POS System') }}</h6>
+                                                <small class="text-muted">{{ __('Point of Sale') }}</small>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input type="hidden" name="menu_pos" value="off">
+                                                <input type="checkbox" name="menu_pos" value="on" class="form-check-input mx-0" id="menu_pos" {{ (!isset($setting['menu_pos']) || $setting['menu_pos'] == 'on') ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card h-100 mb-0 border shadow-none">
+                                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1">{{ __('User System') }}</h6>
+                                                <small class="text-muted">{{ __('Users, Clients & Roles') }}</small>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input type="hidden" name="menu_user" value="off">
+                                                <input type="checkbox" name="menu_user" value="on" class="form-check-input mx-0" id="menu_user" {{ (!isset($setting['menu_user']) || $setting['menu_user'] == 'on') ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card h-100 mb-0 border shadow-none">
+                                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1">{{ __('Product & Service') }}</h6>
+                                                <small class="text-muted">{{ __('Inventory & Items') }}</small>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input type="hidden" name="menu_product" value="off">
+                                                <input type="checkbox" name="menu_product" value="on" class="form-check-input mx-0" id="menu_product" {{ (!isset($setting['menu_product']) || $setting['menu_product'] == 'on') ? 'checked' : '' }}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer p-3 text-end">
+                            <div class="form-group mb-0">
+                                <input class="btn btn-print-invoice btn-primary" type="submit" value="{{ __('Save Changes') }}">
                             </div>
                         </div>
                         {{ Form::close() }}
@@ -1955,6 +2076,21 @@
                                                                                     class="form-control"
                                                                                     value="{{ !isset($company_payment_setting['razorpay_secret_key']) || is_null($company_payment_setting['razorpay_secret_key']) ? '' : $company_payment_setting['razorpay_secret_key'] }}"
                                                                                     placeholder="Secret Key">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-12">
+                                                                        <div class="input-edits">
+                                                                            <div class="form-group">
+                                                                                <label for="razorpay_subscription_button_id"
+                                                                                    class="col-form-label">{{ __('Subscription Button ID (for Monthly Maintenance Auto-Pay)') }}</label>
+                                                                                <input type="text"
+                                                                                    name="razorpay_subscription_button_id"
+                                                                                    id="razorpay_subscription_button_id"
+                                                                                    class="form-control"
+                                                                                    value="{{ !isset($company_payment_setting['razorpay_subscription_button_id']) || is_null($company_payment_setting['razorpay_subscription_button_id']) ? 'pl_T9j7p5Gbk0YDsG' : $company_payment_setting['razorpay_subscription_button_id'] }}"
+                                                                                    placeholder="e.g. pl_T9j7p5Gbk0YDsG">
+                                                                                <small class="text-muted">{{ __('This button will appear on client proposals when they toggle to add a website hosting/maintenance subscription.') }}</small>
                                                                             </div>
                                                                         </div>
                                                                     </div>

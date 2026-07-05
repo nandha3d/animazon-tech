@@ -102,7 +102,7 @@ class UserController extends Controller
                 $user['name'] = $request->name;
                 $user['email'] = $request->email;
                 $psw = $request->password;
-                $user['password'] = !empty($userpassword)?\Hash::make($userpassword) : null;
+                $user['password'] = !empty($userpassword) ? \Hash::make($userpassword) : \Hash::make(\Illuminate\Support\Str::random(12));
                 $user['type'] = 'company';
                 $user['default_pipeline'] = 1;
                 $user['plan'] = 1;
@@ -173,7 +173,7 @@ class UserController extends Controller
                 if ($total_user < $plan->max_users || $plan->max_users == -1) {
                     $role_r = Role::findById($request->role);
                     $psw = $request->password;
-                    $request['password'] = !empty($userpassword)?\Hash::make($userpassword) : null;
+                    $request['password'] = !empty($userpassword) ? \Hash::make($userpassword) : \Hash::make(\Illuminate\Support\Str::random(12));
                     $request['type'] = $role_r->name;
                     $request['lang'] = !empty($default_language) ? $default_language->value : 'en';
                     $request['created_by'] = \Auth::user()->creatorId();

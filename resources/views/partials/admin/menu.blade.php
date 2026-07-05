@@ -14,22 +14,15 @@
 @endphp
 
 @if (isset($setting['cust_theme_bg']) && $setting['cust_theme_bg'] == 'on')
-    <nav class="dash-sidebar {{ (isset($setting['cust_darklayout']) && $setting['cust_darklayout'] == 'on') ? '' : 'light-sidebar' }} transprent-bg">
+    <nav class="dash-sidebar transprent-bg">
 @else
-    <nav class="dash-sidebar {{ (isset($setting['cust_darklayout']) && $setting['cust_darklayout'] == 'on') ? '' : 'light-sidebar' }}">
+    <nav class="dash-sidebar">
 @endif
 <div class="navbar-wrapper">
     <div class="m-header main-logo">
         <a href="#" class="b-brand">
-
-            @if (isset($setting['cust_darklayout']) && $setting['cust_darklayout'] == 'on')
-                <img src="{{ \App\Models\Utility::get_file('uploads/logo/' . (isset($company_logos) && !empty($company_logos) ? $company_logos : 'logo-light.png')) . '?' . time() }}"
-                    alt="{{ config('app.name', 'ANIMAZON') }}" class="logo logo-lg">
-            @else
-                <img src="{{ \App\Models\Utility::get_file('uploads/logo/' . (isset($company_logo) && !empty($company_logo) ? $company_logo : 'logo-dark.png')) . '?' . time() }}"
-                    alt="{{ config('app.name', 'ANIMAZON') }}" class="logo logo-lg">
-            @endif
-
+            <img src="{{ \App\Models\Utility::get_file('uploads/logo/' . (isset($company_logos) && !empty($company_logos) ? $company_logos : 'logo-light.png')) . '?' . time() }}"
+                alt="{{ config('app.name', 'ANIMAZON') }}" class="logo logo-lg">
         </a>
     </div>
     <div class="navbar-content">
@@ -85,7 +78,7 @@
                             <span class="dash-mtext">{{ __('Dashboard') }}</span>
                             <span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
                         <ul class="dash-submenu">
-                            @if ($userPlan->account == 1 && Gate::check('show account dashboard'))
+                            @if ($userPlan->account == 1 && Gate::check('show account dashboard') && (!isset($setting['menu_account']) || $setting['menu_account'] == 'on'))
                                 <li
                                     class="dash-item dash-hasmenu {{ Request::segment(1) == null || Request::segment(1) == 'account-dashboard' || Request::segment(1) == 'report' || Request::segment(1) == 'reports-monthly-cashflow' || Request::segment(1) == 'reports-quarterly-cashflow' ? ' active dash-trigger' : '' }}">
                                     <a class="dash-link" href="#">{{ __('Accounting ') }}<span
@@ -207,7 +200,7 @@
                                 </li>
                             @endif
 
-                            @if ($userPlan->hrm == 1)
+                            @if ($userPlan->hrm == 1 && (!isset($setting['menu_hrm']) || $setting['menu_hrm'] == 'on'))
                                 @can('show hrm dashboard')
                                     <li
                                         class="dash-item dash-hasmenu {{ Request::segment(1) == 'hrm-dashboard' || Request::segment(1) == 'reports-payroll' || Request::segment(1) == 'report-leave' || Request::segment(1) == 'reports-monthly-attendance' ? ' active dash-trigger' : '' }}">
@@ -254,7 +247,7 @@
                                 @endcan
                             @endif
 
-                            @if ($userPlan->crm == 1)
+                            @if ($userPlan->crm == 1 && (!isset($setting['menu_crm']) || $setting['menu_crm'] == 'on'))
                                 @can('show crm dashboard')
                                     <li
                                         class="dash-item dash-hasmenu {{ Request::segment(1) == 'crm-dashboard' || Request::segment(1) == 'reports-lead' || Request::segment(1) == 'reports-deal' ? ' active dash-trigger' : '' }}">
@@ -289,7 +282,7 @@
                                 @endcan
                             @endif
 
-                            @if ($userPlan->project == 1)
+                            @if ($userPlan->project == 1 && (!isset($setting['menu_project']) || $setting['menu_project'] == 'on'))
                                 @can('show project dashboard')
                                     <li
                                         class="dash-item {{ Request::route()->getName() == 'project.dashboard' ? ' active' : '' }}">
@@ -299,7 +292,7 @@
                                 @endcan
                             @endif
 
-                            @if ($userPlan->pos == 1)
+                            @if ($userPlan->pos == 1 && (!isset($setting['menu_pos']) || $setting['menu_pos'] == 'on'))
                                 @can('show pos dashboard')
                                     <li
                                         class="dash-item dash-hasmenu {{
@@ -383,7 +376,7 @@
 
                 <!--------------------- Start HRM ----------------------------------->
 
-                @if (!empty($userPlan) && $userPlan->hrm == 1)
+                @if (!empty($userPlan) && $userPlan->hrm == 1 && (!isset($setting['menu_hrm']) || $setting['menu_hrm'] == 'on'))
                     @if (Gate::check('manage employee') ||
                         Gate::check('manage set salary') || Gate::check('manage pay slip') ||
                         Gate::check('manage leave') || Gate::check('manage attendance') ||
@@ -813,13 +806,13 @@
 
                 <!--------------------- Start Account ----------------------------------->
 
-                @if (!empty($userPlan) && $userPlan->account == 1)
+                @if (!empty($userPlan) && $userPlan->account == 1 && (!isset($setting['menu_account']) || $setting['menu_account'] == 'on'))
                     @if (Gate::check('manage budget plan') || Gate::check('income vs expense report') ||
                             Gate::check('manage goal') || Gate::check('manage constant tax') ||
                             Gate::check('manage constant category') || Gate::check('manage constant unit') ||
                             Gate::check('manage constant custom field') || Gate::check('manage print settings') ||
                             Gate::check('manage customer') || Gate::check('manage vender') ||
-                            Gate::check('manage proposal') || Gate::check('manage bank account') ||
+                            Gate::check('manage bank account') ||
                             Gate::check('manage bank transfer') || Gate::check('manage invoice') ||
                             Gate::check('manage revenue') || Gate::check('manage credit note') ||
                             Gate::check('manage bill') || Gate::check('manage payment') ||
@@ -830,7 +823,7 @@
                             class="dash-item dash-hasmenu
                                         {{ Request::route()->getName() == 'print-setting' ||
                                         Request::segment(1) == 'customer' || Request::segment(1) == 'vender' ||
-                                        Request::segment(1) == 'proposal' || Request::segment(1) == 'bank-account' ||
+                                        Request::segment(1) == 'bank-account' ||
                                         Request::segment(1) == 'bank-transfer' || Request::segment(1) == 'invoice' ||
                                         Request::segment(1) == 'revenue' || Request::segment(1) == 'credit-note' ||
                                         Request::segment(1) == 'taxes' || Request::segment(1) == 'product-category' ||
@@ -872,12 +865,11 @@
                                     </li>
                                 @endif
                                 @if (Gate::check('manage customer') ||
-                                        Gate::check('manage proposal') ||
                                         Gate::check('manage invoice') ||
                                         Gate::check('manage revenue') ||
                                         Gate::check('manage credit note'))
                                     <li
-                                        class="dash-item dash-hasmenu {{ Request::segment(1) == 'customer' || Request::segment(1) == 'proposal' || Request::segment(1) == 'invoice' || Request::segment(1) == 'revenue' || Request::segment(1) == 'credit-note' ? 'active dash-trigger' : '' }}">
+                                        class="dash-item dash-hasmenu {{ Request::segment(1) == 'customer' || Request::segment(1) == 'invoice' || Request::segment(1) == 'revenue' || Request::segment(1) == 'credit-note' ? 'active dash-trigger' : '' }}">
                                         <a class="dash-link" href="#">{{ __('Sales') }}<span
                                                 class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
                                         <ul class="dash-submenu">
@@ -888,13 +880,7 @@
                                                         href="{{ route('customer.index') }}">{{ __('Customer') }}</a>
                                                 </li>
                                             @endif
-                                            @if (Gate::check('manage proposal'))
-                                                <li
-                                                    class="dash-item {{ Request::segment(1) == 'proposal' ? 'active' : '' }}">
-                                                    <a class="dash-link"
-                                                        href="{{ route('proposal.index') }}">{{ __('Estimate') }}</a>
-                                                </li>
-                                            @endif
+
                                             @can('manage invoice')
                                                 <li
                                                     class="dash-item {{ Request::route()->getName() == 'invoice.index' || Request::route()->getName() == 'invoice.create' || Request::route()->getName() == 'invoice.edit' || Request::route()->getName() == 'invoice.show' ? ' active' : '' }}">
@@ -1085,7 +1071,7 @@
 
                 <!--------------------- Start CRM ----------------------------------->
 
-                @if (!empty($userPlan) && $userPlan->crm == 1)
+                @if (!empty($userPlan) && $userPlan->crm == 1 && (!isset($setting['menu_crm']) || $setting['menu_crm'] == 'on'))
                     @if (Gate::check('manage lead') ||
                             Gate::check('manage deal') ||
                             Gate::check('manage form builder') ||
@@ -1146,13 +1132,13 @@
 
                 <!--------------------- Start Project ----------------------------------->
 
-                @if (!empty($userPlan) && $userPlan->project == 1)
+                @if (!empty($userPlan) && $userPlan->project == 1 && (!isset($setting['menu_project']) || $setting['menu_project'] == 'on'))
                     @if (Gate::check('manage project') || Gate::check('manage project task') ||
                         Gate::check('manage timesheet') || Gate::check('manage bug report') ||
-                        Gate::check('manage project task stage') || Gate::check('manage bug status'))
+                        Gate::check('manage project task stage') || Gate::check('manage bug status') || Gate::check('manage proposal'))
                         <li
                             class="dash-item dash-hasmenu
-                                                    {{ Request::segment(1) == 'project' ||
+                                                    {{ Request::segment(1) == 'project' || Request::segment(1) == 'proposal' ||
                                                     Request::segment(1) == 'bugs-report' ||
                                                     Request::segment(1) == 'bugstatus' ||
                                                     Request::segment(1) == 'project-task-stages' ||
@@ -1176,6 +1162,11 @@
                                         <a class="dash-link" href="{{ route('projects.index') }}">{{ __('Projects') }}</a>
                                     </li>
                                 @endcan
+                                @if (Gate::check('manage proposal'))
+                                    <li class="dash-item {{ Request::segment(1) == 'proposal' ? 'active' : '' }}">
+                                        <a class="dash-link" href="{{ route('proposal.index') }}">{{ __('Estimate') }}</a>
+                                    </li>
+                                @endif
                                 @can('manage project task')
                                     <li class="dash-item {{ request()->is('taskboard*') ? 'active' : '' }}">
                                         <a class="dash-link"
@@ -1245,7 +1236,7 @@
 
                 <!--------------------- Start User Managaement System ----------------------------------->
 
-                @if (\Auth::user()->type != 'super admin' && (Gate::check('manage user') || Gate::check('manage role') || Gate::check('manage client')))
+                @if (\Auth::user()->type != 'super admin' && (Gate::check('manage user') || Gate::check('manage role') || Gate::check('manage client')) && (!isset($setting['menu_user']) || $setting['menu_user'] == 'on'))
                     <li
                         class="dash-item dash-hasmenu {{ Request::segment(1) == 'users' ||
                         Request::segment(1) == 'roles' ||
@@ -1286,7 +1277,7 @@
 
                 <!--------------------- Start Products System ----------------------------------->
 
-                @if (Gate::check('manage product & service'))
+                @if (Gate::check('manage product & service') && (!isset($setting['menu_product']) || $setting['menu_product'] == 'on'))
                     <li class="dash-item dash-hasmenu">
                         <a href="#!" class="dash-link ">
                             <span class="dash-micon"><i class="ti ti-shopping-cart"></i></span><span
@@ -1314,7 +1305,7 @@
 
 
                 <!--------------------- Start POs System ----------------------------------->
-                @if (!empty($userPlan) && $userPlan->pos == 1)
+                @if (!empty($userPlan) && $userPlan->pos == 1 && (!isset($setting['menu_pos']) || $setting['menu_pos'] == 'on'))
                     @if (Gate::check('manage warehouse') ||
                             Gate::check('manage purchase') ||
                             Gate::check('manage quotation') ||

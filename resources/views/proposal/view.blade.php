@@ -6,17 +6,12 @@
     $settings = Utility::settings();
 @endphp
 @push('script-page')
+    <script src="{{ asset('js/proposal-read-aloud.js') }}"></script>
     <script>
         $(document).on('change', '.status_change', function () {
             var status = this.value;
             var url = $(this).data('url');
-            $.ajax({
-                url: url + '?status=' + status,
-                type: 'GET',
-                cache: false,
-                success: function (data) {
-                },
-            });
+            window.location.href = url + '?status=' + status;
         });
 
         $('.cp_link').on('click', function () {
@@ -40,8 +35,7 @@
 
 @section('content')
 
-    @can('send proposal')
-        @if($proposal->status!=4)
+    @if(Gate::check('send proposal') || Gate::check('edit proposal') || \Auth::user()->type=='company')
         <div class="row">
             <div class="col-12">
                 <div class="bill-timeline-card mb-4">
@@ -185,8 +179,7 @@
             </div>
         </div>
 
-        @endif
-    @endcan
+    @endif
 
     @if(\Auth::user()->type=='company')
         @if($proposal->status!=0)
@@ -210,6 +203,18 @@
             </div>
         </div>
     @endif
+
+    <div class="row justify-content-end mb-2">
+        <div class="col-md-12 d-flex justify-content-end">
+            <div class="all-button-box">
+                <button type="button" class="btn btn-outline-primary btn-sm" data-role="proposal-read-aloud"
+                        data-tts-audio-url="{{ $proposal->getTtsAudioUrl(\App::getLocale() ?? 'en') }}"
+                        data-tts-segments="{{ json_encode($proposal->getSpeechSegments($settings)) }}">
+                    <i class="ti ti-volume-2"></i> {{ __('Read Aloud') }}
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-12">
@@ -286,7 +291,7 @@
                                     <div class="col">
                                         <div class="float-end mt-3">
                                         @if($settings['qr_display'] == 'on')
-                                            {!! DNS2D::getBarcodeHTML( route('proposal.link.copy',\Illuminate\Support\Facades\Crypt::encrypt($proposal->id)), "QRCODE",2,2) !!}
+                                            {!! DNS2D::getBarcodeHTML($proposal->getPublicUrl(), "QRCODE",2,2) !!}
                                         @endif
                                         </div>
                                     </div>

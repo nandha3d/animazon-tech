@@ -483,14 +483,39 @@
                     @if($projectType->base_cost > 0)
                         <p id="answerHint" class="text-animazon-muted text-xs italic">Answer questions to see cost breakdown</p>
 
-                        {{-- Total --}}
+                        {{-- Subtotal + Tax --}}
+                        <div id="taxRows" class="space-y-1 text-sm hidden">
+                            <div class="flex justify-between">
+                                <span class="text-animazon-muted">Subtotal</span>
+                                <span class="text-animazon-white font-semibold" id="sidebarSubtotal">—</span>
+                            </div>
+                            <div class="flex justify-between" id="gstRow">
+                                <span class="text-animazon-muted">GST (<span id="gstPct">0</span>%)</span>
+                                <span class="text-animazon-white font-semibold" id="sidebarGst">—</span>
+                            </div>
+                        </div>
+
+                        {{-- Grand Total --}}
                         <div class="bg-animazon-black/50 rounded-xl p-4 text-center">
                             <p class="text-[10px] uppercase tracking-wider text-animazon-muted mb-1">ESTIMATED TOTAL</p>
                             <p class="text-3xl font-bold text-primary" id="sidebarTotal"
-                               data-usd="{{ $projectType->base_cost }}">
+                               data-usd="{{ $projectType->base_cost }}"
+                               data-grand-usd="{{ $projectType->base_cost }}">
                                 ${{ number_format($projectType->base_cost, 0) }}
                             </p>
                             <p class="text-[10px] text-animazon-muted mt-1" id="currencyLabel">USD</p>
+                        </div>
+
+                        {{-- Payment schedule --}}
+                        <div id="advanceBox" class="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs space-y-1 hidden">
+                            <div class="flex justify-between">
+                                <span class="text-animazon-muted">Advance to start (<span id="advancePct">30</span>%)</span>
+                                <span class="text-primary font-bold" id="sidebarAdvance">—</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-animazon-muted">Balance on delivery</span>
+                                <span class="text-animazon-white font-semibold" id="sidebarBalance">—</span>
+                            </div>
                         </div>
                     @else
                         <div class="bg-primary/10 rounded-xl p-4 text-center border border-primary/20">
@@ -656,9 +681,10 @@
         if (Object.keys(selectedAnswers).length > 0) {
             recalculate();
         } else {
-            // No answers yet — total = base cost
+            // No answers yet — total = base cost (no GST until scope is chosen)
             document.getElementById('sidebarTotal').textContent = formatPrice(effectiveBase);
             document.getElementById('sidebarTotal').dataset.usd = effectiveBase;
+            document.getElementById('sidebarTotal').dataset.grandUsd = effectiveBase;
             if (document.getElementById('mobileTotal')) {
                 document.getElementById('mobileTotal').textContent = formatPrice(effectiveBase);
                 document.getElementById('mobileTotal').dataset.usd = effectiveBase;
@@ -811,18 +837,42 @@
                 const submitHeadline = document.querySelector('#submitStep h2');
                 if(submitHeadline) submitHeadline.textContent = 'Request Custom Quote';
             } else {
-                document.getElementById('sidebarTotal').textContent = formatPrice(data.total_cost_usd);
+                // Grand total (incl. GST) is the headline figure
+                const grandUsd = (data.grand_total_usd != null) ? data.grand_total_usd : data.total_cost_usd;
+                document.getElementById('sidebarTotal').textContent = formatPrice(grandUsd);
                 document.getElementById('currencyLabel').textContent = c.code;
                 document.getElementById('sidebarWeeks').textContent = data.timeline_weeks;
                 document.getElementById('sidebarTeam').textContent = data.team_size;
-                
-                if (document.getElementById('mobileTotal')) document.getElementById('mobileTotal').textContent = formatPrice(data.total_cost_usd);
+
+                if (document.getElementById('mobileTotal')) document.getElementById('mobileTotal').textContent = formatPrice(grandUsd);
                 if (document.getElementById('mobileCurrencyLabel')) document.getElementById('mobileCurrencyLabel').textContent = c.code;
-                
+
+                // Subtotal + GST rows
+                const taxRows = document.getElementById('taxRows');
+                if (taxRows) {
+                    document.getElementById('sidebarSubtotal').textContent = formatPrice(data.total_cost_usd);
+                    const gstPct = data.gst_percent || 0;
+                    document.getElementById('gstPct').textContent = gstPct;
+                    document.getElementById('sidebarGst').textContent = formatPrice(data.gst_usd || 0);
+                    document.getElementById('gstRow').style.display = gstPct > 0 ? '' : 'none';
+                    taxRows.classList.remove('hidden');
+                }
+
+                // Advance / balance schedule
+                const advBox = document.getElementById('advanceBox');
+                if (advBox && data.advance_usd != null) {
+                    document.getElementById('advancePct').textContent = data.advance_percent || 40;
+                    document.getElementById('sidebarAdvance').textContent = formatPrice(data.advance_usd);
+                    document.getElementById('sidebarBalance').textContent = formatPrice(data.balance_usd);
+                    advBox.classList.remove('hidden');
+                }
+
                 const submitHeadline = document.querySelector('#submitStep h2');
                 if(submitHeadline) submitHeadline.textContent = 'Get Your Detailed Estimate';
             }
+            // dataset.usd = pre-tax subtotal (back-compat); dataset.grandUsd = grand total incl GST
             document.getElementById('sidebarTotal').dataset.usd = data.total_cost_usd;
+            document.getElementById('sidebarTotal').dataset.grandUsd = (data.grand_total_usd != null) ? data.grand_total_usd : data.total_cost_usd;
             if (document.getElementById('mobileTotal')) document.getElementById('mobileTotal').dataset.usd = data.total_cost_usd;
 
             // Build breakdown
@@ -890,10 +940,13 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="ti ti-loader animate-spin mr-1"></i> Submitting...';
 
-        const totalUsd = parseFloat(document.getElementById('sidebarTotal').dataset.usd) || baseCostUsd;
+        const totalEl = document.getElementById('sidebarTotal');
+        const subtotalUsd = parseFloat(totalEl.dataset.usd) || baseCostUsd;
+        const grandUsd = parseFloat(totalEl.dataset.grandUsd) || subtotalUsd;
         const c = getCurrency();
-        
-        const totalLocal = totalUsd * c.rate;
+
+        const subtotalLocal = subtotalUsd * c.rate;
+        const grandLocal = grandUsd * c.rate;
 
         const formData = new FormData();
         formData.append('project_type_id', projectTypeId);
@@ -901,8 +954,8 @@
         formData.append('visitor_email', email);
         formData.append('visitor_phone', document.getElementById('visitorPhone').value.trim());
         formData.append('notes', document.getElementById('visitorNotes').value.trim());
-        formData.append('total_cost', totalLocal);
-        formData.append('grand_total', totalLocal);
+        formData.append('total_cost', subtotalLocal);
+        formData.append('grand_total', grandLocal);
         formData.append('currency_code', c.code);
         formData.append('country_code', currentCountry);
         

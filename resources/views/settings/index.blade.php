@@ -1376,6 +1376,21 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
+                                                                    <div class="col-lg-12">
+                                                                        <div class="input-edits">
+                                                                            <div class="form-group">
+                                                                                <label for="razorpay_subscription_button_id"
+                                                                                    class="col-form-label">{{ __('Subscription Button ID (for Monthly Maintenance Auto-Pay)') }}</label>
+                                                                                <input type="text"
+                                                                                    name="razorpay_subscription_button_id"
+                                                                                    id="razorpay_subscription_button_id"
+                                                                                    class="form-control"
+                                                                                    value="{{ !isset($admin_payment_setting['razorpay_subscription_button_id']) || is_null($admin_payment_setting['razorpay_subscription_button_id']) ? 'pl_T9j7p5Gbk0YDsG' : $admin_payment_setting['razorpay_subscription_button_id'] }}"
+                                                                                    placeholder="e.g. pl_T9j7p5Gbk0YDsG">
+                                                                                <small class="text-muted">{{ __('This button will appear on client proposals when they toggle to add a website hosting/maintenance subscription.') }}</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>

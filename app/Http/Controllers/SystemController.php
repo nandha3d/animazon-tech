@@ -653,8 +653,10 @@ class SystemController extends Controller
             $post['is_razorpay_enabled'] = $request->is_razorpay_enabled;
             $post['razorpay_public_key'] = $request->razorpay_public_key;
             $post['razorpay_secret_key'] = $request->razorpay_secret_key;
+            $post['razorpay_subscription_button_id'] = $request->razorpay_subscription_button_id ?? 'pl_T9j7p5Gbk0YDsG';
         } else {
             $post['is_razorpay_enabled'] = 'off';
+            $post['razorpay_subscription_button_id'] = $request->razorpay_subscription_button_id ?? 'pl_T9j7p5Gbk0YDsG';
         }
 
         if (isset($request->is_mercado_enabled) && $request->is_mercado_enabled == 'on') {
@@ -1298,8 +1300,10 @@ class SystemController extends Controller
             $post['is_razorpay_enabled'] = $request->is_razorpay_enabled;
             $post['razorpay_public_key'] = $request->razorpay_public_key;
             $post['razorpay_secret_key'] = $request->razorpay_secret_key;
+            $post['razorpay_subscription_button_id'] = $request->razorpay_subscription_button_id ?? 'pl_T9j7p5Gbk0YDsG';
         } else {
             $post['is_razorpay_enabled'] = 'off';
+            $post['razorpay_subscription_button_id'] = $request->razorpay_subscription_button_id ?? 'pl_T9j7p5Gbk0YDsG';
         }
 
         if (isset($request->is_mercado_enabled) && $request->is_mercado_enabled == 'on') {

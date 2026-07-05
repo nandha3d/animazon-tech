@@ -57,7 +57,7 @@
 }
 
 body.custom-color {
-    background: linear-gradient(141.55deg, #22242C 3.46%, #22242C 99.86%) !important;
+    background: #0f1117 !important;
 }
 
 #calender_type
@@ -69,4 +69,60 @@ body.custom-color {
 .apexcharts-yaxis-texts-g
 {
     transform: translate(-15px, 0px) !important;
+}
+
+/* Dark Mode Client, User, and Support Card Styling */
+.client-card,
+.user-card,
+.support-user-card {
+    background-color: #2b2d39 !important;
+    border: 1px solid #3d4052 !important;
+    box-shadow: none !important;
+}
+
+.client-card h5,
+.user-card h5,
+.support-user-card h5,
+.client-card h6,
+.user-card h6,
+.support-user-card h6,
+.client-card .h5,
+.user-card .h5,
+.support-user-card .h5 {
+    color: #ffffff !important;
+}
+
+.client-card span:not(.text-muted),
+.user-card span:not(.text-muted),
+.support-user-card span:not(.text-muted) {
+    color: #ffffff !important;
+}
+
+.client-card .project-info,
+.support-user-card .project-info {
+    color: #ffffff !important;
+}
+
+.client-card .text-muted,
+.user-card .text-muted,
+.support-user-card .text-muted {
+    color: #9ea4b4 !important;
+}
+
+.client-card .border-bottom,
+.user-card .border-bottom,
+.support-user-card .border-bottom {
+    border-color: #3d4052 !important;
+}
+
+.client-card .project-info-wrp .project-info:not(:last-of-type)::before,
+.support-user-card .project-info-wrp .project-info:not(:last-of-type)::before {
+    background: var(--theme-color) !important;
+}
+
+.client-card .date-wrp .date .date-icon i,
+.client-card .date-wrp .time .time-icon i,
+.user-card .date-wrp .date .date-icon i,
+.user-card .date-wrp .time .time-icon i {
+    color: #ffffff !important;
 }

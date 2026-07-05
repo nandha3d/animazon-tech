@@ -76,17 +76,38 @@
  </header>
 
  <div class="main-content container">
-     <div class="row justify-content-between align-items-center mb-3">
-         <div class="col-md-12 d-flex align-items-center justify-content-between justify-content-md-end">
-             <div class="all-button-box mx-2">
-                 <a href="{{ route('proposal.pdf', Crypt::encrypt($proposal->id))}}" target="_blank" class="btn btn-primary mt-3" >
-                     {{__('Download')}}
-                 </a>
-             </div>
-         </div>
-     </div>
+     @php
+         $isExpired = $proposal->isExpired();
+         $isAccepted = $proposal->isAccepted();
+         $isDeclined = $proposal->isDeclined();
+         $isPending = !$isAccepted && !$isDeclined;
+         $totalDue = $proposal->getDue();
+         $totalPaid = $proposal->amountPaid();
+         $isRudraProposal = ($proposal->proposal_id == 1 || $proposal->id == 1 || (isset($customer) && str_contains(strtolower($customer->name ?? ''), 'rudra')));
+     @endphp
+      @if(!$isRudraProposal)
+      <div class="row justify-content-between align-items-center mb-3">
+          <div class="col-md-12 d-flex align-items-center justify-content-between justify-content-md-end">
+              <div class="all-button-box mx-2">
+                  <a href="{{ route('proposal.pdf', Crypt::encrypt($proposal->id))}}" target="_blank" class="btn btn-primary mt-3" >
+                      {{__('Download')}}
+                  </a>
+              </div>
+              <div class="all-button-box mx-2">
+                  <button type="button" class="btn btn-outline-primary mt-3" data-role="proposal-read-aloud"
+                          data-tts-audio-url="{{ $proposal->getTtsAudioUrl(\App::getLocale() ?? 'en') }}"
+                          data-tts-segments="{{ json_encode($proposal->getSpeechSegments($settings)) }}">
+                      <i class="ti ti-volume-2"></i> {{ __('Read Aloud') }}
+                  </button>
+              </div>
+          </div>
+      </div>
+      @endif
      <div class="row">
          <div class="col-12">
+             @if($isRudraProposal)
+                 @include('proposal.rudra_proposal_view')
+             @else
              <div class="card">
                  <div class="card-body">
                      <div class="proposal">
@@ -127,7 +148,7 @@
                                  <div class="col">
                                      <div class="float-end mt-3">
                                         @if(($settings['qr_display'] ?? null) == 'on')
-                                         {!! DNS2D::getBarcodeHTML(route('proposal.link.copy',\Illuminate\Support\Facades\Crypt::encrypt($proposal->id)), "QRCODE",2,2) !!}
+                                         {!! DNS2D::getBarcodeHTML($proposal->getPublicUrl(), "QRCODE",2,2) !!}
                                         @endif
                                      </div>
                                  </div>
@@ -305,18 +326,11 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 
-    @php
-        $isExpired = $proposal->isExpired();
-        $isAccepted = $proposal->isAccepted();
-        $isDeclined = $proposal->isDeclined();
-        $isPending = !$isAccepted && !$isDeclined;
-        $totalDue = $proposal->getDue();
-        $totalPaid = $proposal->amountPaid();
-    @endphp
-
+    @if(!$isRudraProposal)
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
@@ -469,6 +483,7 @@
         </div>
     </div>
 </div>
+@endif
 
 @if(!$isDeclined && !$isExpired && $totalDue > 0 && !empty($razorpayKey))
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -570,6 +585,7 @@
 
 <script src="{{ asset('js/jscolor.js') }}"></script>
 <script src="{{ asset('js/custom.js') }}"></script>
+<script src="{{ asset('js/proposal-read-aloud.js') }}"></script>
 
 @if($message = Session::get('success'))
     <script>
