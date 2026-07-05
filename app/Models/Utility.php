@@ -654,19 +654,22 @@ class Utility extends Model
         $number = explode('.', $price);
         $length = strlen(trim($number[0]));
         $float_number = isset($settings['float_number']) && $settings['float_number'] == 'dot' ? '.' : ',';
+        $decSep = $settings['decimal_separator'] ?? 'dot';
+        $thouSep = $settings['thousand_separator'] ?? 'comma';
         if($length > 3)
         {
-            $decimal_separator = $settings['decimal_separator'] == 'dot' ? '.' : ',';
-            $thousand_separator = $settings['thousand_separator'] == 'dot' ? '.' : ',';
+            $decimal_separator = $decSep == 'dot' ? '.' : ',';
+            $thousand_separator = $thouSep == 'dot' ? '.' : ',';
         }
         else
         {
-            $decimal_separator = $settings['decimal_separator'] == 'dot' ? '.' : ',';
-            $thousand_separator = $settings['thousand_separator'] == 'dot' ? '.' : ',';
+            $decimal_separator = $decSep == 'dot' ? '.' : ',';
+            $thousand_separator = $thouSep == 'dot' ? '.' : ',';
         }
-        $currency = $settings['currency_symbol'] == 'withcurrencysymbol' ? $settings['site_currency_symbol']: $settings['site_currency'];
-        $decimal_number = $settings['decimal_number'] ? $settings['decimal_number'] : 0;
-        $currency_space = $settings['currency_space'];
+        $currencySymbolPref = $settings['currency_symbol'] ?? 'withcurrencysymbol';
+        $currency = $currencySymbolPref == 'withcurrencysymbol' ? ($settings['site_currency_symbol'] ?? '₹') : ($settings['site_currency'] ?? 'INR');
+        $decimal_number = !empty($settings['decimal_number']) ? $settings['decimal_number'] : 0;
+        $currency_space = $settings['currency_space'] ?? 'withspace';
         $price = number_format($price, $decimal_number, $decimal_separator, $thousand_separator);
 
         if ($float_number == 'dot') {
@@ -675,7 +678,8 @@ class Utility extends Model
             $price = preg_replace('/' . preg_quote($decimal_separator, '/') . '([^' . preg_quote($decimal_separator, '/') . ']*)$/', $float_number . '$1', $price);
         }
 
-        return (($settings['site_currency_symbol_position'] == "pre") ? $currency : '') . ($currency_space == 'withspace' ? ' ' : '') . $price . ($currency_space == 'withspace' ? ' ' : '') . (($settings['site_currency_symbol_position'] == "post") ? $currency : '');
+        $symbolPos = $settings['site_currency_symbol_position'] ?? 'pre';
+        return (($symbolPos == "pre") ? $currency : '') . ($currency_space == 'withspace' ? ' ' : '') . $price . ($currency_space == 'withspace' ? ' ' : '') . (($symbolPos == "post") ? $currency : '');
 
     }
 
