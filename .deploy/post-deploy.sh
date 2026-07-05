@@ -6,7 +6,7 @@ set -e
 
 cd "$DEPLOY_PATH"
 
-PHP_BIN="/usr/bin/php8.2"
+PHP_BIN="/opt/alt/php82/usr/bin/php"
 echo "Using PHP binary: $PHP_BIN"
 
 echo "Clearing stale compiled cache (bootstrap/cache/*.php)..."
