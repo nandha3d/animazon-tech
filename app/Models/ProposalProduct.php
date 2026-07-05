@@ -12,6 +12,8 @@ class ProposalProduct extends Model
         'quantity',
         'tax',
         'discount',
+        'price',
+        'description',
         'total',
     ];
 

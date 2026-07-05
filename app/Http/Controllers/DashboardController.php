@@ -150,6 +150,40 @@ class DashboardController extends Controller
                     $data['monthlyBill'] = \Auth::user()->monthlyBill();
                     $data['goals'] = Goal::where('created_by', '=', \Auth::user()->creatorId())->where('is_display', 1)->get();
 
+                    // Client website renewals due within 30 days (or overdue)
+                    $expiringItems = [];
+                    if (\Auth::user()->can('manage client asset')) {
+                        foreach (\App\Models\ClientAsset::expiring(\Auth::user()->creatorId(), 30) as $asset) {
+                            foreach ($asset->dueRenewals(30) as $due) {
+                                $expiringItems[] = array_merge($due, [
+                                    'client'    => optional($asset->client)->name,
+                                    'asset'     => $asset->label,
+                                    'client_id' => $asset->client_id,
+                                ]);
+                            }
+                        }
+                        usort($expiringItems, fn ($a, $b) => $a['days_left'] <=> $b['days_left']);
+                    }
+                    $data['expiringAssets'] = $expiringItems;
+
+                    // Client maintenance plans due within 30 days (or overdue)
+                    $maintenanceDue = [];
+                    if (\Auth::user()->can('manage client maintenance')) {
+                        foreach (\App\Models\ClientMaintenancePlan::dueSoon(\Auth::user()->creatorId(), 30) as $plan) {
+                            $maintenanceDue[] = [
+                                'client'      => optional($plan->client)->name,
+                                'client_id'   => $plan->client_id,
+                                'service'     => $plan->service_type,
+                                'amount'      => $plan->amount,
+                                'due_date'    => $plan->next_due_date->format('Y-m-d'),
+                                'days_left'   => $plan->daysUntilDue(),
+                                'overdue'     => $plan->isOverdue(),
+                                'plan_id'     => $plan->id,
+                            ];
+                        }
+                    }
+                    $data['maintenanceDue'] = $maintenanceDue;
+
                     //Storage limit
                     $data['users'] = User::find(\Auth::user()->creatorId());
                     $data['plan'] = Plan::getPlan(\Auth::user()->show_dashboard());

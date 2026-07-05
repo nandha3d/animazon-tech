@@ -24,6 +24,8 @@ use App\Http\Controllers\CashfreeController;
 use App\Http\Controllers\ChartOfAccountController;
 use App\Http\Controllers\CinetPayController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientAssetController;
+use App\Http\Controllers\ClientMaintenanceController;
 use App\Http\Controllers\CoingatePaymentController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\CompanyPolicyController;
@@ -179,12 +181,23 @@ use Illuminate\Support\Facades\Artisan;
 Route::view('/our-portfolio', 'pages.portfolio')->name('portfolio.public');
 Route::view('/blog', 'pages.blog')->name('blog.index');
 
+Route::prefix('blog')->name('blog.')->group(function () {
+    Route::view('local-business-growth', 'pages.blog.local-business-growth')->name('local-business-growth');
+});
+
 Route::prefix('services')->name('services.')->group(function () {
     Route::view('3d-animation', 'pages.services.3d-animation')->name('3d-animation');
     Route::view('game-development', 'pages.services.game-development')->name('game-development');
     Route::view('web-development', 'pages.services.web-development')->name('web-development');
     Route::view('mobile-applications', 'pages.services.mobile-applications')->name('mobile-applications');
 });
+
+// WhatsApp Cloud API — seamless on-site chat bridge
+Route::get('/whatsapp/webhook', [\App\Http\Controllers\WhatsAppChatController::class, 'verify']);
+Route::post('/whatsapp/webhook', [\App\Http\Controllers\WhatsAppChatController::class, 'webhook']);
+Route::post('/chat/send', [\App\Http\Controllers\WhatsAppChatController::class, 'send'])->name('chat.send');
+Route::get('/chat/poll', [\App\Http\Controllers\WhatsAppChatController::class, 'poll'])->name('chat.poll');
+
 require __DIR__ . '/auth.php';
 
 
@@ -198,6 +211,11 @@ Route::get('/vender/bill/{id}/', [BillController::class, 'invoiceLink'])->name('
 Route::get('/vendor/purchase/{id}/', [PurchaseController::class, 'purchaseLink'])->name('purchase.link.copy');
 Route::get('/customer/proposal/{id}/', [ProposalController::class, 'invoiceLink'])->name('proposal.link.copy');
 Route::get('proposal/pdf/{id}', [ProposalController::class, 'proposal'])->name('proposal.pdf')->middleware(['XSS', 'revalidate']);
+
+// Client-facing tracking actions (view/approve/decline/pay) — no auth, reached via the encrypted link above
+Route::post('/customer/proposal/{id}/approve', [ProposalController::class, 'publicApprove'])->name('proposal.public.approve')->middleware(['XSS']);
+Route::post('/customer/proposal/{id}/decline', [ProposalController::class, 'publicDecline'])->name('proposal.public.decline')->middleware(['XSS']);
+Route::post('/customer/proposal/{id}/pay-with-razorpay', [ProposalController::class, 'publicPayRazorpay'])->name('proposal.public.pay.razorpay')->middleware(['XSS']);
 
 //================================= Invoice Payment Gateways  ====================================//
 
@@ -786,6 +804,41 @@ Route::group(['middleware' => ['verified']], function () {
 
     Route::any('client-reset-password/{id}', [ClientController::class, 'clientPassword'])->name('clients.reset');
     Route::post('client-reset-password/{id}', [ClientController::class, 'clientPasswordReset'])->name('client.password.update');
+
+    // Client <-> Customer linking (same real entity)
+    Route::post('clients/{client}/convert-customer', [ClientController::class, 'convertToCustomer'])->name('clients.convert.customer')->middleware(['auth', 'XSS']);
+    Route::post('customer/{customer}/convert-client', [CustomerController::class, 'convertToClient'])->name('customer.convert.client')->middleware(['auth', 'XSS']);
+
+    // Inline (modal) customer create used by invoice/estimate screens
+    Route::post('customer-store-ajax', [CustomerController::class, 'storeAjax'])->name('customer.store.ajax')->middleware(['auth', 'XSS']);
+    Route::post('product-category-store-ajax', [ProductServiceCategoryController::class, 'storeAjax'])->name('product-category.store.ajax')->middleware(['auth', 'XSS']);
+    // Bare-fragment "add customer/category" forms for pages that are themselves an
+    // ajax-modal (revenue/expense/bill/purchase/payment/proposal) — loaded into the
+    // app's existing #commonModalOver shell so nested Bootstrap modals aren't needed.
+    Route::get('inline/customer/add', fn () => view('invoice.partials.inline-add-customer'))->name('customer.add.inline')->middleware(['auth', 'XSS']);
+    Route::get('inline/category/add', fn () => view('invoice.partials.inline-add-category'))->name('product-category.add.inline')->middleware(['auth', 'XSS']);
+    // Generate an invoice from an estimate (bridges client<->customer link)
+    Route::get('invoice-from-estimation/{estimation_id}', [InvoiceController::class, 'storeFromEstimation'])->name('invoice.from.estimation')->middleware(['auth', 'XSS']);
+    // Generate an invoice from a Cost Calculator estimate
+    Route::get('invoice-from-cost-estimate/{id}', [InvoiceController::class, 'storeFromCostEstimate'])->name('invoice.from.cost.estimate')->middleware(['auth', 'XSS']);
+
+    // Client Assets (MSP credential/website vault)
+    Route::get('clients/{client}/assets', [ClientAssetController::class, 'index'])->name('client-assets.index')->middleware(['auth', 'XSS']);
+    Route::get('clients/{client}/assets/create', [ClientAssetController::class, 'create'])->name('client-assets.create')->middleware(['auth', 'XSS']);
+    Route::post('clients/{client}/assets', [ClientAssetController::class, 'store'])->name('client-assets.store')->middleware(['auth', 'XSS']);
+    Route::get('client-assets/{client_asset}/edit', [ClientAssetController::class, 'edit'])->name('client-assets.edit')->middleware(['auth', 'XSS']);
+    Route::put('client-assets/{client_asset}', [ClientAssetController::class, 'update'])->name('client-assets.update')->middleware(['auth', 'XSS']);
+    Route::delete('client-assets/{client_asset}', [ClientAssetController::class, 'destroy'])->name('client-assets.destroy')->middleware(['auth', 'XSS']);
+    Route::get('client-assets/{client_asset}/reveal/{field}', [ClientAssetController::class, 'reveal'])->name('client-assets.reveal')->middleware(['auth', 'XSS']);
+
+    // Client Maintenance Plans (recurring retainer billing — website, software, 3D animation, etc)
+    Route::get('clients/{client}/maintenance', [ClientMaintenanceController::class, 'index'])->name('client-maintenance.index')->middleware(['auth', 'XSS']);
+    Route::get('clients/{client}/maintenance/create', [ClientMaintenanceController::class, 'create'])->name('client-maintenance.create')->middleware(['auth', 'XSS']);
+    Route::post('clients/{client}/maintenance', [ClientMaintenanceController::class, 'store'])->name('client-maintenance.store')->middleware(['auth', 'XSS']);
+    Route::get('client-maintenance/{client_maintenance}/edit', [ClientMaintenanceController::class, 'edit'])->name('client-maintenance.edit')->middleware(['auth', 'XSS']);
+    Route::put('client-maintenance/{client_maintenance}', [ClientMaintenanceController::class, 'update'])->name('client-maintenance.update')->middleware(['auth', 'XSS']);
+    Route::delete('client-maintenance/{client_maintenance}', [ClientMaintenanceController::class, 'destroy'])->name('client-maintenance.destroy')->middleware(['auth', 'XSS']);
+    Route::post('client-maintenance/{client_maintenance}/renew', [ClientMaintenanceController::class, 'renew'])->name('client-maintenance.renew')->middleware(['auth', 'XSS']);
 
     // Deal Module
 

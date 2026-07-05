@@ -493,7 +493,7 @@
                                 {{ Form::label('customer_id', __('Customer'),['class'=>'form-label']) }}<x-required></x-required>
                                 {{ Form::select('customer_id', $customers,null, array('class' => 'form-control select ','id'=>'customer','data-url'=>route('invoice.customer'),'required'=>'required')) }}
                                 <div class="text-xs mt-1">
-                                    {{ __('Create customer here.') }} <a href="{{ route('customer.index') }}"><b>{{ __('Create customer') }}</b></a>
+                                    {{ __('Not listed?') }} <a href="#" data-bs-toggle="modal" data-bs-target="#addCustomerModal"><b>{{ __('+ Add New Customer') }}</b></a>
                                 </div>
                             </div>
                             <div id="customer_detail" class="d-none">
@@ -529,7 +529,7 @@
                                     {{ Form::label('category_id', __('Category'),['class'=>'form-label']) }}<x-required></x-required>
                                     {{ Form::select('category_id', $category,null, array('class' => 'form-control select','required'=>'required')) }}
                                     <div class="text-xs mt-1">
-                                        {{ __('Create category here.') }} <a href="{{ route('product-category.index') }}"><b>{{ __('Create category') }}</b></a>
+                                        {{ __('Not listed?') }} <a href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><b>{{ __('+ Add New Category') }}</b></a>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -681,6 +681,9 @@
             <input type="submit" value="{{__('Update')}}" class="btn  btn-primary">
         </div>
         {{ Form::close() }}
+
+        @include('invoice.partials.add-customer-modal')
+        @include('invoice.partials.add-category-modal')
     </div>
 @endsection
 

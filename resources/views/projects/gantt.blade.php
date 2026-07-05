@@ -30,6 +30,30 @@
 @section('content')
     <div class="row">
         <div class="col-12">
+            @if($project && ($costEstimate || $projectInvoices->count() > 0))
+                <div class="card mb-3">
+                    <div class="card-body d-flex flex-wrap align-items-center gap-3 py-2">
+                        <strong class="me-2"><i class="ti ti-link"></i> {{ __('Linked Billing') }}:</strong>
+                        @if($costEstimate)
+                            <span class="badge bg-info p-2 px-3 rounded">
+                                {{ __('Estimate') }}: {{ ucfirst($costEstimate->status) }}
+                                ({{ $costEstimate->currency_code }} {{ number_format($costEstimate->grand_total, 2) }})
+                            </span>
+                        @endif
+                        @if($projectInvoices->count() > 0)
+                            @foreach($projectInvoices as $inv)
+                                <a href="{{ route('invoice.show', \Crypt::encrypt($inv->id)) }}"
+                                    class="badge bg-primary p-2 px-3 rounded text-white">
+                                    {{ \Auth::user()->invoiceNumberFormat($inv->invoice_id) }} —
+                                    {{ __(\App\Models\Invoice::$statues[$inv->status]) }}
+                                </a>
+                            @endforeach
+                        @else
+                            <span class="text-muted">{{ __('No invoice generated yet.') }}</span>
+                        @endif
+                    </div>
+                </div>
+            @endif
             <div class="card card-stats border-0">
                 <div class="card-body"></div>
                 @if($project)
@@ -53,6 +77,10 @@
 @if($project)
     @push('css-page')
         <link rel="stylesheet" href="{{asset('css/frappe-gantt.css')}}" />
+        <style>
+            .bar-wrapper.milestone .bar { fill: #6f42c1; }
+            .bar-wrapper.milestone .bar-progress { fill: #4b2c85; }
+        </style>
     @endpush
     @push('script-page')
         @php
@@ -114,6 +142,10 @@
                 on_click: function (task) {
                 },
                 on_date_change: function(task, start, end) {
+                    // Milestones are read-only markers on this timeline, not draggable tasks.
+                    if (String(task.id).indexOf('milestone_') === 0) {
+                        return;
+                    }
                     task_id = task.id;
                     start = moment(start);
                     end = moment(end);

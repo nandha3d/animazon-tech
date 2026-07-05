@@ -26,8 +26,21 @@ class Project extends Model
         'description',
         'status',
         'tags',
-        'created_by'
+        'created_by',
+        'cost_estimate_id',
     ];
+
+    /** The Cost Calculator estimate this project originated from. */
+    public function costEstimate()
+    {
+        return $this->belongsTo(CostEstimate::class, 'cost_estimate_id');
+    }
+
+    /** Invoices billed against this project. */
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'project_id');
+    }
 
     public static $project_status=[
         'in_progress' => 'In Progress',

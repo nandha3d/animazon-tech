@@ -718,7 +718,7 @@
                                     {{ Form::label('customer_id', __('Payee'),['class'=>'form-label']) }}
                                     {{ Form::select('customer_id', $customers,$expense->vender_id, array('class' => 'form-control select','id'=>'customer','data-url'=>route('expense.customer'))) }}
                                     <div class="text-xs mt-1">
-                                        {{ __('Create customer here.') }} <a href="{{ route('customer.index') }}"><b>{{ __('Create customer') }}</b></a>
+                                        {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-size="md" data-title="{{ __('Add New Customer') }}" data-url="{{ route('customer.add.inline') }}"><b>{{ __('+ Add New Customer') }}</b></a>
                                     </div>
                                 </div>
                                 <div id="customer_detail" class="d-none">
@@ -750,8 +750,9 @@
                                     <div class="form-group">
                                         {{ Form::label('category_id', __('Category'),['class'=>'form-label']) }}
                                         {{ Form::select('category_id', $category,null, array('class' => 'form-control select')) }}
+                                        <input type="hidden" id="categoryTypeExpense" value="expense">
                                         <div class="text-xs mt-1">
-                                            {{ __('Create category here.') }} <a href="{{ route('product-category.index') }}"><b>{{ __('Create category') }}</b></a>
+                                            {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-validate="#categoryTypeExpense" data-size="md" data-title="{{ __('Add New Category') }}" data-url="{{ route('product-category.add.inline') }}"><b>{{ __('+ Add New Category') }}</b></a>
                                         </div>
                                     </div>
                                 </div>

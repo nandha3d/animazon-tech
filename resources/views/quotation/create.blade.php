@@ -6,7 +6,7 @@
                 {{ Form::label('customer_id', __('Customer'),['class'=>'form-label']) }}<x-required></x-required>
                 {{ Form::select('customer_id', $customers,'', array('class' => 'form-control select','required'=>'required')) }}
                 <div class="text-xs mt-1">
-                    {{ __('Create customer here.') }} <a href="{{ route('customer.index') }}"><b>{{ __('Create customer') }}</b></a>
+                    {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-size="md" data-title="{{ __('Add New Customer') }}" data-url="{{ route('customer.add.inline') }}"><b>{{ __('+ Add New Customer') }}</b></a>
                 </div>
             </div>
         </div>

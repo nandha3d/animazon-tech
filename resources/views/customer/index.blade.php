@@ -95,6 +95,22 @@ $profile=\App\Models\Utility::get_file('uploads/avatar/');
                                                         </a>
                                                     </div>
                                                 @endcan
+                                                @can('create client')
+                                                    <div class="action-btn me-2">
+                                                        @if (empty($customer->linked_user_id))
+                                                            {!! Form::open(['method' => 'POST', 'route' => ['customer.convert.client', $customer['id']],'id'=>'convert-client-'.$customer['id']]) !!}
+                                                            <a href="#" class="mx-3 btn btn-sm align-items-center bg-success" data-bs-toggle="tooltip" title="{{__('Make Client')}}"
+                                                               onclick="event.preventDefault(); document.getElementById('convert-client-{{ $customer['id'] }}').submit();">
+                                                                <i class="ti ti-user-plus text-white"></i>
+                                                            </a>
+                                                            {!! Form::close() !!}
+                                                        @else
+                                                            <a href="#" class="mx-3 btn btn-sm align-items-center bg-secondary" data-bs-toggle="tooltip" title="{{__('Linked as Client')}}">
+                                                                <i class="ti ti-check text-white"></i>
+                                                            </a>
+                                                        @endif
+                                                    </div>
+                                                @endcan
                                                 @can('delete customer')
                                                     <div class="action-btn ">
                                                         {!! Form::open(['method' => 'DELETE', 'route' => ['customer.destroy', $customer['id']],'id'=>'delete-form-'.$customer['id']]) !!}

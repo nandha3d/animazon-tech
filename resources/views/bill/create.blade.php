@@ -562,8 +562,9 @@
                                     <div class="form-group">
                                         {{ Form::label('category_id', __('Category'),['class'=>'form-label']) }}<x-required></x-required>
                                         {{ Form::select('category_id', $category,null, array('class' => 'form-control select', 'required'=>'required')) }}
+                                        <input type="hidden" id="categoryTypeExpense" value="expense">
                                         <div class="text-xs mt-1">
-                                            {{ __('Create category here.') }} <a href="{{ route('product-category.index') }}"><b>{{ __('Create category') }}</b></a>
+                                            {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-validate="#categoryTypeExpense" data-size="md" data-title="{{ __('Add New Category') }}" data-url="{{ route('product-category.add.inline') }}"><b>{{ __('+ Add New Category') }}</b></a>
                                         </div>
                                     </div>
                                 </div>

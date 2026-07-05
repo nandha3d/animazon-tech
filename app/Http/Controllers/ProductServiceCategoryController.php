@@ -73,6 +73,42 @@ class ProductServiceCategoryController extends Controller
         }
     }
 
+    /**
+     * Inline (modal) category create used by invoice/bill/expense/etc screens.
+     * Returns JSON so the caller injects it into the dropdown without navigating.
+     */
+    public function storeAjax(Request $request)
+    {
+        if (!\Auth::user()->can('create constant category')) {
+            return response()->json(['error' => __('Permission denied.')], 401);
+        }
+
+        $validator = \Validator::make(
+            $request->all(), [
+                'name'  => 'required|max:200',
+                'color' => 'required',
+                'type'  => 'nullable|in:income,expense',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $category = new ProductServiceCategory();
+        $category->name             = $request->name;
+        $category->color            = ltrim($request->color, '#');
+        $category->type             = $request->type === 'expense' ? 'expense' : 'income';
+        $category->chart_account_id = !empty($request->chart_account) ? $request->chart_account : 0;
+        $category->created_by       = \Auth::user()->creatorId();
+        $category->save();
+
+        return response()->json([
+            'id'      => $category->id,
+            'text'    => $category->name,
+            'message' => __('Category successfully created.'),
+        ]);
+    }
+
     public function edit($id)
     {
 

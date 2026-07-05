@@ -20,7 +20,7 @@
             {{ Form::label('customer_id', __('Customer'),['class'=>'form-label']) }}<x-required></x-required>
             {{ Form::select('customer_id', $customers,null, array('class' => 'form-control select','required'=>'required')) }}
             <div class="text-xs mt-1">
-                {{ __('Create customer here.') }} <a href="{{ route('customer.index') }}"><b>{{ __('Create customer') }}</b></a>
+                {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-size="md" data-title="{{ __('Add New Customer') }}" data-url="{{ route('customer.add.inline') }}"><b>{{ __('+ Add New Customer') }}</b></a>
             </div>
         </div>
         <div class="form-group  col-md-12">
@@ -31,7 +31,7 @@
             {{ Form::label('category_id', __('Category'),['class'=>'form-label']) }}<x-required></x-required>
             {{ Form::select('category_id', $categories,null, array('class' => 'form-control select','required'=>'required')) }}
             <div class="text-xs mt-1">
-                {{ __('Create category here.') }} <a href="{{ route('product-category.index') }}"><b>{{ __('Create category') }}</b></a>
+                {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-size="md" data-title="{{ __('Add New Category') }}" data-url="{{ route('product-category.add.inline') }}"><b>{{ __('+ Add New Category') }}</b></a>
             </div>
         </div>
         <div class="form-group col-md-6">

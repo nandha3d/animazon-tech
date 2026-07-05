@@ -401,6 +401,14 @@
                                 <div class="col-xs-12 col-sm-12 col-nd-6 col-lg-6 col-12 text-end">
                                     <h4 class="invoice-number">
                                         {{ AUth::user()->invoiceNumberFormat($invoice->invoice_id) }}</h4>
+                                    @if ($invoice->project_id && $invoice->project)
+                                        @can('view project')
+                                            <a href="{{ route('projects.show', $invoice->project_id) }}"
+                                                class="badge bg-info p-2 px-3 rounded">
+                                                <i class="ti ti-briefcase"></i> {{ $invoice->project->project_name }}
+                                            </a>
+                                        @endcan
+                                    @endif
                                 </div>
                                 <div class="col-12">
                                     <hr>

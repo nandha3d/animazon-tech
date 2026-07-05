@@ -363,7 +363,7 @@
                                                         $totalDiscount += $iteam->discount;
                                                     @endphp
                                                     <td>{{ !empty($productName) ? $productName->name : '' }}</td>
-                                                    <td>{{ $iteam->quantity . ' (' . $productName->unit->name . ')' }}</td>
+                                                    <td>{{ $iteam->quantity . ' (' . (isset($productName->unit) ? $productName->unit->name : 'No unit') . ')' }}</td>
                                                     <td>{{\Auth::user()->priceFormat($iteam->price)}}</td>
                                                     <td>{{\Auth::user()->priceFormat($iteam->discount)}}</td>
                                                     <td>

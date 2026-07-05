@@ -412,7 +412,7 @@
                                 {{ Form::label('customer_id', __('Customer'),['class'=>'form-label']) }}<x-required></x-required>
                                 {{ Form::select('customer_id', $customers,$customerId, array('class' => 'form-control select','id'=>'customer','data-url'=>route('proposal.customer'),'required'=>'required')) }}
                                 <div class="text-xs mt-1">
-                                    {{ __('Create customer here.') }} <a href="{{ route('customer.index') }}"><b>{{ __('Create customer') }}</b></a>
+                                    {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-size="md" data-title="{{ __('Add New Customer') }}" data-url="{{ route('customer.add.inline') }}"><b>{{ __('+ Add New Customer') }}</b></a>
                                 </div>
                             </div>
 
@@ -434,7 +434,7 @@
                                         {{ Form::label('category_id', __('Category'),['class'=>'form-label']) }}<x-required></x-required>
                                         {{ Form::select('category_id', $category,null, array('class' => 'form-control select','required'=>'required')) }}
                                         <div class="text-xs mt-1">
-                                            {{ __('Create category here.') }} <a href="{{ route('product-category.index') }}"><b>{{ __('Create category') }}</b></a>
+                                            {{ __('Not listed?') }} <a href="#" data-ajax-popup-over="true" data-size="md" data-title="{{ __('Add New Category') }}" data-url="{{ route('product-category.add.inline') }}"><b>{{ __('+ Add New Category') }}</b></a>
                                         </div>
                                     </div>
                                 </div>
@@ -446,11 +446,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ Form::label('valid_till', __('Valid Till'),['class'=>'form-label']) }}
+                                        <div class="form-icon-user">
+                                            {{Form::date('valid_till',null,array('class'=>'form-control'))}}
+                                        </div>
+                                        <div class="text-xs mt-1 text-muted">{{ __('Client cannot accept/pay after this date.') }}</div>
+                                    </div>
+                                </div>
 
                                 @if(!$customFields->isEmpty())
                                             @include('customFields.formBuilder')
                                 @endif
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 form-group mb-0">
+                            {{ Form::label('terms', __('Terms shown to client'),['class'=>'form-label']) }}
+                            {{ Form::textarea('terms', null, array('class' => 'form-control', 'rows' => 3, 'placeholder' => __('Payment terms, validity, scope notes — shown on the client tracking page.'))) }}
                         </div>
                     </div>
                 </div>

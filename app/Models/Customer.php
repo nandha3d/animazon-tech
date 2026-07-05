@@ -39,7 +39,17 @@ class Customer extends Authenticatable
         'shipping_phone',
         'shipping_zip',
         'shipping_address',
+        'tax_number',
+        'linked_user_id',
     ];
+
+    /**
+     * The users-table row (client) this customer is linked to (same real entity).
+     */
+    public function clientLink()
+    {
+        return $this->belongsTo(User::class, 'linked_user_id');
+    }
 
     protected $hidden = [
         'password',

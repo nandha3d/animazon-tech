@@ -199,6 +199,235 @@ class InvoiceController extends Controller
         }
     }
 
+    /**
+     * Generate an invoice from an estimation. Bridges the client (estimate) and
+     * customer (invoice) worlds via the client<->customer link, auto-creating and
+     * linking the customer when needed, then opens the invoice for review.
+     */
+    public function storeFromEstimation($estimation_id)
+    {
+        if (!\Auth::user()->can('create invoice')) {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+
+        $estimation = \App\Models\Estimation::find($estimation_id);
+        if (!$estimation || $estimation->created_by != \Auth::user()->creatorId()) {
+            return redirect()->back()->with('error', __('Invalid Estimate.'));
+        }
+
+        $client = User::find($estimation->client_id);
+        if (!$client) {
+            return redirect()->back()->with('error', __('This estimate has no client.'));
+        }
+
+        // Resolve the linked customer; create + link one if the client has none.
+        $customerId = $client->customer_id;
+        if (empty($customerId) || !Customer::find($customerId)) {
+            $latest      = Customer::where('created_by', \Auth::user()->creatorId())->latest('customer_id')->first();
+            $default_lang = DB::table('settings')->select('value')->where('name', 'default_language')->first();
+
+            $customer                 = new Customer();
+            $customer->customer_id    = $latest ? $latest->customer_id + 1 : 1;
+            $customer->name           = $client->name;
+            $customer->email          = $client->email ?: ('client' . $client->id . '@example.invalid');
+            $customer->contact        = $client->contact;
+            $customer->tax_number     = $client->tax_number;
+            $customer->created_by     = \Auth::user()->creatorId();
+            $customer->linked_user_id = $client->id;
+            foreach (['billing', 'shipping'] as $g) {
+                foreach (['name', 'country', 'state', 'city', 'phone', 'zip', 'address'] as $f) {
+                    $customer->{$g . '_' . $f} = $client->{$g . '_' . $f};
+                }
+            }
+            $customer->lang = !empty($default_lang) ? $default_lang->value : 'en';
+            $customer->save();
+
+            $client->customer_id = $customer->id;
+            $client->save();
+            $customerId = $customer->id;
+        }
+
+        // Default income category (create a "General" one if none exists yet).
+        $category = ProductServiceCategory::where('created_by', \Auth::user()->creatorId())->where('type', 'income')->first();
+        if (!$category) {
+            $category                   = new ProductServiceCategory();
+            $category->name             = 'General';
+            $category->color            = '6777ef';
+            $category->type             = 'income';
+            $category->chart_account_id = 0;
+            $category->created_by       = \Auth::user()->creatorId();
+            $category->save();
+        }
+
+        $invoice              = new Invoice();
+        $invoice->invoice_id  = $this->invoiceNumber();
+        $invoice->customer_id = $customerId;
+        $invoice->status      = 0;
+        $invoice->issue_date  = date('Y-m-d');
+        $invoice->due_date    = date('Y-m-d', strtotime('+15 days'));
+        $invoice->category_id = $category->id;
+        $invoice->ref_number  = 'EST-' . $estimation->estimation_id;
+        $invoice->created_by  = \Auth::user()->creatorId();
+        $invoice->save();
+
+        // Copy estimate line items. The estimate's single tax/discount are carried
+        // onto the items so the estimated cost is preserved for review.
+        $taxId    = $estimation->tax_id ? (string) $estimation->tax_id : '';
+        $discount = (float) $estimation->discount;
+        $first    = true;
+        foreach ($estimation->getProducts as $product) {
+            $ip              = new InvoiceProduct();
+            $ip->invoice_id  = $invoice->id;
+            $ip->product_id  = $product->id;
+            $ip->quantity    = $product->pivot->quantity;
+            $ip->price       = $product->pivot->price;
+            $ip->description = $product->pivot->description;
+            $ip->tax         = $taxId;
+            $ip->discount    = $first ? $discount : 0; // whole-estimate discount on first line
+            $ip->save();
+
+            Utility::total_quantity('minus', $ip->quantity, $ip->product_id);
+            $first = false;
+        }
+
+        return redirect()->route('invoice.edit', \Crypt::encrypt($invoice->id))
+            ->with('success', __('Invoice generated from estimate. Review the details and save.'));
+    }
+
+    /**
+     * Generate an invoice from a Cost Calculator estimate (CostEstimate).
+     * Creates/links a customer from the estimate's visitor info, bills the
+     * estimated cost as a single reviewable line, and links the records.
+     */
+    public function storeFromCostEstimate($id)
+    {
+        if (!\Auth::user()->can('create invoice')) {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+
+        $est = \App\Models\CostEstimate::find($id);
+        if (!$est) {
+            return redirect()->back()->with('error', __('Estimate not found.'));
+        }
+        if (!empty($est->invoice_id) && Invoice::find($est->invoice_id)) {
+            return redirect()->route('invoice.edit', \Crypt::encrypt($est->invoice_id))
+                ->with('error', __('This estimate is already invoiced. Opening the existing invoice.'));
+        }
+
+        $creatorId = \Auth::user()->creatorId();
+
+        // 1. Resolve the customer (existing link -> match by email -> create new).
+        $customer = $est->client_id ? Customer::find($est->client_id) : null;
+        if (!$customer && !empty($est->visitor_email)) {
+            $customer = Customer::where('created_by', $creatorId)->where('email', $est->visitor_email)->first();
+        }
+        if (!$customer) {
+            $latest                = Customer::where('created_by', $creatorId)->latest('customer_id')->first();
+            $customer              = new Customer();
+            $customer->customer_id = $latest ? $latest->customer_id + 1 : 1;
+            $customer->name        = $est->visitor_name ?: $est->project_name;
+            $customer->email       = $est->visitor_email ?: ('lead' . $est->id . '@example.invalid');
+            $customer->contact     = $est->visitor_phone;
+            $customer->created_by  = $creatorId;
+            $customer->lang        = 'en';
+            $customer->save();
+        }
+        $est->client_id = $customer->id;
+
+        // 2. Default income category.
+        $category = ProductServiceCategory::where('created_by', $creatorId)->where('type', 'income')->first();
+        if (!$category) {
+            $category                   = new ProductServiceCategory();
+            $category->name             = 'General';
+            $category->color            = '6777ef';
+            $category->type             = 'income';
+            $category->chart_account_id = 0;
+            $category->created_by       = $creatorId;
+            $category->save();
+        }
+
+        // 3. Reusable bridge product (the estimate has no catalog line items).
+        $product = ProductService::where('created_by', $creatorId)->where('name', 'Project Services')->first();
+        if (!$product) {
+            // unit_id=0 has no matching ProductServiceUnit row, which crashes
+            // templates that assume every product has a unit (e.g. proposal/view.blade.php).
+            $unit = \App\Models\ProductServiceUnit::where('created_by', $creatorId)->first();
+            if (!$unit) {
+                $unit = new \App\Models\ProductServiceUnit();
+                $unit->name = 'Service';
+                $unit->created_by = $creatorId;
+                $unit->save();
+            }
+
+            $product              = new ProductService();
+            $product->name        = 'Project Services';
+            $product->sku         = 'PROJ-SVC-' . $creatorId;
+            $product->sale_price  = 0;
+            $product->purchase_price = 0;
+            $product->category_id = $category->id;
+            $product->unit_id     = $unit->id;
+            $product->type        = 'service';
+            $product->created_by  = $creatorId;
+            $product->save();
+        }
+
+        // 4. Map the estimate's tax percentage to a Tax record (for the line).
+        $taxIdStr = '';
+        if ((float) $est->tax_percentage > 0) {
+            $tax = \App\Models\Tax::where('created_by', $creatorId)->where('rate', $est->tax_percentage)->first();
+            if (!$tax) {
+                $tax             = new \App\Models\Tax();
+                $tax->name       = 'GST ' . rtrim(rtrim((string) $est->tax_percentage, '0'), '.') . '%';
+                $tax->rate       = $est->tax_percentage;
+                $tax->created_by = $creatorId;
+                $tax->save();
+            }
+            $taxIdStr = (string) $tax->id;
+        }
+
+        // 5. Create the draft invoice + single line for the estimated cost.
+        $invoice                   = new Invoice();
+        $invoice->invoice_id       = $this->invoiceNumber();
+        $invoice->customer_id      = $customer->id;
+        $invoice->status           = 0;
+        $invoice->issue_date       = date('Y-m-d');
+        $invoice->due_date         = date('Y-m-d', strtotime('+15 days'));
+        $invoice->category_id      = $category->id;
+        $invoice->ref_number       = 'EST-' . $est->id;
+        $invoice->cost_estimate_id = $est->id;
+        $invoice->project_id       = $est->project_id;
+        $invoice->created_by       = $creatorId;
+        $invoice->save();
+
+        $ip              = new InvoiceProduct();
+        $ip->invoice_id  = $invoice->id;
+        $ip->product_id  = $product->id;
+        $ip->quantity    = 1;
+        $ip->price       = $est->total_cost; // pre-tax subtotal; tax applied via line tax
+        $ip->description = $est->project_name . ($est->timeline_weeks ? (' — ' . $est->timeline_weeks . ' weeks') : '');
+        $ip->tax         = $taxIdStr;
+        $ip->discount    = 0;
+        $ip->save();
+
+        // 6. Back-link estimate -> invoice.
+        $est->invoice_id = $invoice->id;
+        $est->save();
+
+        // 7. Currency sanity check (invoices are in company currency).
+        $settings   = Utility::settings($creatorId);
+        $companyCur = $settings['site_currency'] ?? null;
+        $warn       = '';
+        if (!empty($est->currency_code) && !empty($companyCur) && strtoupper($est->currency_code) !== strtoupper($companyCur)) {
+            $warn = ' ' . __('Note: estimate was in :ec but the invoice uses :cc — review the amount.', [
+                'ec' => $est->currency_code,
+                'cc' => $companyCur,
+            ]);
+        }
+
+        return redirect()->route('invoice.edit', \Crypt::encrypt($invoice->id))
+            ->with('success', __('Invoice generated from estimate. Review the details and save.') . $warn);
+    }
+
     public function edit($ids)
     {
         if (\Auth::user()->can('edit invoice')) {

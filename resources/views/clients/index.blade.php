@@ -34,7 +34,9 @@
                     </div>
                     <div class="client-info flex-1">
                         <div class="d-flex align-items-center gap-2">
-                            <h5 class="mb-1 flex-1">{{ $client->name }}</h5>
+                            <h5 class="mb-1 flex-1">
+                                <a href="{{ route('clients.show', $client->id) }}" class="text-body">{{ $client->name }}</a>
+                            </h5>
                             <div class="btn-group card-option">
                                 <button type="button" class="btn p-0 border-0" data-bs-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">
@@ -100,6 +102,36 @@
                                         <i class="ti ti-adjustments"></i>
                                         <span> {{ __('Reset Password') }}</span>
                                     </a>
+
+                                    @can('manage client asset')
+                                        <a href="{{ route('client-assets.index', $client->id) }}"
+                                            class="dropdown-item"
+                                            data-bs-original-title="{{ __('Manage Websites') }}">
+                                            <i class="ti ti-world"></i>
+                                            <span> {{ __('Manage Websites') }}</span>
+                                        </a>
+                                    @endcan
+
+                                    @can('create customer')
+                                        @if (empty($client->customer_id))
+                                            {!! Form::open([
+                                                'method' => 'POST',
+                                                'route' => ['clients.convert.customer', $client->id],
+                                                'id' => 'convert-cust-' . $client->id,
+                                            ]) !!}
+                                            <a href="#!" class="dropdown-item"
+                                                onclick="event.preventDefault(); document.getElementById('convert-cust-{{ $client->id }}').submit();">
+                                                <i class="ti ti-users"></i>
+                                                <span> {{ __('Make Customer') }}</span>
+                                            </a>
+                                            {!! Form::close() !!}
+                                        @else
+                                            <span class="dropdown-item text-muted">
+                                                <i class="ti ti-check"></i>
+                                                {{ __('Linked as Customer') }}
+                                            </span>
+                                        @endif
+                                    @endcan
                                 </div>
                             </div>
                         </div>

@@ -123,7 +123,7 @@ class ClientController extends Controller
                         'name' => $request->name,
                         'email' => $request->email,
                         'job_title' => $request->job_title,
-                        'password' => !empty($userpassword) ? \Hash::make($userpassword) : null,
+                        'password' => !empty($userpassword) ? \Hash::make($userpassword) : \Hash::make(\Illuminate\Support\Str::random(12)),
                         'type' => 'client',
                         'lang' => !empty($default_language) ? $default_language->value : 'en',
                         'created_by' => $user->creatorId(),
@@ -174,28 +174,6 @@ class ClientController extends Controller
         $usr = Auth::user();
         if(!empty($client) && $usr->id == $client->creatorId() && $client->id != $usr->id && $client->type == 'client')
         {
-            // For Estimations
-            $estimations = $client->clientEstimations()->orderByDesc('id')->get();
-            $curr_month  = $client->clientEstimations()->whereMonth('issue_date', '=', date('m'))->get();
-            $curr_week   = $client->clientEstimations()->whereBetween(
-                'issue_date', [
-                                \Carbon\Carbon::now()->startOfWeek(),
-                                \Carbon\Carbon::now()->endOfWeek(),
-                            ]
-            )->get();
-            $last_30days = $client->clientEstimations()->whereDate('issue_date', '>', \Carbon\Carbon::now()->subDays(30))->get();
-            // Estimation Summary
-            $cnt_estimation                = [];
-            $cnt_estimation['total']       = Estimation::getEstimationSummary($estimations);
-            $cnt_estimation['this_month']  = Estimation::getEstimationSummary($curr_month);
-            $cnt_estimation['this_week']   = Estimation::getEstimationSummary($curr_week);
-            $cnt_estimation['last_30days'] = Estimation::getEstimationSummary($last_30days);
-
-            $cnt_estimation['cnt_total']       = $estimations->count();
-            $cnt_estimation['cnt_this_month']  = $curr_month->count();
-            $cnt_estimation['cnt_this_week']   = $curr_week->count();
-            $cnt_estimation['cnt_last_30days'] = $last_30days->count();
-
             // For Contracts
             $contracts   = $client->clientContracts()->orderByDesc('id')->get();
             $curr_month  = $client->clientContracts()->whereMonth('start_date', '=', date('m'))->get();
@@ -219,7 +197,28 @@ class ClientController extends Controller
             $cnt_contract['cnt_this_week']   = $curr_week->count();
             $cnt_contract['cnt_last_30days'] = $last_30days->count();
 
-            return view('clients.show', compact('client', 'estimations', 'cnt_estimation', 'contracts', 'cnt_contract'));
+            // Client Hub: everything linked to this client in one place.
+            $customer = $client->customerLink;
+
+            $costEstimates = $customer
+                ? \App\Models\CostEstimate::where('client_id', $customer->id)->orderByDesc('id')->get()
+                : collect();
+
+            $clientInvoices = $customer
+                ? Invoice::where('customer_id', $customer->id)->where('created_by', $usr->creatorId())->orderByDesc('id')->get()
+                : collect();
+
+            $clientProjects = $costEstimates->pluck('project_id')->filter()->unique()->isNotEmpty()
+                ? \App\Models\Project::whereIn('id', $costEstimates->pluck('project_id')->filter()->unique())->get()
+                : collect();
+
+            $assets = $client->assets()->orderByDesc('id')->get();
+            $maintenancePlans = $client->maintenancePlans()->orderBy('next_due_date')->get();
+
+            return view('clients.show', compact(
+                'client', 'contracts', 'cnt_contract',
+                'customer', 'costEstimates', 'clientInvoices', 'clientProjects', 'assets', 'maintenancePlans'
+            ));
         }
         else
         {
@@ -356,6 +355,57 @@ class ClientController extends Controller
         );
 
 
+    }
+
+    /**
+     * Make this client also a Customer (same real entity), copying shared
+     * fields and linking the two records both ways.
+     */
+    public function convertToCustomer(User $client)
+    {
+        if(!\Auth::user()->can('create customer'))
+        {
+            return redirect()->back()->with('error', __('Permission Denied.'));
+        }
+
+        $user = \Auth::user();
+        if($client->created_by != $user->creatorId() || $client->type != 'client')
+        {
+            return redirect()->back()->with('error', __('Invalid Client.'));
+        }
+
+        if(!empty($client->customer_id) && \App\Models\Customer::find($client->customer_id))
+        {
+            return redirect()->back()->with('error', __('This client is already linked to a customer.'));
+        }
+
+        $latest      = \App\Models\Customer::where('created_by', '=', $user->creatorId())->latest('customer_id')->first();
+        $customer_no = $latest ? $latest->customer_id + 1 : 1;
+
+        $default_language = DB::table('settings')->select('value')->where('name', 'default_language')->first();
+
+        $customer                  = new \App\Models\Customer();
+        $customer->customer_id     = $customer_no;
+        $customer->name            = $client->name;
+        $customer->email           = $client->email;
+        $customer->contact         = $client->contact;
+        $customer->tax_number      = $client->tax_number;
+        $customer->created_by      = $user->creatorId();
+        $customer->linked_user_id  = $client->id;
+        foreach(['billing', 'shipping'] as $g)
+        {
+            foreach(['name', 'country', 'state', 'city', 'phone', 'zip', 'address'] as $f)
+            {
+                $customer->{$g . '_' . $f} = $client->{$g . '_' . $f};
+            }
+        }
+        $customer->lang = !empty($default_language) ? $default_language->value : 'en';
+        $customer->save();
+
+        $client->customer_id = $customer->id;
+        $client->save();
+
+        return redirect()->back()->with('success', __('Client linked as Customer successfully.'));
     }
 
 

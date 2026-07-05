@@ -238,6 +238,122 @@
     <li class="breadcrumb-item">{{__('Account')}}</li>
 @endsection
 @section('content')
+    @if (!empty($expiringAssets))
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0"><i class="ti ti-alert-triangle text-warning"></i>
+                            {{ __('Website Renewals Due') }}
+                            <span class="badge bg-warning">{{ count($expiringAssets) }}</span>
+                        </h5>
+                        <small class="text-muted">{{ __('Next 30 days') }}</small>
+                    </div>
+                    <div class="card-body table-border-style p-0">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Client') }}</th>
+                                        <th>{{ __('Website') }}</th>
+                                        <th>{{ __('Type') }}</th>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (array_slice($expiringAssets, 0, 8) as $it)
+                                        <tr>
+                                            <td>{{ $it['client'] ?? '-' }}</td>
+                                            <td>{{ $it['asset'] }}</td>
+                                            <td>{{ __($it['label']) }}</td>
+                                            <td>{{ $it['date'] }}
+                                                @if (!empty($it['amount']))
+                                                    <br><small class="text-muted">{{ \Auth::user()->priceFormat($it['amount']) }}</small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($it['overdue'])
+                                                    <span class="badge bg-danger">{{ __('Overdue') }}
+                                                        {{ abs($it['days_left']) }} {{ __('d') }}</span>
+                                                @else
+                                                    <span class="badge bg-warning">{{ $it['days_left'] }}
+                                                        {{ __('d left') }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-end">
+                                                @can('manage client asset')
+                                                    <a href="{{ route('client-assets.index', $it['client_id']) }}"
+                                                        class="btn btn-xs btn-outline-primary">{{ __('View') }}</a>
+                                                @endcan
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+    @if (!empty($maintenanceDue))
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0"><i class="ti ti-repeat text-info"></i>
+                            {{ __('Maintenance / Retainer Billing Due') }}
+                            <span class="badge bg-info">{{ count($maintenanceDue) }}</span>
+                        </h5>
+                        <small class="text-muted">{{ __('Next 30 days') }}</small>
+                    </div>
+                    <div class="card-body table-border-style p-0">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Client') }}</th>
+                                        <th>{{ __('Service') }}</th>
+                                        <th>{{ __('Amount') }}</th>
+                                        <th>{{ __('Due Date') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (array_slice($maintenanceDue, 0, 8) as $it)
+                                        <tr>
+                                            <td>{{ $it['client'] ?? '-' }}</td>
+                                            <td>{{ $it['service'] }}</td>
+                                            <td>{{ \Auth::user()->priceFormat($it['amount']) }}</td>
+                                            <td>{{ $it['due_date'] }}</td>
+                                            <td>
+                                                @if ($it['overdue'])
+                                                    <span class="badge bg-danger">{{ __('Overdue') }}
+                                                        {{ abs($it['days_left']) }} {{ __('d') }}</span>
+                                                @else
+                                                    <span class="badge bg-info">{{ $it['days_left'] }}
+                                                        {{ __('d left') }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-end">
+                                                @can('manage client maintenance')
+                                                    <a href="{{ route('client-maintenance.index', $it['client_id']) }}"
+                                                        class="btn btn-xs btn-outline-primary">{{ __('View') }}</a>
+                                                @endcan
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="row">
         <div class="col-sm-12">
             <div class="row">

@@ -141,7 +141,9 @@ class ProposalController extends Controller
             $proposal->customer_id    = $request->customer_id;
             $proposal->status         = 0;
             $proposal->issue_date     = $request->issue_date;
+            $proposal->valid_till     = $request->valid_till;
             $proposal->category_id    = $request->category_id;
+            $proposal->terms          = $request->terms;
             $proposal->created_by     = \Auth::user()->creatorId();
             $proposal->save();
             CustomField::saveData($proposal, $request->customField);
@@ -247,7 +249,9 @@ class ProposalController extends Controller
                 }
                 $proposal->customer_id    = $request->customer_id;
                 $proposal->issue_date     = $request->issue_date;
+                $proposal->valid_till     = $request->valid_till;
                 $proposal->category_id    = $request->category_id;
+                $proposal->terms          = $request->terms;
                 $proposal->save();
                 CustomField::saveData($proposal, $request->customField);
                 $products = $request->items;
@@ -949,13 +953,154 @@ class ProposalController extends Controller
             $status   = Proposal::$statues;
             $customFields         = CustomField::where('module', '=', 'proposal')->get();
 
-            return view('proposal.customer_proposal',compact('proposal','customer','iteams','customFields','status','user'));
+            // Resolve Razorpay key the same way the estimate document does.
+            $paymentSettings = Utility::getCompanyPaymentSetting($user_id);
+            if (empty($paymentSettings) || !isset($paymentSettings['is_razorpay_enabled'])) {
+                $paymentSettings = Utility::getAdminPaymentSetting();
+            }
+            $razorpayKey = null;
+            if (isset($paymentSettings['is_razorpay_enabled']) && $paymentSettings['is_razorpay_enabled'] === 'on') {
+                $razorpayKey = $paymentSettings['razorpay_public_key'] ?? null;
+            }
+            if (!$razorpayKey) {
+                $razorpayKey = env('RAZORPAY_KEY');
+            }
+
+            return view('proposal.customer_proposal', compact('proposal', 'customer', 'iteams', 'customFields', 'status', 'user', 'razorpayKey'));
         }
         else
         {
             return redirect()->back()->with('error', __('Permission Denied.'));
         }
 
+    }
+
+    /**
+     * Client-facing: approve the proposal (no payment). Used when nothing is
+     * due up front, or the client wants to accept before paying.
+     */
+    public function publicApprove($proposalID)
+    {
+        try {
+            $id = Crypt::decrypt($proposalID);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+
+        $proposal = Proposal::find($id);
+        if (!$proposal) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+        if ($proposal->isAccepted() || $proposal->isDeclined()) {
+            return redirect()->back()->with('error', __('This proposal has already been actioned.'));
+        }
+        if ($proposal->isExpired()) {
+            return redirect()->back()->with('error', __('This proposal has expired. Please contact us for a revised quote.'));
+        }
+
+        $proposal->status = 2; // Accepted
+        $proposal->accepted_at = now();
+        $proposal->save();
+
+        return redirect()->back()->with('success', __('Proposal accepted. Thank you!'));
+    }
+
+    /**
+     * Client-facing: decline the proposal with an optional reason.
+     */
+    public function publicDecline(Request $request, $proposalID)
+    {
+        try {
+            $id = Crypt::decrypt($proposalID);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+
+        $proposal = Proposal::find($id);
+        if (!$proposal) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+        if ($proposal->isAccepted() || $proposal->isDeclined()) {
+            return redirect()->back()->with('error', __('This proposal has already been actioned.'));
+        }
+
+        $proposal->status = 3; // Declined
+        $proposal->declined_at = now();
+        $proposal->decline_reason = $request->input('reason');
+        $proposal->save();
+
+        return redirect()->back()->with('success', __('Proposal declined.'));
+    }
+
+    /**
+     * Client-facing: pay (in full or in part) via Razorpay. Verifies the
+     * payment server-side before recording it, then marks the proposal
+     * Accepted if it wasn't already.
+     */
+    public function publicPayRazorpay(Request $request, $proposalID)
+    {
+        try {
+            $id = Crypt::decrypt($proposalID);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+
+        $proposal = Proposal::find($id);
+        if (!$proposal) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+        if ($proposal->isDeclined()) {
+            return redirect()->back()->with('error', __('This proposal was declined.'));
+        }
+
+        $request->validate([
+            'razorpay_payment_id' => 'required|string',
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        $paymentSettings = Utility::getCompanyPaymentSetting($proposal->created_by);
+        if (empty($paymentSettings) || !isset($paymentSettings['is_razorpay_enabled'])) {
+            $paymentSettings = Utility::getAdminPaymentSetting();
+        }
+        $publicKey = $paymentSettings['razorpay_public_key'] ?? '';
+        $secretKey = $paymentSettings['razorpay_secret_key'] ?? '';
+
+        try {
+            $ch = curl_init('https://api.razorpay.com/v1/payments/' . $request->razorpay_payment_id);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_USERPWD, $publicKey . ':' . $secretKey);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = json_decode(curl_exec($ch));
+            curl_close($ch);
+
+            if (!$response || !isset($response->status) || !in_array($response->status, ['authorized', 'captured'])) {
+                \Illuminate\Support\Facades\Log::warning('Proposal Razorpay verification failed for proposal #' . $id, [
+                    'payment_id' => $request->razorpay_payment_id,
+                    'response' => $response,
+                ]);
+                return redirect()->back()->with('error', __('Payment verification failed. Please contact support.'));
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Proposal Razorpay verification error: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('Payment verification error. Please contact support.'));
+        }
+
+        \App\Models\ProposalPayment::create([
+            'proposal_id' => $proposal->id,
+            'date' => now()->toDateString(),
+            'amount' => $request->amount,
+            'payment_type' => 'razorpay',
+            'transaction_id' => $request->razorpay_payment_id,
+            'created_by' => $proposal->created_by,
+        ]);
+
+        if (!$proposal->isAccepted()) {
+            $proposal->status = 2;
+            $proposal->accepted_at = now();
+        }
+        $proposal->save();
+
+        return redirect()->back()->with('success', __('Payment received. Thank you!'));
     }
 
     public function export()

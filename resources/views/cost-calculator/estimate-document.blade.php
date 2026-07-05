@@ -36,6 +36,31 @@
 <div class="bg-animazon-black min-h-screen py-10 md:py-16">
     <div class="container mx-auto px-4 max-w-4xl">
 
+        {{-- Admin-only action bar (hidden from client visitors) --}}
+        @auth
+            @can('create invoice')
+                <div class="mb-6 flex flex-wrap items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl p-4">
+                    <span class="text-white/70 text-sm">
+                        <i class="ti ti-shield-lock mr-1"></i>{{ __('Admin actions') }}
+                    </span>
+                    <div class="flex items-center gap-2">
+                        @if(!empty($estimate->invoice_id))
+                            <a href="{{ route('invoice.edit', \Crypt::encrypt($estimate->invoice_id)) }}"
+                               class="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold">
+                                <i class="ti ti-file-invoice"></i> {{ __('View Invoice') }}
+                            </a>
+                        @else
+                            <a href="{{ route('invoice.from.cost.estimate', $estimate->id) }}"
+                               onclick="return confirm('{{ __('Generate an invoice from this estimate?') }}')"
+                               class="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold">
+                                <i class="ti ti-file-plus"></i> {{ __('Generate Invoice') }}
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endcan
+        @endauth
+
         {{-- Status Banner --}}
         @if(session('success'))
         <div class="mb-6 bg-green-500/20 border border-green-500/50 rounded-2xl p-4 text-center text-green-400 font-semibold">

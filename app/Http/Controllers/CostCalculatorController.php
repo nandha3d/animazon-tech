@@ -63,6 +63,14 @@ class CostCalculatorController extends Controller
     ];
 
     /**
+     * Pricing policy constants (single source of truth).
+     * Change these to adjust quotes site-wide.
+     */
+    public const ADVANCE_PERCENT = 30;     // upfront advance to start (matches estimate agreement milestone 1)
+    public const GST_PERCENT_IN  = 18;     // GST applied for India clients only
+    public const GST_PERCENT_INTL = 0;     // export of services — zero-rated for non-India
+
+    /**
      * Country names for the dropdown
      */
     private const COUNTRIES = [
@@ -206,8 +214,13 @@ class CostCalculatorController extends Controller
         // India gets base pricing; all other countries get 2x
         $internationalMultiplier = ($countryCode !== 'IN') ? 2.0 : 1.0;
 
-        $totalMultiplier = 1.0;
-        $additionalCosts = 0;
+        // Feature multipliers stack ADDITIVELY (1 + Σ(mult-1)) so picking many
+        // add-ons no longer compounds into runaway totals. Quantity inputs stay
+        // multiplicative (e.g. 5 models = ×5). Each answer contributes its cost
+        // exactly once — either as a multiplier OR a flat add-on, never both.
+        $featureIncrement = 0.0;   // sum of (multiplier - 1) across select answers
+        $quantityMultiplier = 1.0; // product of quantity inputs
+        $additionalCosts = 0.0;
         $costBreakdown = [];
 
         foreach ($answers as $questionId => $answer) {
@@ -224,14 +237,18 @@ class CostCalculatorController extends Controller
                     $answerObj = CostCalculatorAnswer::find($answerId);
                     if (!$answerObj) continue;
 
+                    $mult = (float)$answerObj->cost_multiplier;
+
                     $costBreakdown[] = [
                         'question' => $question->question,
                         'answer' => $answerObj->answer_text,
-                        'multiplier' => $answerObj->cost_multiplier,
-                        'additional_cost' => $answerObj->additional_cost * $internationalMultiplier,
+                        'multiplier' => $mult,
+                        'additional_cost' => (float)$answerObj->additional_cost * $internationalMultiplier,
                     ];
 
-                    $totalMultiplier *= (float)$answerObj->cost_multiplier;
+                    if ($mult > 0) {
+                        $featureIncrement += ($mult - 1.0);
+                    }
                     $additionalCosts += (float)$answerObj->additional_cost;
                 }
             } elseif ($question->type === 'input') {
@@ -241,40 +258,60 @@ class CostCalculatorController extends Controller
                 } else {
                     $val = floatval($answer);
                 }
-                
+                $val = max(0, $val); // never allow negative quantities
+
                 if ($val > 0) {
                     $answerObj = $question->answers->first();
                     if ($answerObj) {
+                        $mult = (float)$answerObj->cost_multiplier;
+                        $add  = (float)$answerObj->additional_cost;
+
+                        // A quantity input is EITHER a per-unit multiplier OR a
+                        // per-unit flat cost — applying both would double-charge.
+                        if ($mult > 0) {
+                            $quantityMultiplier *= ($mult * $val);
+                            $effMultiplier = $mult * $val;
+                            $effAdditional = 0.0;
+                        } else {
+                            $effMultiplier = 1;
+                            $effAdditional = $add * $val;
+                            $additionalCosts += $effAdditional;
+                        }
+
                         $costBreakdown[] = [
                             'question' => $question->question,
                             'answer' => $val . ' × ' . $answerObj->answer_text,
-                            'multiplier' => $answerObj->cost_multiplier > 0 ? ($answerObj->cost_multiplier * $val) : 1,
-                            'additional_cost' => $answerObj->additional_cost * $val * $internationalMultiplier,
+                            'multiplier' => $effMultiplier,
+                            'additional_cost' => $effAdditional * $internationalMultiplier,
                         ];
-
-                        if ((float)$answerObj->cost_multiplier > 0) {
-                            $totalMultiplier *= ((float)$answerObj->cost_multiplier * $val);
-                        }
-                        $additionalCosts += ((float)$answerObj->additional_cost * $val);
                     }
                 }
             }
         }
 
-        $totalCostUsd = ($baseCost * $totalMultiplier) + $additionalCosts;
+        // Combined multiplier: additive features × multiplicative quantity (floored so discounts can't zero it out)
+        $totalMultiplier = max(0.1, 1.0 + $featureIncrement) * $quantityMultiplier;
 
-        // Apply 2x international margin on USD total BEFORE currency conversion
-        $totalCostUsd *= $internationalMultiplier;
+        // Scope cost in base (India) USD — used for timeline/team sizing
+        $scopeCost = ($baseCost * $totalMultiplier) + $additionalCosts;
+
+        // Apply international margin to reach the client-facing pre-tax subtotal
+        $subtotalUsd = $scopeCost * $internationalMultiplier;
         $baseCostEffective = $baseCost * $internationalMultiplier;
+
+        // Tax (GST) — India only; export of services is zero-rated elsewhere
+        $gstPercent = ($countryCode === 'IN') ? self::GST_PERCENT_IN : self::GST_PERCENT_INTL;
+        $gstUsd = round($subtotalUsd * $gstPercent / 100, 2);
+        $grandTotalUsd = round($subtotalUsd + $gstUsd, 2);
+
+        // Payment schedule
+        $advanceUsd = round($grandTotalUsd * self::ADVANCE_PERCENT / 100, 2);
+        $balanceUsd = round($grandTotalUsd - $advanceUsd, 2);
 
         // Convert to local currency
         $currency = self::CURRENCY_MAP[$countryCode] ?? self::CURRENCY_MAP['US'];
-        $totalCostLocal = $totalCostUsd * $currency['rate'];
-        $baseCostLocal = $baseCostEffective * $currency['rate'];
-        $additionalCostsLocal = ($additionalCosts * $internationalMultiplier) * $currency['rate'];
+        $rate = $currency['rate'];
 
-        // Timeline and team estimation based on original USD scope (not inflated)
-        $scopeCost = ($baseCost * $totalMultiplier) + $additionalCosts;
         $timeline = $this->estimateTimeline($scopeCost);
         $teamSize = $this->estimateTeamSize($scopeCost);
 
@@ -282,12 +319,25 @@ class CostCalculatorController extends Controller
             'success' => true,
             'project_type' => $projectType->name,
             'base_cost_usd' => round($baseCostEffective, 2),
-            'base_cost_local' => round($baseCostLocal, 2),
+            'base_cost_local' => round($baseCostEffective * $rate, 2),
             'total_multiplier' => round($totalMultiplier, 2),
             'additional_costs_usd' => round($additionalCosts * $internationalMultiplier, 2),
-            'additional_costs_local' => round($additionalCostsLocal, 2),
-            'total_cost_usd' => round($totalCostUsd, 2),
-            'total_cost_local' => round($totalCostLocal, 2),
+            'additional_costs_local' => round($additionalCosts * $internationalMultiplier * $rate, 2),
+            // Pre-tax subtotal (kept as total_cost_* for backward compatibility with the frontend)
+            'total_cost_usd' => round($subtotalUsd, 2),
+            'total_cost_local' => round($subtotalUsd * $rate, 2),
+            // Tax + grand total
+            'gst_percent' => $gstPercent,
+            'gst_usd' => $gstUsd,
+            'gst_local' => round($gstUsd * $rate, 2),
+            'grand_total_usd' => $grandTotalUsd,
+            'grand_total_local' => round($grandTotalUsd * $rate, 2),
+            // Payment schedule
+            'advance_percent' => self::ADVANCE_PERCENT,
+            'advance_usd' => $advanceUsd,
+            'advance_local' => round($advanceUsd * $rate, 2),
+            'balance_usd' => $balanceUsd,
+            'balance_local' => round($balanceUsd * $rate, 2),
             'currency' => $currency,
             'timeline_weeks' => $timeline,
             'team_size' => $teamSize,
@@ -337,6 +387,12 @@ class CostCalculatorController extends Controller
             $documentPath = $request->file('document')->store('estimates/documents', 'public');
         }
 
+        // Derive tax from the subtotal/grand-total the client was shown
+        $subtotal = (float)$request->total_cost;
+        $grandTotal = (float)$request->grand_total;
+        $taxAmount = max(0, round($grandTotal - $subtotal, 2));
+        $taxPercentage = $subtotal > 0 ? round(($taxAmount / $subtotal) * 100, 2) : 0;
+
         $estimate = CostEstimate::create([
             'project_type_id' => $request->project_type_id,
             'project_name' => $projectType->name . ' Project - ' . $request->visitor_name,
@@ -344,10 +400,10 @@ class CostCalculatorController extends Controller
             'visitor_email' => $request->visitor_email,
             'visitor_phone' => $request->visitor_phone,
             'base_cost' => $projectType->base_cost,
-            'total_cost' => $request->total_cost,
-            'tax_percentage' => 0,
-            'tax_amount' => 0,
-            'grand_total' => $request->grand_total,
+            'total_cost' => $subtotal,
+            'tax_percentage' => $taxPercentage,
+            'tax_amount' => $taxAmount,
+            'grand_total' => $grandTotal,
             'currency_code' => $currency['code'],
             'timeline_weeks' => $request->timeline_weeks,
             'team_size' => $request->team_size,
@@ -421,9 +477,9 @@ class CostCalculatorController extends Controller
             Log::warning('CRM Lead generation failed: ' . $e->getMessage());
         }
 
-        // Create Project in Projects section
+        // Create Project in Projects section and link it to the estimate both ways
         try {
-            Project::create([
+            $project = Project::create([
                 'project_name' => $projectType->name . ' - ' . $request->visitor_name,
                 'start_date' => now()->format('Y-m-d'),
                 'end_date' => $request->timeline_weeks ? now()->addWeeks((int)$request->timeline_weeks)->format('Y-m-d') : null,
@@ -435,7 +491,9 @@ class CostCalculatorController extends Controller
                 'status' => 'estimated',
                 'estimated_hrs' => ((int)$request->timeline_weeks * 40 * ((int)$request->team_size ?: 1)),
                 'created_by' => $adminId,
+                'cost_estimate_id' => $estimate->id,
             ]);
+            $estimate->update(['project_id' => $project->id]);
         } catch (\Exception $e) {
             Log::warning('Project generation failed: ' . $e->getMessage());
         }

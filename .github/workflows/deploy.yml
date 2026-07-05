@@ -1,0 +1,107 @@
+name: Deploy to Production
+
+# Auto-deploys on every push to master, per team decision (2026-07-05).
+# Server: Hostinger shared/business hosting, SSH-enabled.
+# Runtime data (storage/app, storage/logs, public/uploads, public/storage) is
+# NEVER transferred by this pipeline — those directories hold real client
+# uploads (logos, portfolios, credentials) that do not exist in git and must
+# never be touched by an automated deploy.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+env:
+  REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
+  REMOTE_PORT: ${{ secrets.DEPLOY_PORT }}
+  REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+  REMOTE_PATH: ${{ secrets.DEPLOY_PATH }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install PHP dependencies (for the asset build step only; vendor/ is rebuilt on the server)
+        run: composer install --no-dev --prefer-dist --no-progress --no-interaction
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Assemble deploy artifact (code only — no vendor, no runtime data)
+        run: |
+          mkdir -p .deploy-artifact
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='node_modules/' \
+            --exclude='vendor/' \
+            --exclude='tests/' \
+            --exclude='deploy/' \
+            --exclude='.deploy/' \
+            --exclude='.deploy-artifact/' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='storage/app/' \
+            --exclude='storage/logs/' \
+            --exclude='storage/framework/cache/' \
+            --exclude='storage/framework/sessions/' \
+            --exclude='storage/framework/views/' \
+            --exclude='bootstrap/cache/*.php' \
+            --exclude='public/uploads/' \
+            --exclude='public/storage' \
+            --exclude='public/hot' \
+            --exclude='_tmp_*.php' \
+            --exclude='*.log' \
+            ./ .deploy-artifact/
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$REMOTE_PORT" "$REMOTE_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Copy deploy scripts to server
+        run: |
+          rsync -az -e "ssh -i ~/.ssh/deploy_key -p $REMOTE_PORT" \
+            .deploy/backup.sh .deploy/post-deploy.sh \
+            "$REMOTE_USER@$REMOTE_HOST:/tmp/"
+
+      - name: Backup current release on server
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
+            "DEPLOY_PATH='$REMOTE_PATH' bash /tmp/backup.sh"
+
+      - name: Sync code to server (additive only — never deletes)
+        run: |
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -p $REMOTE_PORT" \
+            .deploy-artifact/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
+
+      - name: Post-deploy — clear stale cache, install deps, migrate, re-cache
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
+            "DEPLOY_PATH='$REMOTE_PATH' bash /tmp/post-deploy.sh"
+
+      - name: Health check
+        run: |
+          sleep 3
+          curl -sf -o /dev/null -w "HTTP %{http_code}\n" "${{ secrets.DEPLOY_HEALTHCHECK_URL }}" || (echo "Health check failed" && exit 1)

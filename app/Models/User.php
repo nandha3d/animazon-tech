@@ -51,7 +51,49 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_enable_login',
         'last_login_at',
         'created_by',
+        'customer_id',
+        'job_title',
+        'contact',
+        'tax_number',
+        'billing_name',
+        'billing_country',
+        'billing_state',
+        'billing_city',
+        'billing_phone',
+        'billing_zip',
+        'billing_address',
+        'shipping_name',
+        'shipping_country',
+        'shipping_state',
+        'shipping_city',
+        'shipping_phone',
+        'shipping_zip',
+        'shipping_address',
     ];
+
+    /**
+     * The customers-table row this client is linked to (same real entity).
+     */
+    public function customerLink()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    /**
+     * MSP website/infrastructure assets managed for this client.
+     */
+    public function assets()
+    {
+        return $this->hasMany(ClientAsset::class, 'client_id');
+    }
+
+    /**
+     * Recurring maintenance/retainer plans billed to this client.
+     */
+    public function maintenancePlans()
+    {
+        return $this->hasMany(ClientMaintenancePlan::class, 'client_id');
+    }
 
     protected $hidden = [
         'password',

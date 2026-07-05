@@ -15,7 +15,21 @@ class Invoice extends Model
         'status',
         'category_id',
         'created_by',
+        'cost_estimate_id',
+        'project_id',
     ];
+
+    /** The Cost Calculator estimate this invoice was generated from. */
+    public function costEstimate()
+    {
+        return $this->belongsTo(CostEstimate::class, 'cost_estimate_id');
+    }
+
+    /** The project this invoice is billed against. */
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
 
     public static $statues = [
         'Draft',

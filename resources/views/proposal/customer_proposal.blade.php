@@ -126,7 +126,7 @@
                                  @endif
                                  <div class="col">
                                      <div class="float-end mt-3">
-                                        @if($settings['qr_display'] == 'on')
+                                        @if(($settings['qr_display'] ?? null) == 'on')
                                          {!! DNS2D::getBarcodeHTML(route('proposal.link.copy',\Illuminate\Support\Facades\Crypt::encrypt($proposal->id)), "QRCODE",2,2) !!}
                                         @endif
                                      </div>
@@ -135,7 +135,7 @@
                              </div>
                              <div class="row mt-2">
                                 <div class="col">
-                                    @if($company_setting['vat_gst_number_switch'] == 'on')
+                                    @if(($company_setting['vat_gst_number_switch'] ?? null) == 'on')
                                     @if(!empty($company_setting['tax_type']) && !empty($company_setting['vat_number'])){{$company_setting['tax_type'].' '. __('Number')}} : {{$company_setting['vat_number']}} <br>@endif
 
                                     <strong>{{__('Tax Number ')}} : </strong>{{!empty($customer->tax_number)?$customer->tax_number:'--'}}
@@ -307,7 +307,211 @@
             </div>
         </div>
     </div>
+
+    @php
+        $isExpired = $proposal->isExpired();
+        $isAccepted = $proposal->isAccepted();
+        $isDeclined = $proposal->isDeclined();
+        $isPending = !$isAccepted && !$isDeclined;
+        $totalDue = $proposal->getDue();
+        $totalPaid = $proposal->amountPaid();
+    @endphp
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ __('Status & Actions') }}</h5>
+                </div>
+                <div class="card-body">
+
+                    {{-- Validity --}}
+                    @if($proposal->valid_till)
+                        <p class="text-muted mb-3">
+                            <i class="ti ti-calendar-due"></i>
+                            {{ __('Valid till') }} <strong>{{ $user->dateFormat($proposal->valid_till) }}</strong>
+                            @if($isExpired && $isPending)
+                                <span class="badge bg-danger ms-1">{{ __('Expired') }}</span>
+                            @endif
+                        </p>
+                    @endif
+
+                    {{-- Terms --}}
+                    @if(!empty($proposal->terms))
+                        <div class="alert alert-light border mb-4">
+                            <strong>{{ __('Terms') }}:</strong>
+                            <div style="white-space:pre-line">{{ $proposal->terms }}</div>
+                        </div>
+                    @endif
+
+                    {{-- Decision banner / actions --}}
+                    @if($isAccepted)
+                        <div class="alert alert-success d-flex align-items-center gap-2">
+                            <i class="ti ti-circle-check fs-4"></i>
+                            <div>
+                                <strong>{{ __('Accepted') }}</strong>
+                                @if($proposal->accepted_at)
+                                    — {{ $user->dateFormat($proposal->accepted_at) }}
+                                @endif
+                            </div>
+                        </div>
+                    @elseif($isDeclined)
+                        <div class="alert alert-secondary d-flex align-items-center gap-2">
+                            <i class="ti ti-circle-x fs-4"></i>
+                            <div>
+                                <strong>{{ __('Declined') }}</strong>
+                                @if($proposal->declined_at)
+                                    — {{ $user->dateFormat($proposal->declined_at) }}
+                                @endif
+                                @if($proposal->decline_reason)
+                                    <br><small class="text-muted">{{ $proposal->decline_reason }}</small>
+                                @endif
+                            </div>
+                        </div>
+                    @elseif($isExpired)
+                        <div class="alert alert-warning d-flex align-items-center gap-2">
+                            <i class="ti ti-clock-exclamation fs-4"></i>
+                            <div>{{ __('This proposal has expired. Please contact us for a revised quote.') }}</div>
+                        </div>
+                    @else
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            {!! Form::open(['route' => ['proposal.public.approve', \Illuminate\Support\Facades\Crypt::encrypt($proposal->id)], 'method' => 'POST', 'class' => 'd-inline']) !!}
+                            <button type="submit" class="btn btn-success">
+                                <i class="ti ti-check"></i> {{ __('Approve Proposal') }}
+                            </button>
+                            {!! Form::close() !!}
+
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#declineModal">
+                                <i class="ti ti-x"></i> {{ __('Decline') }}
+                            </button>
+                        </div>
+
+                        <div class="modal fade" id="declineModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    {!! Form::open(['route' => ['proposal.public.decline', \Illuminate\Support\Facades\Crypt::encrypt($proposal->id)], 'method' => 'POST']) !!}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ __('Decline this proposal') }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <label class="form-label">{{ __('Reason (optional)') }}</label>
+                                        <textarea name="reason" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                                        <button type="submit" class="btn btn-danger">{{ __('Decline Proposal') }}</button>
+                                    </div>
+                                    {!! Form::close() !!}
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Payment summary --}}
+                    <hr>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block">{{ __('Total') }}</small>
+                            <strong class="fs-5">{{ \App\Models\Utility::priceFormat($settings, $proposal->getTotal()) }}</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block">{{ __('Paid') }}</small>
+                            <strong class="fs-5 text-success">{{ \App\Models\Utility::priceFormat($settings, $totalPaid) }}</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block">{{ __('Due') }}</small>
+                            <strong class="fs-5 {{ $totalDue > 0 ? 'text-danger' : 'text-success' }}">{{ \App\Models\Utility::priceFormat($settings, max($totalDue, 0)) }}</strong>
+                        </div>
+                    </div>
+
+                    @if($proposal->payments->count() > 0)
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Method') }}</th>
+                                        <th>{{ __('Reference') }}</th>
+                                        <th class="text-end">{{ __('Amount') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($proposal->payments as $payment)
+                                        <tr>
+                                            <td>{{ $user->dateFormat($payment->date) }}</td>
+                                            <td>{{ ucfirst($payment->payment_type) }}</td>
+                                            <td class="text-muted">{{ $payment->transaction_id }}</td>
+                                            <td class="text-end">{{ \App\Models\Utility::priceFormat($settings, $payment->amount) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
+                    {{-- Pay Now --}}
+                    @if(!$isDeclined && !$isExpired && $totalDue > 0)
+                        <div class="border rounded p-3 text-center">
+                            @if(!empty($razorpayKey))
+                                <button id="rzpProposalPayBtn" type="button" class="btn btn-primary btn-lg">
+                                    <i class="ti ti-shield-check"></i> {{ __('Pay Now') }} — {{ \App\Models\Utility::priceFormat($settings, $totalDue) }}
+                                </button>
+                                <p class="text-muted small mt-2 mb-0"><i class="ti ti-lock"></i> {{ __('Secured by Razorpay') }}</p>
+                            @else
+                                <p class="text-muted mb-0">{{ __('Online payment is not configured yet. Please contact us to arrange payment.') }}</p>
+                            @endif
+                        </div>
+                    @endif
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@if(!$isDeclined && !$isExpired && $totalDue > 0 && !empty($razorpayKey))
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.getElementById('rzpProposalPayBtn').addEventListener('click', function () {
+            var options = {
+                key: "{{ $razorpayKey }}",
+                amount: {{ (int) round($totalDue * 100) }},
+                currency: "INR",
+                name: "{{ Utility::companyData($proposal->created_by, 'title_text') ?: config('app.name', 'ANIMAZON') }}",
+                description: "{{ __('Proposal') }} {{ $user->proposalNumberFormat($proposal->proposal_id) }}",
+                handler: function (response) {
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = "{{ route('proposal.public.pay.razorpay', \Illuminate\Support\Facades\Crypt::encrypt($proposal->id)) }}";
+
+                    var csrf = document.createElement('input');
+                    csrf.type = 'hidden'; csrf.name = '_token'; csrf.value = "{{ csrf_token() }}";
+                    form.appendChild(csrf);
+
+                    var payId = document.createElement('input');
+                    payId.type = 'hidden'; payId.name = 'razorpay_payment_id'; payId.value = response.razorpay_payment_id;
+                    form.appendChild(payId);
+
+                    var amt = document.createElement('input');
+                    amt.type = 'hidden'; amt.name = 'amount'; amt.value = "{{ $totalDue }}";
+                    form.appendChild(amt);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                },
+                prefill: {
+                    name: "{{ $customer->name ?? '' }}",
+                    email: "{{ $customer->email ?? '' }}",
+                    contact: "{{ $customer->contact ?? '' }}"
+                },
+                theme: { color: "#0f9c86" }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+        });
+    </script>
+@endif
 
 <footer id="footer-main">
     <div class="footer-dark">

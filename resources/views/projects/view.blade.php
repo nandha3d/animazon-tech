@@ -563,6 +563,75 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6 col-12 mb-4">
+            <div class="card mb-0">
+                <div class="card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5>{{ __('Invoices') }} ({{ $projectInvoices->count() }})</h5>
+                        @can('create invoice')
+                            @if ($project->cost_estimate_id && !$project->costEstimate?->invoice_id)
+                                <a href="{{ route('invoice.from.cost.estimate', $project->cost_estimate_id) }}"
+                                    onclick="return confirm('{{ __('Generate an invoice from this project\'s estimate?') }}')"
+                                    class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
+                                    title="{{ __('Generate Invoice from Estimate') }}">
+                                    <i class="ti ti-file-plus"></i>
+                                </a>
+                            @else
+                                <a href="{{ route('invoice.create') }}" class="btn btn-sm btn-primary"
+                                    data-bs-toggle="tooltip" title="{{ __('Create Invoice') }}">
+                                    <i class="ti ti-plus"></i>
+                                </a>
+                            @endif
+                        @endcan
+                    </div>
+                </div>
+                <div class="card-body activity-scroll">
+                    @if ($projectInvoices->count() > 0)
+                        <ul class="list-group list-group-flush">
+                            @foreach ($projectInvoices as $inv)
+                                <li class="list-group-item px-0">
+                                    <div class="row align-items-center justify-content-between">
+                                        <div class="col-sm-auto mb-2 mb-sm-0">
+                                            <h6 class="m-0">{{ \Auth::user()->invoiceNumberFormat($inv->invoice_id) }}</h6>
+                                            <small class="text-muted">{{ \Auth::user()->priceFormat($inv->getTotal()) }}</small>
+                                        </div>
+                                        <div class="col-sm-auto text-sm-end d-flex align-items-center gap-2">
+                                            @if ($inv->status == 0)
+                                                <span class="status_badge badge bg-secondary p-2 px-3 rounded">{{ __(\App\Models\Invoice::$statues[$inv->status]) }}</span>
+                                            @elseif($inv->status == 1)
+                                                <span class="status_badge badge bg-warning p-2 px-3 rounded">{{ __(\App\Models\Invoice::$statues[$inv->status]) }}</span>
+                                            @elseif($inv->status == 2)
+                                                <span class="status_badge badge bg-danger p-2 px-3 rounded">{{ __(\App\Models\Invoice::$statues[$inv->status]) }}</span>
+                                            @elseif($inv->status == 3)
+                                                <span class="status_badge badge bg-info p-2 px-3 rounded">{{ __(\App\Models\Invoice::$statues[$inv->status]) }}</span>
+                                            @elseif($inv->status == 4)
+                                                <span class="status_badge badge bg-primary p-2 px-3 rounded">{{ __(\App\Models\Invoice::$statues[$inv->status]) }}</span>
+                                            @endif
+                                            @can('show invoice')
+                                                <a href="{{ route('invoice.show', \Crypt::encrypt($inv->id)) }}"
+                                                    class="btn btn-sm bg-warning">
+                                                    <i class="ti ti-eye text-white"></i>
+                                                </a>
+                                            @endcan
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                        <div class="text-end mt-3">
+                            <strong>{{ __('Total Billed') }}: {{ \Auth::user()->priceFormat($invoicedTotal) }}</strong>
+                            @if ($project->budget)
+                                <br><small class="text-muted">{{ __('Budget') }}: {{ \Auth::user()->priceFormat($project->budget) }}</small>
+                            @endif
+                        </div>
+                    @else
+                        <div class="py-5">
+                            <h6 class="h6 text-center">{{ __('No Invoice Found.') }}</h6>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
         @can('view activity')
             <div class="col-xl-6">
                 <div class="card">

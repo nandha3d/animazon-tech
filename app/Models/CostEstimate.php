@@ -29,7 +29,9 @@ class CostEstimate extends Model
         'document_path',
         'sent_at',
         'accepted_at',
-        'rejected_at'
+        'rejected_at',
+        'invoice_id',
+        'project_id',
     ];
 
     protected $casts = [
@@ -56,5 +58,17 @@ class CostEstimate extends Model
     public function answers()
     {
         return $this->hasMany(CostEstimateAnswer::class);
+    }
+
+    /** The invoice generated from this estimate (if billed). */
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+
+    /** The project created for this estimate. */
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
     }
 }

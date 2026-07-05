@@ -10,11 +10,23 @@ class Proposal extends Model
         'proposal_id',
         'customer_id',
         'issue_date',
+        'valid_till',
         'status',
         'category_id',
+        'terms',
         'is_convert',
         'converted_invoice_id',
+        'accepted_at',
+        'declined_at',
+        'decline_reason',
         'created_by',
+    ];
+
+    protected $casts = [
+        'issue_date'  => 'date',
+        'valid_till'  => 'date',
+        'accepted_at' => 'datetime',
+        'declined_at' => 'datetime',
     ];
 
     public static $statues = [
@@ -39,6 +51,32 @@ class Proposal extends Model
     public function customer()
     {
         return $this->hasOne('App\Models\Customer', 'id', 'customer_id');
+    }
+
+    /** Payments recorded against this proposal (client pay-now on the tracking page). */
+    public function payments()
+    {
+        return $this->hasMany(ProposalPayment::class, 'proposal_id');
+    }
+
+    public function amountPaid()
+    {
+        return $this->payments->sum('amount');
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->valid_till && now()->startOfDay()->gt($this->valid_till);
+    }
+
+    public function isAccepted(): bool
+    {
+        return (int) $this->status === 2;
+    }
+
+    public function isDeclined(): bool
+    {
+        return (int) $this->status === 3;
     }
 
     public function getSubTotal()
@@ -92,13 +130,13 @@ class Proposal extends Model
 
     public function getDue()
     {
-        $due = 0;
+        $paid = 0;
         foreach($this->payments as $payment)
         {
-            $due += $payment->amount;
+            $paid += $payment->amount;
         }
 
-        return ($this->getTotal() - $due) - $this->invoiceTotalCreditNote();
+        return $this->getTotal() - $paid;
     }
 
     public static function change_status($proposal_id, $status)

@@ -16,6 +16,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+
+        // Daily digest of client website SSL / hosting / domain renewals.
+        $schedule->command('assets:renewal-reminders')->dailyAt('08:00');
     }
 
     /**

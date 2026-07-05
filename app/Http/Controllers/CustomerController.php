@@ -150,6 +150,73 @@ class CustomerController extends Controller
     }
 
 
+    /**
+     * Create a customer from an inline modal (e.g. the invoice screen) and
+     * return JSON so the caller can inject it into a dropdown without leaving
+     * the page. Mirrors store() but never redirects.
+     */
+    public function storeAjax(Request $request)
+    {
+        if(!\Auth::user()->can('create customer'))
+        {
+            return response()->json(['error' => __('Permission denied.')], 401);
+        }
+
+        $rules = [
+            'name'    => 'required',
+            'contact' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/',
+            'email'   => [
+                'required',
+                'email',
+                Rule::unique('customers')->where(function ($query) {
+                    return $query->where('created_by', \Auth::user()->creatorId());
+                }),
+            ],
+        ];
+
+        $validator = \Validator::make($request->all(), $rules);
+        if($validator->fails())
+        {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
+        $objCustomer    = \Auth::user();
+        $creator        = User::find($objCustomer->creatorId());
+        $total_customer = $objCustomer->countCustomers();
+        $plan           = Plan::find($creator->plan);
+        if(!($total_customer < $plan->max_customers || $plan->max_customers == -1))
+        {
+            return response()->json(['error' => __('Your user limit is over, Please upgrade plan.')], 422);
+        }
+
+        $default_language = DB::table('settings')->select('value')->where('name', 'default_language')->first();
+
+        $customer                  = new Customer();
+        $customer->customer_id     = $this->customerNumber();
+        $customer->name            = $request->name;
+        $customer->contact         = $request->contact;
+        $customer->email           = $request->email;
+        $customer->tax_number      = $request->tax_number;
+        $customer->created_by      = \Auth::user()->creatorId();
+        $customer->billing_name    = $request->billing_name;
+        $customer->billing_country = $request->billing_country;
+        $customer->billing_state   = $request->billing_state;
+        $customer->billing_city    = $request->billing_city;
+        $customer->billing_phone   = $request->billing_phone;
+        $customer->billing_zip     = $request->billing_zip;
+        $customer->billing_address = $request->billing_address;
+        $customer->lang            = !empty($default_language) ? $default_language->value : '';
+        $customer->save();
+
+        CustomField::saveData($customer, $request->customField);
+
+        return response()->json([
+            'id'      => $customer->id,
+            'text'    => $customer->name,
+            'message' => __('Customer successfully created.'),
+        ]);
+    }
+
     public function show($ids)
     {
         try {
@@ -266,6 +333,79 @@ class CustomerController extends Controller
         }
 
         return $latest->customer_id + 1;
+    }
+
+    /**
+     * Make this customer also a Client (same real entity), copying shared
+     * fields and linking the two records both ways.
+     */
+    public function convertToClient(Customer $customer)
+    {
+        if(!\Auth::user()->can('create client'))
+        {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+
+        $user = \Auth::user();
+        if($customer->created_by != $user->creatorId())
+        {
+            return redirect()->back()->with('error', __('Invalid Customer.'));
+        }
+
+        if(!empty($customer->linked_user_id) && User::find($customer->linked_user_id))
+        {
+            return redirect()->back()->with('error', __('This customer is already linked to a client.'));
+        }
+
+        // email must be unique in the users table
+        if(User::where('email', $customer->email)->exists())
+        {
+            return redirect()->back()->with('error', __('A user with this email already exists. Cannot create client.'));
+        }
+
+        $creator      = User::find($user->creatorId());
+        $plan         = Plan::find($creator->plan);
+        $total_client = User::where('created_by', '=', $user->creatorId())->where('type', 'client')->count();
+        if(!($total_client < $plan->max_clients || $plan->max_clients == -1))
+        {
+            return redirect()->back()->with('error', __('Your user limit is over, Please upgrade plan.'));
+        }
+
+        $default_language = DB::table('settings')->select('value')->where('name', 'default_language')->where('created_by', '=', $user->creatorId())->first();
+
+        $client = User::create([
+            'name'              => $customer->name,
+            'email'             => $customer->email,
+            'contact'           => $customer->contact,
+            'tax_number'        => $customer->tax_number,
+            'password'          => Hash::make(\Illuminate\Support\Str::random(12)),
+            'type'              => 'client',
+            'lang'              => !empty($default_language) ? $default_language->value : 'en',
+            'created_by'        => $user->creatorId(),
+            'email_verified_at' => date('Y-m-d H:i:s'),
+            'is_enable_login'   => 0,
+            'customer_id'       => $customer->id,
+            'billing_name'      => $customer->billing_name,
+            'billing_country'   => $customer->billing_country,
+            'billing_state'     => $customer->billing_state,
+            'billing_city'      => $customer->billing_city,
+            'billing_phone'     => $customer->billing_phone,
+            'billing_zip'       => $customer->billing_zip,
+            'billing_address'   => $customer->billing_address,
+            'shipping_name'     => $customer->shipping_name,
+            'shipping_country'  => $customer->shipping_country,
+            'shipping_state'    => $customer->shipping_state,
+            'shipping_city'     => $customer->shipping_city,
+            'shipping_phone'    => $customer->shipping_phone,
+            'shipping_zip'      => $customer->shipping_zip,
+            'shipping_address'  => $customer->shipping_address,
+        ]);
+        $client->assignRole(Role::findByName('client'));
+
+        $customer->linked_user_id = $client->id;
+        $customer->save();
+
+        return redirect()->back()->with('success', __('Customer linked as Client successfully.'));
     }
 
     public function customerLogout(Request $request)

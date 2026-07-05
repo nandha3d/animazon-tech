@@ -373,7 +373,14 @@ class ProjectController extends Controller
 
                 // end chart
 
-                return view('projects.view',compact('project','project_data' , 'last_task'));
+                // Invoices billed against this project (interlink)
+                $projectInvoices = \App\Models\Invoice::where('project_id', $project->id)
+                    ->where('created_by', \Auth::user()->creatorId())
+                    ->orderByDesc('id')
+                    ->get();
+                $invoicedTotal = $projectInvoices->sum(fn ($inv) => $inv->getTotal());
+
+                return view('projects.view',compact('project','project_data' , 'last_task', 'projectInvoices', 'invoicedTotal'));
             }
             else
             {
@@ -805,9 +812,35 @@ class ProjectController extends Controller
                     ];
                     $tasks[]             = $tmp;
                 }
+
+                // Milestones on the same timeline (read-only markers, not draggable)
+                foreach($project->milestones as $milestone)
+                {
+                    if(empty($milestone->start_date) || empty($milestone->due_date))
+                    {
+                        continue;
+                    }
+                    $tasks[] = [
+                        'id'           => 'milestone_' . $milestone->id,
+                        'name'         => "\u{1F4CD} " . $milestone->title,
+                        'start'        => $milestone->start_date,
+                        'end'          => $milestone->due_date,
+                        'custom_class' => 'milestone',
+                        'progress'     => (int) str_replace('%', '', (string) $milestone->progress),
+                        'extra'        => [
+                            'priority' => ucfirst(__($milestone->status)),
+                            'comments' => 0,
+                            'duration' => Utility::getDateFormated($milestone->start_date) . ' - ' . Utility::getDateFormated($milestone->due_date),
+                        ],
+                    ];
+                }
             }
 
-            return view('projects.gantt', compact('project', 'tasks', 'duration'));
+            // Estimate / invoice status strip so billing context stays visible on the timeline
+            $costEstimate = $project->cost_estimate_id ? \App\Models\CostEstimate::find($project->cost_estimate_id) : null;
+            $projectInvoices = $project ? \App\Models\Invoice::where('project_id', $project->id)->where('created_by', \Auth::user()->creatorId())->get() : collect();
+
+            return view('projects.gantt', compact('project', 'tasks', 'duration', 'costEstimate', 'projectInvoices'));
         }
 
         else

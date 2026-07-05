@@ -26,7 +26,30 @@
 
 @endpush
 @push('script-page')
-
+    <script>
+        $(document).on('click', '.copy-client-link', function (e) {
+            e.preventDefault();
+            var link = $(this).data('link');
+            var done = function () {
+                if (typeof show_toastr === 'function') {
+                    show_toastr('{{ __('Success') }}', '{{ __('Client link copied to clipboard') }}', 'success');
+                }
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(link).then(done);
+            } else {
+                var t = document.createElement('textarea');
+                t.value = link;
+                t.style.position = 'fixed';
+                document.body.appendChild(t);
+                t.focus();
+                t.select();
+                document.execCommand('copy');
+                document.body.removeChild(t);
+                done();
+            }
+        });
+    </script>
 @endpush
 @section('content')
 
@@ -141,6 +164,11 @@
                                                     </a>
                                                 </div>
                                             @endcan
+                                            <div class="action-btn me-2">
+                                                <a href="#" class="mx-3 btn btn-sm align-items-center bg-success copy-client-link" data-bs-toggle="tooltip" title="{{__('Copy Client Link')}}" data-original-title="{{__('Copy Client Link')}}" data-link="{{ route('proposal.link.copy', \Crypt::encrypt($proposal->id)) }}">
+                                                    <i class="ti ti-link text-white"></i>
+                                                </a>
+                                            </div>
                                             @can('show proposal')
 
                                                     <div class="action-btn me-2">
