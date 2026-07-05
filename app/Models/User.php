@@ -161,7 +161,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $float_number = Utility::getValByName('float_number') == 'dot' ? '.' : ',';
 
         if ($length > 3) {
-            $decimal_separator = Utility::getValByName('decimal_separator') == 'dot' ? ',' : ',';
+            $decimal_separator = Utility::getValByName('decimal_separator') == 'dot' ? '.' : ',';
             $thousand_separator = Utility::getValByName('thousand_separator') == 'dot' ? '.' : ',';
         } else {
             $decimal_separator = Utility::getValByName('decimal_separator') == 'dot' ? '.' : ',';

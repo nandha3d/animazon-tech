@@ -656,7 +656,7 @@ class Utility extends Model
         $float_number = isset($settings['float_number']) && $settings['float_number'] == 'dot' ? '.' : ',';
         if($length > 3)
         {
-            $decimal_separator = $settings['decimal_separator'] == 'dot' ? ',' : ',';
+            $decimal_separator = $settings['decimal_separator'] == 'dot' ? '.' : ',';
             $thousand_separator = $settings['thousand_separator'] == 'dot' ? '.' : ',';
         }
         else
