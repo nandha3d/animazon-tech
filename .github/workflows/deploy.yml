@@ -25,15 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          tools: composer:v2
-
-      - name: Install PHP dependencies (for the asset build step only; vendor/ is rebuilt on the server)
-        run: composer install --no-dev --prefer-dist --no-progress --no-interaction
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
