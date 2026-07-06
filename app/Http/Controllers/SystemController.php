@@ -434,6 +434,7 @@ class SystemController extends Controller
             if (
                 !empty($request->title_text) || !empty($request->color) || !empty($request->cust_theme_bg)
                 || !empty($request->footer_text) || !empty($request->default_language) || !empty($request->cust_darklayout)
+                || !empty($request->proposal_read_aloud_voice)
             ) {
 
                 $SITE_RTL = $request->has('SITE_RTL') ? $request->SITE_RTL : 'off';

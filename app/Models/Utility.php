@@ -116,6 +116,7 @@ class Utility extends Model
             "registration_number" => "",
             "vat_number" => "",
             "default_language" => "en",
+            "proposal_read_aloud_voice" => "en-IN-female",
             "enable_stripe" => "",
             "enable_paypal" => "",
             "paypal_mode" => "",

@@ -97,6 +97,7 @@
               <div class="all-button-box mx-2">
                   <button type="button" class="btn btn-outline-primary mt-3" data-role="proposal-read-aloud"
                           data-tts-audio-url="{{ $proposal->getTtsAudioUrl(\App::getLocale() ?? 'en') }}"
+                          data-tts-voice="{{ $settings['proposal_read_aloud_voice'] ?? 'en-IN-female' }}"
                           data-tts-segments="{{ json_encode($proposal->getSpeechSegments($settings)) }}">
                       <i class="ti ti-volume-2"></i> {{ __('Read Aloud') }}
                   </button>
