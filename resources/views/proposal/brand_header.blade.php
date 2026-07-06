@@ -235,9 +235,11 @@
       if(langIcon) langIcon.innerText = '🇬🇧';
       
       // Update TTS button attributes for local language
-      if (btnReadAloud && btnReadAloud.getAttribute('data-tts-audio-url-local')) {
-        btnReadAloud.setAttribute('data-tts-audio-url', btnReadAloud.getAttribute('data-tts-audio-url-local'));
-        btnReadAloud.setAttribute('data-tts-segments', btnReadAloud.getAttribute('data-tts-segments-local'));
+      if (btnReadAloud) {
+        btnReadAloud.setAttribute('data-tts-audio-url', btnReadAloud.getAttribute('data-tts-audio-url-local') || '');
+        btnReadAloud.setAttribute('data-tts-segments', btnReadAloud.getAttribute('data-tts-segments-local') || '[]');
+        btnReadAloud.setAttribute('data-current-lang', langType);
+        document.documentElement.lang = langType;
       }
     } else {
       // Switch to English
@@ -249,9 +251,11 @@
       if(langIcon) langIcon.innerText = '🇮🇳';
       
       // Revert TTS button attributes to English
-      if (btnReadAloud && btnReadAloud.getAttribute('data-tts-audio-url-en-orig')) {
-        btnReadAloud.setAttribute('data-tts-audio-url', btnReadAloud.getAttribute('data-tts-audio-url-en-orig'));
-        btnReadAloud.setAttribute('data-tts-segments', btnReadAloud.getAttribute('data-tts-segments-en-orig'));
+      if (btnReadAloud) {
+        btnReadAloud.setAttribute('data-tts-audio-url', btnReadAloud.getAttribute('data-tts-audio-url-en-orig') || '');
+        btnReadAloud.setAttribute('data-tts-segments', btnReadAloud.getAttribute('data-tts-segments-en-orig') || '[]');
+        btnReadAloud.setAttribute('data-current-lang', 'en');
+        document.documentElement.lang = 'en';
       }
     }
   }
@@ -260,8 +264,9 @@
   document.addEventListener('DOMContentLoaded', function() {
     var btnReadAloud = document.getElementById('btnReadAloudBrand');
     if (btnReadAloud) {
-      btnReadAloud.setAttribute('data-tts-audio-url-en-orig', btnReadAloud.getAttribute('data-tts-audio-url'));
-      btnReadAloud.setAttribute('data-tts-segments-en-orig', btnReadAloud.getAttribute('data-tts-segments'));
+      btnReadAloud.setAttribute('data-tts-audio-url-en-orig', btnReadAloud.getAttribute('data-tts-audio-url') || '');
+      btnReadAloud.setAttribute('data-tts-segments-en-orig', btnReadAloud.getAttribute('data-tts-segments') || '[]');
+      btnReadAloud.setAttribute('data-current-lang', document.documentElement.lang || 'en');
     }
 
     // Restore theme
