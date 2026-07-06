@@ -641,6 +641,37 @@
                                 </div>
                             </div>
 
+                            <div class="row row-gap-1 mt-3">
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group mb-0">
+                                        {{ Form::label('proposal_read_aloud_voice', __('Proposal Read-Aloud Voice (Real-Time / Indian Accents)'), ['class' => 'form-label text-dark']) }}
+                                        <div class="changeLanguage">
+                                            <select name="proposal_read_aloud_voice" id="proposal_read_aloud_voice" class="form-control select">
+                                                <optgroup label="🇮🇳 Indian Accents (Recommended)">
+                                                    <option value="en-IN-female" {{ ($setting['proposal_read_aloud_voice'] ?? 'en-IN-female') == 'en-IN-female' ? 'selected' : '' }}>🇮🇳 Indian English - Female (Warm & Professional)</option>
+                                                    <option value="en-IN-male" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'en-IN-male' ? 'selected' : '' }}>🇮🇳 Indian English - Male (Authoritative & Deep)</option>
+                                                    <option value="hi-IN-female" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'hi-IN-female' ? 'selected' : '' }}>🇮🇳 Hindi - Female (Madhur / Swara)</option>
+                                                    <option value="hi-IN-male" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'hi-IN-male' ? 'selected' : '' }}>🇮🇳 Hindi - Male (Prabhat / Rishi)</option>
+                                                </optgroup>
+                                                <optgroup label="⚡ Kokoro AI Studio (Server Indian Voices)">
+                                                    <option value="hf_alpha" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'hf_alpha' ? 'selected' : '' }}>🇮🇳 Kokoro AI - Indian Female (Alpha)</option>
+                                                    <option value="hf_beta" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'hf_beta' ? 'selected' : '' }}>🇮🇳 Kokoro AI - Indian Female (Beta)</option>
+                                                    <option value="hm_omega" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'hm_omega' ? 'selected' : '' }}>🇮🇳 Kokoro AI - Indian Male (Omega)</option>
+                                                    <option value="hm_psi" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'hm_psi' ? 'selected' : '' }}>🇮🇳 Kokoro AI - Indian Male (Psi)</option>
+                                                </optgroup>
+                                                <optgroup label="🌍 International Accents">
+                                                    <option value="en-US" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'en-US' ? 'selected' : '' }}>🇺🇸 American English (Natural)</option>
+                                                    <option value="en-GB" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'en-GB' ? 'selected' : '' }}>🇬🇧 British English (Natural)</option>
+                                                    <option value="af_sarah" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'af_sarah' ? 'selected' : '' }}>🇺🇸 Kokoro AI - American Female (Sarah)</option>
+                                                    <option value="am_adam" {{ ($setting['proposal_read_aloud_voice'] ?? '') == 'am_adam' ? 'selected' : '' }}>🇺🇸 Kokoro AI - American Male (Adam)</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                        <small class="text-muted">{{ __('Select the default real-time reading voice and accent used when clients listen to proposals.') }}</small>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="card-body border-top border-1 p-3">
                             <h4 class="small-title h5 mb-3">{{ __('Theme Customizer') }}</h4>

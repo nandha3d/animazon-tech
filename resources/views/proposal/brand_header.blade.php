@@ -177,6 +177,7 @@
     <button type="button" class="btn-brand-action" id="btnReadAloudBrand"
             data-role="proposal-read-aloud"
             data-tts-audio-url="{{ $audioUrlEn ?? $proposal->getTtsAudioUrl('en') }}"
+            data-tts-voice="{{ $settings['proposal_read_aloud_voice'] ?? 'en-IN-female' }}"
             data-tts-segments="{{ $segmentsEn ?? '[]' }}"
             data-tts-audio-url-local="{{ $audioUrlLocal ?? '' }}"
             data-tts-segments-local="{{ $segmentsLocal ?? '[]' }}">

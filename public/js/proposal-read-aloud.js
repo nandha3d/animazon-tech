@@ -9,6 +9,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (synth) {
         // Cancel any lingering browser speech on load
         synth.cancel();
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = function() {
+                synth.getVoices();
+            };
+        }
     }
 
     function stopSpeaking() {
@@ -68,27 +73,27 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             var docLang = document.documentElement.lang || 'en';
-            // Check for Kokoro pre-generated audio file first
+            // Check for pre-existing audio file first
             var audioUrl = btn.getAttribute('data-tts-audio-url-' + docLang) || btn.getAttribute('data-tts-audio-url');
             
-            if (audioUrl) {
-                console.log("Attempting to play Kokoro TTS audio:", audioUrl);
+            if (audioUrl && audioUrl.length > 5) {
+                console.log("Attempting to play audio file:", audioUrl);
                 currentAudio = new Audio(audioUrl);
                 currentAudio.play().then(function() {
                     currentAudio.onended = function() {
                         stopSpeaking();
                     };
                 }).catch(function(err) {
-                    console.warn("Audio playback failed, falling back to speech synthesis:", err);
-                    playSpeechSynthesisFallback(btn, docLang);
+                    console.warn("Audio playback failed, falling back to real-time speech synthesis:", err);
+                    playRealtimeSpeech(btn, docLang);
                 });
             } else {
-                playSpeechSynthesisFallback(btn, docLang);
+                playRealtimeSpeech(btn, docLang);
             }
         });
     });
 
-    function playSpeechSynthesisFallback(btn, docLang) {
+    function playRealtimeSpeech(btn, docLang) {
         if (!synth || !('speechSynthesis' in window)) {
             console.error("Web Speech API not supported.");
             stopSpeaking();
@@ -115,17 +120,57 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        var voiceSetting = btn.getAttribute('data-tts-voice') || 'en-IN-female';
+        var voices = synth.getVoices();
+        var selectedVoice = null;
         var utterLang = docLang;
-        if (docLang === 'hi') {
-            utterLang = 'hi-IN';
+
+        if (docLang === 'hi' || voiceSetting.indexOf('hi') !== -1 || voiceSetting === 'hf_alpha' || voiceSetting === 'hf_beta' || voiceSetting === 'hm_omega' || voiceSetting === 'hm_psi') {
+            utterLang = (docLang === 'hi' || voiceSetting.indexOf('hi') !== -1) ? 'hi-IN' : 'en-IN';
         } else if (docLang === 'en') {
             utterLang = 'en-US';
+        }
+
+        if (voices && voices.length > 0) {
+            if (voiceSetting.indexOf('IN') !== -1 || voiceSetting.indexOf('hf_') !== -1 || voiceSetting.indexOf('hm_') !== -1 || docLang === 'hi') {
+                utterLang = (docLang === 'hi' || voiceSetting.indexOf('hi') !== -1) ? 'hi-IN' : 'en-IN';
+                var isMale = (voiceSetting.indexOf('hm_') !== -1 || voiceSetting.indexOf('male') !== -1 || voiceSetting.indexOf('Prabhat') !== -1 || voiceSetting.indexOf('Rishi') !== -1 || voiceSetting.indexOf('Hemant') !== -1);
+                
+                var indianVoices = voices.filter(function(v) {
+                    return v.lang === 'en-IN' || v.lang === 'en_IN' || v.lang === 'hi-IN' || v.lang === 'hi_IN' || v.name.indexOf('India') !== -1 || v.name.indexOf('Hindi') !== -1;
+                });
+
+                if (indianVoices.length > 0) {
+                    if (isMale) {
+                        selectedVoice = indianVoices.find(function(v) {
+                            return v.name.indexOf('Male') !== -1 || v.name.indexOf('Prabhat') !== -1 || v.name.indexOf('Rishi') !== -1 || v.name.indexOf('Hemant') !== -1 || v.name.indexOf('David') !== -1;
+                        }) || indianVoices[0];
+                    } else {
+                        selectedVoice = indianVoices.find(function(v) {
+                            return v.name.indexOf('Female') !== -1 || v.name.indexOf('Neerja') !== -1 || v.name.indexOf('Veena') !== -1 || v.name.indexOf('Heera') !== -1 || v.name.indexOf('Kalpana') !== -1 || v.name.indexOf('Swara') !== -1;
+                        }) || indianVoices[0];
+                    }
+                }
+            } else if (voiceSetting.indexOf('GB') !== -1 || voiceSetting.indexOf('bf_') !== -1 || voiceSetting.indexOf('bm_') !== -1) {
+                utterLang = 'en-GB';
+                selectedVoice = voices.find(function(v) {
+                    return v.lang === 'en-GB' || v.lang === 'en_GB' || v.name.indexOf('UK') !== -1 || v.name.indexOf('British') !== -1;
+                });
+            } else if (voiceSetting.indexOf('US') !== -1 || voiceSetting.indexOf('af_') !== -1 || voiceSetting.indexOf('am_') !== -1) {
+                utterLang = 'en-US';
+                selectedVoice = voices.find(function(v) {
+                    return v.lang === 'en-US' || v.lang === 'en_US' || v.name.indexOf('US') !== -1 || v.name.indexOf('United States') !== -1;
+                });
+            }
         }
 
         currentUtterances = segments.map(function (text) {
             var u = new SpeechSynthesisUtterance(text);
             u.rate = 0.95;
             u.lang = utterLang;
+            if (selectedVoice) {
+                u.voice = selectedVoice;
+            }
             return u;
         });
 
