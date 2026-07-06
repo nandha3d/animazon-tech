@@ -25,6 +25,9 @@ fi
 echo "Running migrations..."
 "$PHP_BIN" artisan migrate --force
 
+echo "Running ProposalSeeder to ensure proposals exist in production DB..."
+"$PHP_BIN" artisan db:seed --class=ProposalSeeder --force || true
+
 echo "Rebuilding caches..."
 "$PHP_BIN" artisan config:cache
 "$PHP_BIN" artisan route:cache
