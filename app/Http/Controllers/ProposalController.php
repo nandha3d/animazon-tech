@@ -1002,6 +1002,21 @@ class ProposalController extends Controller
     }
 
     /**
+     * Helper method to send email notifications to admin (info@animazon.in)
+     */
+    protected function notifyAdminEmail($subject, $body)
+    {
+        try {
+            \Illuminate\Support\Facades\Mail::raw($body, function ($msg) use ($subject) {
+                $msg->to('info@animazon.in')
+                    ->subject($subject);
+            });
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send admin notification email: " . $e->getMessage());
+        }
+    }
+
+    /**
      * Client-facing: approve the proposal (no payment). Used when nothing is
      * due up front, or the client wants to accept before paying.
      */
@@ -1021,6 +1036,17 @@ class ProposalController extends Controller
         $proposal->status = 2; // Accepted
         $proposal->accepted_at = now();
         $proposal->save();
+
+        $customerName = $proposal->customer ? $proposal->customer->name : 'Client';
+        $proposalNum = '#' . str_pad($proposal->proposal_id, 6, '0', STR_PAD_LEFT);
+        $subject = "🎉 Proposal Approved: {$proposalNum} ({$customerName})";
+        $body = "Good news! A proposal has just been APPROVED by the client.\n\n"
+              . "Proposal Number: {$proposalNum}\n"
+              . "Client Name: {$customerName}\n"
+              . "Date & Time: " . now()->format('Y-m-d H:i A') . "\n"
+              . "URL Slug: {$proposal->url_slug}\n\n"
+              . "Please log in to your Animazon dashboard to view full details and proceed with the project.";
+        $this->notifyAdminEmail($subject, $body);
 
         return redirect()->back()->with('success', __('Proposal accepted. Thank you!'));
     }
@@ -1088,6 +1114,19 @@ class ProposalController extends Controller
             }
             $proposal->save();
 
+            $customerName = $proposal->customer ? $proposal->customer->name : 'Client';
+            $proposalNum = '#' . str_pad($proposal->proposal_id, 6, '0', STR_PAD_LEFT);
+            $subject = "💰 Proposal Payment Received (Demo) & Approved: {$proposalNum} ({$customerName})";
+            $body = "Good news! A payment has been received (Demo Mode) and the proposal is marked as APPROVED.\n\n"
+                  . "Proposal Number: {$proposalNum}\n"
+                  . "Client Name: {$customerName}\n"
+                  . "Amount Paid: " . $request->amount . "\n"
+                  . "Transaction ID: " . $request->razorpay_payment_id . "\n"
+                  . "Date & Time: " . now()->format('Y-m-d H:i A') . "\n"
+                  . "URL Slug: {$proposal->url_slug}\n\n"
+                  . "Please log in to your Animazon dashboard to view full details.";
+            $this->notifyAdminEmail($subject, $body);
+
             return redirect()->back()->with('success', __('Payment received (Demo Mode). Thank you!'));
         }
 
@@ -1126,6 +1165,19 @@ class ProposalController extends Controller
         }
         $proposal->save();
 
+        $customerName = $proposal->customer ? $proposal->customer->name : 'Client';
+        $proposalNum = '#' . str_pad($proposal->proposal_id, 6, '0', STR_PAD_LEFT);
+        $subject = "💰 Proposal Payment Received & Approved: {$proposalNum} ({$customerName})";
+        $body = "Good news! A payment has been received and the proposal is marked as APPROVED.\n\n"
+              . "Proposal Number: {$proposalNum}\n"
+              . "Client Name: {$customerName}\n"
+              . "Amount Paid: " . $request->amount . "\n"
+              . "Transaction ID: " . $request->razorpay_payment_id . "\n"
+              . "Date & Time: " . now()->format('Y-m-d H:i A') . "\n"
+              . "URL Slug: {$proposal->url_slug}\n\n"
+              . "Please log in to your Animazon dashboard to view full details.";
+        $this->notifyAdminEmail($subject, $body);
+
         return redirect()->back()->with('success', __('Payment received. Thank you!'));
     }
 
@@ -1150,6 +1202,17 @@ class ProposalController extends Controller
                 'category' => $request->category ?? 'General Feedback',
                 'comment' => $request->comment,
             ]);
+
+            $customerName = $proposal->customer ? $proposal->customer->name : 'Client';
+            $proposalNum = '#' . str_pad($proposal->proposal_id, 6, '0', STR_PAD_LEFT);
+            $subject = "💬 New Client Comment on Proposal {$proposalNum} ({$request->client_name})";
+            $body = "A new comment or feedback has been posted on Proposal {$proposalNum}.\n\n"
+                  . "Client Name: {$request->client_name}\n"
+                  . "Category: " . ($request->category ?? 'General Feedback') . "\n"
+                  . "Comment:\n{$request->comment}\n\n"
+                  . "Date & Time: " . now()->format('Y-m-d H:i A') . "\n\n"
+                  . "Please log in to your Animazon dashboard to reply or review.";
+            $this->notifyAdminEmail($subject, $body);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Proposal comment error: ' . $e->getMessage());
         }
@@ -1189,6 +1252,18 @@ class ProposalController extends Controller
                     'file_path' => $fileName,
                     'file_size' => round($file->getSize() / 1024, 2) . ' KB',
                 ]);
+
+                $customerName = $proposal->customer ? $proposal->customer->name : 'Client';
+                $proposalNum = '#' . str_pad($proposal->proposal_id, 6, '0', STR_PAD_LEFT);
+                $subject = "📁 New File Uploaded on Proposal {$proposalNum} ({$request->client_name})";
+                $body = "A new project asset or file has been uploaded on Proposal {$proposalNum}.\n\n"
+                      . "Uploaded By: {$request->client_name}\n"
+                      . "Category: " . ($request->category ?? 'Project Asset') . "\n"
+                      . "File Name: " . $file->getClientOriginalName() . "\n"
+                      . "File Size: " . round($file->getSize() / 1024, 2) . " KB\n\n"
+                      . "Date & Time: " . now()->format('Y-m-d H:i A') . "\n\n"
+                      . "Please log in to your Animazon dashboard to download and review the asset.";
+                $this->notifyAdminEmail($subject, $body);
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Proposal upload error: ' . $e->getMessage());
             }
