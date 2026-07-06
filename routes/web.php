@@ -216,6 +216,8 @@ Route::get('proposal/pdf/{id}', [ProposalController::class, 'proposal'])->name('
 Route::post('/customer/proposal/{id}/approve', [ProposalController::class, 'publicApprove'])->name('proposal.public.approve')->middleware(['XSS']);
 Route::post('/customer/proposal/{id}/decline', [ProposalController::class, 'publicDecline'])->name('proposal.public.decline')->middleware(['XSS']);
 Route::post('/customer/proposal/{id}/pay-with-razorpay', [ProposalController::class, 'publicPayRazorpay'])->name('proposal.public.pay.razorpay')->middleware(['XSS']);
+Route::post('/customer/proposal/{id}/comment', [ProposalController::class, 'publicComment'])->name('proposal.public.comment')->middleware(['XSS']);
+Route::post('/customer/proposal/{id}/upload', [ProposalController::class, 'publicUpload'])->name('proposal.public.upload')->middleware(['XSS']);
 
 //================================= Invoice Payment Gateways  ====================================//
 

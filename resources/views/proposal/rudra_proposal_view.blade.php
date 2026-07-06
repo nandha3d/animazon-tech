@@ -1,23 +1,26 @@
 @php
     $subBtnId = !empty($companyPayment['razorpay_subscription_button_id']) ? $companyPayment['razorpay_subscription_button_id'] : (!empty($adminPayment['razorpay_subscription_button_id']) ? $adminPayment['razorpay_subscription_button_id'] : 'pl_T9j7p5Gbk0YDsG');
     $publicParam = !empty($proposal->url_slug) ? $proposal->url_slug : \Illuminate\Support\Facades\Crypt::encrypt($proposal->id);
+    $totalDue = 0;
 
     $rudraSegmentsEn = [
-        "Restart Fee and Dues for rudraspirit.com.",
-        "Section 1: Context. The rudraspirit.com website was completed, delivered, and the build fee paid in full of 40,000 rupees. Work then paused for roughly 6 months with no active development or feedback. Two amounts are now due to resume: unpaid hosting and domain charges of 2,400 rupees per month, running since 22 December 2025, and a restart fee to bring the dormant project back to a working, current, deployable state. There is no kill fee and nothing extra on the completed build.",
-        "Section 2: Why the restart fee applies. Six months of dormancy creates real, billable work before development can resume: rebuilding the local dev environment, re-establishing deployment, WordPress and plugin updates, security review and patching, PHP and server compatibility, and context re-familiarization.",
-        "Section 3: Upgrade to Premium VPS Hosting. To prioritize search engine optimization and support business scaling, we migrated the website from Hostinger Shared Hosting to a high-performance, dedicated Virtual Private Server. Benefits of VPS hosting include lightning-fast loading speeds for higher Google SEO rankings, exclusive CPU and RAM to handle high concurrent traffic during promotion, isolated security with dedicated IP, and proactive 24/7 server monitoring.",
-        "Section 4: Amount payable now. Congratulations! We have waived off your 6,000 rupees restart fee as a goodwill gesture. You pay 0 rupees for reactivation and only settle the pending web hosting charges of 16,800 rupees. Unpaid hosting and domain renewal since 22 December 2025 is 16,800 rupees. The 6,000 rupees restart fee is waived. Total payable now is 16,800 rupees.",
-        "Section 5: Terms to resume. Total of 16,800 rupees is payable in advance before development resumes. Hosting renewal is mandatory at 2,400 rupees per month or automated auto pay subscription."
+        "Project Reactivation and 1-Month Delivery Agreement for rudraspirit.com.",
+        "Section 1: Context. The rudraspirit.com website was completed, delivered, and the build fee paid in full (40,000 rupees). Work then paused for roughly 6 months with no active development or feedback.",
+        "To resume development, your 1st-year basic shared hosting is included at no charge (0 rupees per month until December 2026). Additionally, after 6 months of dormancy, there is normally a 6,000 rupees restart fee to bring the project back to a working, deployable state—which we have completely waived as a goodwill gesture!",
+        "Section 2: Why the restart fee applies. Six months of dormancy creates real, billable work before development can resume: rebuilding local dev environment, re-establishing deployment, WordPress and plugin updates, security review and patching, PHP and server compatibility checks, and context re-familiarization.",
+        "Section 3: Strict 1-Month Completion Timeline and Client Delay Clause. We commit to completing and launching the live e-commerce website within just 1 month (30 calendar days) from proposal approval. The client must promptly provide all required details, product data, feedback, and assets. If the client delays or extends in providing required details or assets within this 1-month timeline, it will constitute a breach of contract and break this agreement. In such event, fee waivers will be voided and additional charges will become applicable to resume work.",
+        "Section 4: Amount payable now. To celebrate continuing our partnership, we have completely waived off the 6,000 rupees Server Reactivation and Restart Fee as a goodwill gesture. Because your 1st-year basic shared hosting is included free until December 2026, you pay 0 rupees today to resume development!",
+        "Section 5: Terms for resuming work. Total amount payable now is 0 rupees. To reactivate your project and start the 1-month delivery clock, simply approve this proposal. Any new work outside the original delivered scope will be quoted and approved separately. Response deadline is 5 days from the date above.",
+        "Section 6: Maintenance and future work. First 6 months of maintenance from the restart date is free. After 6 months, maintenance will be decided based on performance and traffic. Any new features or modules are quoted separately at 800 rupees per hour."
     ];
 
     $rudraSegmentsHi = [
-        "रूद्र स्पिरिट डॉट कॉम के लिए पुनः आरंभ शुल्क और बकाया राशि।",
-        "भाग 1: संदर्भ। रूद्र स्पिरिट डॉट कॉम वेबसाइट पूरी हो चुकी थी, डिलीवर कर दी गई थी, और निर्माण शुल्क 40,000 रुपये का पूरा भुगतान कर दिया गया था। इसके बाद लगभग 6 महीने तक कोई काम या फीडबैक नहीं मिला। काम फिर से शुरू करने के लिए दो राशियाँ देय हैं: 22 दिसंबर 2025 से बकाया होस्टिंग और डोमेन शुल्क 2,400 रुपये प्रति माह, और प्रोजेक्ट को फिर से चालू करने का पुनः आरंभ शुल्क।",
+        "रूद्र स्पिरिट डॉट कॉम के लिए प्रोजेक्ट पुनःसक्रियण और वैकल्पिक वीपीएस अपग्रेड।",
+        "भाग 1: संदर्भ। रूद्र स्पिरिट डॉट कॉम वेबसाइट पूरी हो चुकी थी, डिलीवर कर दी गई थी, और निर्माण शुल्क 40,000 रुपये का पूरा भुगतान कर दिया गया था। इसके बाद लगभग 6 महीने तक काम रुका रहा। आपकी बेसिक शेयर्ड होस्टिंग पहले वर्ष के लिए दिसंबर 2026 तक नि:शुल्क शामिल है। 6 महीने के विराम के बाद प्रोजेक्ट को दोबारा चालू करने का 6,000 रुपये का पुनः आरंभ शुल्क हमने सद्भावना स्वरूप पूरी तरह माफ़ कर दिया है!",
         "भाग 2: पुनः आरंभ शुल्क क्यों लागू होता है। 6 महीने की निष्क्रियता के बाद काम दोबारा शुरू करने से पहले वास्तविक काम करना पड़ता है: लोकल डेवलपमेंट एनवायरनमेंट दोबारा बनाना, डिप्लॉयमेंट दोबारा स्थापित करना, वर्डप्रेस और प्लगइन अपडेट, सुरक्षा जाँच और पैचिंग, पीएचपी और सर्वर संगतता, और प्रोजेक्ट संदर्भ दोबारा समझना।",
-        "भाग 3: प्रीमियम वीपीएस होस्टिंग में अपग्रेड। आपके व्यवसाय की वृद्धि और एसईओ अनुकूलन को प्राथमिकता देने के लिए हमने वेबसाइट को होस्टिंगर शेयर्ड होस्टिंग से एक समर्पित वर्चुअल प्राइवेट सर्वर पर माइग्रेट कर दिया है। वीपीएस होस्टिंग के लाभों में गूगल एसईओ रैंकिंग बढ़ाने के लिए सुपर-फ़ास्ट लोडिंग स्पीड, बेहतर ट्रैफिक क्षमता, और दैनिक बैकअप के साथ उन्नत सुरक्षा शामिल है।",
-        "भाग 4: अभी देय राशि। बधाई हो! हमने सद्भावना स्वरूप आपका 6,000 रुपये का पुनः आरंभ शुल्क माफ़ कर दिया है! आपको पुनःसक्रियण के लिए 0 रुपये देना होगा और केवल बकाया वेब होस्टिंग शुल्क 16,800 रुपये का भुगतान करना होगा। 22 दिस॰ 2025 से बकाया होस्टिंग और डोमेन नवीनीकरण 16800 रुपये है। 6,000 रुपये पुनः आरंभ शुल्क माफ़ है। अभी देय कुल राशि 16,800 रुपये है।",
-        "भाग 5: दोबारा शुरू करने की शर्तें। काम शुरू होने से पहले केवल बकाया होस्टिंग और डोमेन के 16,800 रुपये अग्रिम देय हैं। 2,400 रुपये प्रति माह पर निरंतर वेब होस्टिंग नवीनीकरण अनिवार्य है।"
+        "भाग 3: प्रीमियम वीपीएस होस्टिंग में वैकल्पिक अपग्रेड। हालांकि बेसिक शेयर्ड होस्टिंग दिसंबर 2026 तक नि:शुल्क है, आपके ई-कॉमर्स स्टोर को गूगल एसईओ रैंकिंग में ऊपर लाने और उच्च ट्रैफिक संभालने के लिए हम 2,400 रुपये प्रति माह पर प्रीमियम वर्चुअल प्राइवेट सर्वर (VPS) का वैकल्पिक अपग्रेड प्रदान करते हैं।",
+        "भाग 4: अभी देय राशि। बधाई हो! हमने सद्भावना स्वरूप आपका 6,000 रुपये का पुनः आरंभ शुल्क माफ़ कर दिया है! पहले वर्ष की बेसिक होस्टिंग नि:शुल्क होने के कारण अभी काम शुरू करने के लिए देय कुल राशि 0 रुपये है! आप चाहें तो नीचे प्रीमियम वीपीएस होस्टिंग के लिए 2,400 रुपये मासिक ऑटो-पे चुन सकते हैं।",
+        "भाग 5: दोबारा शुरू करने की शर्तें। अभी देय राशि 0 रुपये है। प्रोजेक्ट पुनः सक्रिय करने और अपनी पसंद का होस्टिंग विकल्प चुनने के लिए बस इस प्रस्ताव को स्वीकृत करें।"
     ];
 @endphp
 <style>
@@ -30,7 +33,7 @@
     --rudra-shadow: 0 1px 2px rgba(36,29,20,.05), 0 12px 32px -12px rgba(36,29,20,.14);
     --rudra-maxw: 100%;
   }
-  :root[data-theme="dark"] {
+  :root[data-theme="dark"], [data-theme="dark"], [data-theme-root="dark"] {
     --rudra-bg: #151109; --rudra-surface: #1E1810; --rudra-ink: #EFE8DA; --rudra-muted: #A79A85;
     --rudra-border: #332A1C; --rudra-border-strong: #413524;
     --rudra-accent: #D89C3E; --rudra-accent-deep: #E7B45E; --rudra-accent-soft: #2A2213;
@@ -72,8 +75,12 @@
   .rudra-view-container .header-actions-area { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
   .rudra-view-container .logo-for-light { display: block !important; }
   .rudra-view-container .logo-for-dark { display: none !important; }
-  :root[data-theme="dark"] .rudra-view-container .logo-for-light { display: none !important; }
-  :root[data-theme="dark"] .rudra-view-container .logo-for-dark { display: block !important; }
+  :root[data-theme="dark"] .rudra-view-container .logo-for-light,
+  [data-theme="dark"] .logo-for-light,
+  [data-theme-root="dark"] .logo-for-light { display: none !important; }
+  :root[data-theme="dark"] .rudra-view-container .logo-for-dark,
+  [data-theme="dark"] .logo-for-dark,
+  [data-theme-root="dark"] .logo-for-dark { display: block !important; }
   .rudra-view-container .toolbar-header .grp { display: flex; gap: .35rem; align-items: center; }
   .rudra-view-container .seg { display: inline-flex; border: 1px solid var(--rudra-border-strong); border-radius: 8px; overflow: hidden; }
   .rudra-view-container .seg button { border: none; border-radius: 0; background: transparent; color: var(--rudra-muted); padding: .42rem .85rem; }
@@ -213,49 +220,47 @@
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
-<div class="rudra-view-container">
-  <header class="toolbar-header">
-    <div class="header-brand-area">
-      <a href="{{ url('/') }}" class="brand-link">
-        @php
-          $logoPath = \App\Models\Utility::get_file('uploads/logo');
-          $logoDark = !empty($company_setting['company_logo_dark']) ? $company_setting['company_logo_dark'] : (!empty($settings['company_logo_dark']) ? $settings['company_logo_dark'] : 'logo-dark.png');
-          $logoLight = !empty($company_setting['company_logo_light']) ? $company_setting['company_logo_light'] : (!empty($settings['company_logo_light']) ? $settings['company_logo_light'] : 'logo-light.png');
-        @endphp
-        <img src="{{ $logoPath . '/' . $logoDark . '?' . time() }}" alt="Animazon Logo" class="header-logo-img logo-for-light" />
-        <img src="{{ $logoPath . '/' . $logoLight . '?' . time() }}" alt="Animazon Logo" class="header-logo-img logo-for-dark" />
-      </a>
-      <span class="studio-badge">DESIGN &amp; WEB STUDIO</span>
-    </div>
-    <div class="header-actions-area">
-      <button class="ghost" type="button" data-role="proposal-read-aloud"
-              data-tts-audio-url-en="{{ $proposal->getTtsAudioUrl('en') }}"
-              data-tts-audio-url-hi="{{ $proposal->getTtsAudioUrl('hi') }}"
-              data-tts-segments-en="{{ json_encode($rudraSegmentsEn) }}"
-              data-tts-segments-hi="{{ json_encode($rudraSegmentsHi) }}">
-          <i class="ti ti-volume-2"></i> {{ __('Read Aloud') }}
-      </button>
-      <span class="seg" role="group" aria-label="Language">
-        <button id="btn-en" aria-pressed="true" onclick="setLang('en')">English</button>
-        <button id="btn-hi" aria-pressed="false" onclick="setLang('hi')">हिंदी</button>
-      </span>
-      <button class="ghost" onclick="toggleRudraTheme()">◐ Theme</button>
-      <button onclick="window.print()">🖨️ Print / PDF</button>
-    </div>
-  </header>
+<div class="rudra-view-container" data-theme-root>
+  @include('proposal.brand_header', [
+      'proposal' => $proposal,
+      'langType' => 'hi',
+      'langNameLocal' => 'हिन्दी (Hindi)',
+      'segmentsEn' => json_encode($rudraSegmentsEn),
+      'segmentsLocal' => json_encode($rudraSegmentsHi),
+      'audioUrlEn' => $proposal->getTtsAudioUrl('en'),
+      'audioUrlLocal' => $proposal->getTtsAudioUrl('hi')
+  ])
 
   <div class="wrap">
+    <!-- Chronological Proposal Navigation Switcher -->
+    <div class="sheet mb-4" style="border-left: 4px solid var(--rudra-accent);">
+      <div class="sheet-pad" style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--rudra-muted); font-weight: 700;">Chronological Proposal Navigation</div>
+          <div style="font-weight: 700; color: var(--rudra-ink);">Viewing: <span style="color: var(--rudra-accent);">Proposal #2 — Reactivation &amp; 1-Month Delivery Plan</span></div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="{{ url('/customer/proposal/rudra-spirit-agreement') }}" class="btn-nav ghost" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; border: 1px solid var(--rudra-border-strong); color: var(--rudra-ink); background: transparent;">
+            📄 View Proposal #1: Initial Agreement (Nov 2025)
+          </a>
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700; background: var(--rudra-accent); color: #fff;">
+            🚀 Proposal #2 (Current Due)
+          </span>
+        </div>
+      </div>
+    </div>
+
     <!-- ============================= ENGLISH ============================= -->
     <article class="sheet lang-en" id="pane-en" lang="en">
       <div class="sheet-pad">
         <header class="mast">
-          <p class="eyebrow">Project Reactivation Notice</p>
-          <h1>Restart Fee &amp; Dues — rudraspirit.com</h1>
-          <p class="sub">Reactivating the Rudraksha e-commerce website after a dormancy period.</p>
+          <p class="eyebrow">Project Reactivation &amp; Delivery Timeline</p>
+          <h1>Reactivation &amp; 1-Month Delivery Agreement — rudraspirit.com</h1>
+          <p class="sub">Reactivating the Rudraksha e-commerce website after a dormancy period with a strict 30-day completion and launch plan.</p>
           <dl class="meta">
             <div><dt>Project</dt><dd>rudraspirit.com</dd></div>
-            <div><dt>Website build</dt><dd>₹40,000 <span class="pill paid">Paid</span></dd></div>
-            <div><dt>Dormant</dt><dd>~6 months</dd></div>
+            <div><dt>Website build</dt><dd>₹40,000 <span class="pill paid">Paid in full</span></dd></div>
+            <div><dt>1st Year Hosting</dt><dd>Basic Shared <span class="pill good">Included / ₹0</span></dd></div>
             <div><dt>Date</dt><dd><span class="fill" contenteditable="true">{{ $user->dateFormat($proposal->issue_date) }}</span></dd></div>
             <div><dt>Prepared for</dt><dd><span class="fill" contenteditable="true">rudraspirit.com</span></dd></div>
             <div><dt>Prepared by</dt><dd><span class="fill" contenteditable="true">Animazon</span></dd></div>
@@ -265,7 +270,7 @@
         <section>
           <h2><span class="n">1</span> Context</h2>
           <p>The rudraspirit.com website was completed, delivered, and the build fee <strong>paid in full (₹40,000)</strong>. Work then paused for roughly <strong>6 months</strong> with no active development or feedback.</p>
-          <p>Two amounts are now due to resume: <strong>unpaid hosting + domain charges</strong> (₹2,400/month, running since 22 Dec 2025), and a <strong>restart fee</strong> to bring the dormant project back to a working, current, deployable state. There is no kill fee and nothing extra on the completed build.</p>
+          <p>To resume and finalize development, your <strong>1st-year basic shared hosting is included at no charge (₹0/month until Dec 2026)</strong>. Additionally, after 6 months of dormancy, there is normally a <strong>₹6,000 restart fee</strong> to bring the project back to a working, deployable state—which we have <strong>completely waived as a goodwill gesture!</strong></p>
           <div class="clause">
             <p><strong>Why an extra charge?</strong> The ₹40,000 paid for <strong>building and delivering</strong> the site — not for holding it ready indefinitely. In the 6-month gap, resources moved to other clients and the site fell behind on updates and security. Getting it back to a safe, current, deployable state — and reserving schedule time again — is <strong>fresh work that wasn't part of the completed project.</strong> Hosting is a separate service cost that remained unpaid.</p>
           </div>
@@ -290,18 +295,18 @@
         </section>
 
         <section>
-          <h2><span class="n">3</span> Upgrade to Premium VPS Hosting</h2>
-          <p>To prioritize search engine optimization (SEO) and support business scaling, we migrated the website from <strong>Hostinger Shared Hosting</strong> to a high-performance, dedicated <strong>Virtual Private Server (VPS)</strong>. This migration includes optimized server configurations tailored specifically for WooCommerce performance.</p>
-          <div class="tbl-scroll">
-            <table class="why">
-              <thead><tr><th>VPS Cloud Advantage</th><th>Why it matters for rudraspirit.com</th></tr></thead>
-              <tbody>
-                <tr><td>Google SEO Ranking</td><td>Faster response times (Time to First Byte) directly improve mobile and desktop search engine rankings.</td></tr>
-                <tr><td>Dedicated Resources</td><td>Exclusive CPU, RAM, and SSD storage prevent site slow-downs or crashes during high-traffic sales.</td></tr>
-                <tr><td>Isolated Security</td><td>A private server environment with dedicated IP, custom firewalls, and isolated file access.</td></tr>
-                <tr><td>24/7 Proactive Monitoring</td><td>Continuous server health checks, regular database optimizations, and auto-renewing SSL monitoring.</td></tr>
-              </tbody>
-            </table>
+          <h2><span class="n">3</span> Strict 1-Month Completion Timeline &amp; Client Delay Clause</h2>
+          <p>To ensure a swift, efficient launch without further protracted delays, both parties agree to a strict completion and delivery schedule:</p>
+          <div style="border-left: 4px solid var(--rudra-danger); background: var(--rudra-danger-soft); padding: 1.5rem; border-radius: 10px; margin: 1.25rem 0; color: var(--rudra-ink);">
+            <h3 style="margin: 0 0 0.75rem; color: var(--rudra-danger); font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              ⚠️ Critical Contract Condition: Timely Asset &amp; Detail Submission
+            </h3>
+            <ul style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.95rem; line-height: 1.6;">
+              <li><strong>1-Month Delivery Guarantee:</strong> Animazon commits to completing, testing, and delivering the full e-commerce website within <strong>just 1 month (30 calendar days)</strong> from the date of proposal approval.</li>
+              <li><strong>Client Responsibility:</strong> To achieve this rapid turnaround, the Client must promptly provide all required product details, pricing, content assets, branding files, and feedback when requested by our team.</li>
+              <li><strong>Breach of Contract upon Delay:</strong> If the Client extends or delays in providing required details, feedback, or assets within this 1-month timeline, <strong>it will constitute a direct breach of this agreement and void this contract.</strong></li>
+              <li><strong>Applicability of Charges:</strong> In the event of such delay or contract breach, the ₹0 fee waiver and reactivation benefits will be forfeited. <strong>Standard hourly or monthly project reactivation and maintenance charges will become immediately applicable to resume work.</strong></li>
+            </ul>
           </div>
         </section>
 
@@ -317,7 +322,7 @@
                 <strong style="font-size: 1.35rem; color: var(--rudra-good); line-height: 1.2;">Congratulations! We Have Waived Off Your ₹6,000 Restart Fee!</strong>
               </div>
               <p style="margin: 0; font-size: 1rem; color: var(--rudra-ink); line-height: 1.5;">
-                To celebrate continuing our partnership, we have completely waived off the <strong>₹6,000 Server Reactivation &amp; Restart Fee</strong> as a goodwill gesture. You pay <strong style="color: var(--rudra-good); font-size: 1.1rem;">₹0</strong> for reactivation and only settle the pending web hosting charges!
+                To celebrate continuing our partnership, we have completely waived off the <strong>₹6,000 Server Reactivation &amp; Restart Fee</strong> as a goodwill gesture. Because your 1st-year basic shared hosting is included free until Dec 2026, you pay <strong style="color: var(--rudra-good); font-size: 1.1rem;">₹0</strong> today to resume development!
               </p>
             </div>
           </div>
@@ -328,54 +333,21 @@
               <thead><tr><th class="item">Item</th><th>Status</th><th class="amt">Amount</th></tr></thead>
               <tbody>
                 <tr class="ref"><td class="item">Website build &amp; delivery</td><td><span class="pill paid">Paid in full</span></td><td class="amt"><span class="cur">₹</span>40,000</td></tr>
-                <tr><td class="item">Hosting + domain renewal<span class="muted">₹<span class="fill rate" contenteditable="true" style="min-width:3ch">2,400</span>/month × <span class="fill months" contenteditable="true" style="min-width:2ch">7</span> months · since 22 Dec 2025</span></td><td><span class="pill out">Unpaid</span></td><td class="amt"><span class="cur">₹</span><span class="host-sub">16,800</span></td></tr>
-                <tr class="waived"><td class="item">Restart / reactivation fee</td><td><span class="pill good">Waived · goodwill</span></td><td class="amt"><span class="was">₹6,000</span><span class="cur">₹</span>0</td></tr>
-                <tr class="total"><td class="item" colspan="2">Total payable now</td><td class="amt"><span class="cur">₹</span><span class="total-val">16,800</span></td></tr>
+                <tr class="ref"><td class="item">1st Year Basic Shared Hosting<span class="muted">Dec 2025 – Dec 2026 · Included with build</span></td><td><span class="pill good">Included / Free</span></td><td class="amt"><span class="cur">₹</span>0</td></tr>
+                <tr class="waived"><td class="item">Restart / reactivation fee<span class="muted">6 months dormancy rebuild</span></td><td><span class="pill good">Waived · goodwill</span></td><td class="amt"><span class="was">₹6,000</span><span class="cur">₹</span>0</td></tr>
+                <tr class="total"><td class="item" colspan="2">Total payable now to resume work</td><td class="amt"><span class="cur">₹</span><span class="total-val">0</span></td></tr>
               </tbody>
             </table>
             </div>
-            <p class="pay-note">Total payable now = hosting + domain only (<b>₹2,400/month × 7 = ₹16,800</b>, accrued since 22 Dec 2025). The ₹40,000 build fee is already settled. The <b>₹6,000 restart fee is waived</b> — no charge for reactivation.</p>
+            <p class="pay-note">Total payable now = <b>₹0</b>! Your 1st-year basic shared hosting is included until December 2026. The <b>₹6,000 restart fee is 100% waived</b>.</p>
           </div>
           <div class="savings">
             <span class="tick">✓</span>
-            <p><b>Good news:</b> the ₹6,000 restart fee is <b>waived as a thank-you</b> for continuing together. You only pay the pending hosting — <b>you save ₹6,000</b>.</p>
+            <p><b>Good news:</b> the ₹6,000 restart fee is <b>waived as a thank-you</b> for continuing together, and basic hosting remains free — <b>you save ₹6,000 today!</b></p>
           </div>
 
-          <!-- Side-by-Side: Web Hosting Auto-Pay & Action Required Box -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin: 2rem 0 1.5rem; align-items: stretch;">
-              <!-- Left Column: Web Hosting Charges Auto-Pay -->
-              <div style="padding: 1.5rem; background: var(--rudra-bg-subtle); border: 2px solid var(--rudra-border-strong); border-radius: 14px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
-                  <div>
-                      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-                          <span style="background: var(--rudra-accent); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">WEB HOSTING CHARGES</span>
-                          <strong style="font-size: 1.15rem; color: var(--rudra-ink);">Web Hosting Charges Auto-Pay</strong>
-                      </div>
-                      <p style="margin: 0 0 1.25rem; font-size: 0.9rem; color: var(--rudra-muted); line-height: 1.5;">
-                          Ongoing web hosting charges are compulsory. Choose between manual monthly payments or enable automated recurring payments (Auto-Pay) via Razorpay for cloud hosting, domain renewal, 24/7 uptime monitoring, and security patching.
-                      </p>
-                  </div>
-                  <div style="padding-top: 1rem; border-top: 1px solid var(--rudra-border-strong);">
-                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
-                          <span id="subStatusTextEn" style="font-weight: 700; font-size: 0.95rem; color: var(--rudra-good);">Yes, Auto-Pay Enabled</span>
-                          <label class="switch-sub">
-                              <input type="checkbox" id="toggleSubEn" checked onchange="toggleSubscriptionWidget('En', this.checked)">
-                              <span class="slider-round"></span>
-                          </label>
-                      </div>
-                      <div id="subWidgetBoxEn" style="display: block; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px dashed var(--rudra-border-strong); text-align: center;">
-                          <p style="font-size: 0.9rem; color: var(--rudra-accent-deep); font-weight: 700; margin-bottom: 0.85rem;">
-                              ✓ Auto-Pay Mode Selected — Authorize recurring hosting payments below:
-                          </p>
-                          <div style="display: flex; justify-content: center; align-items: center; min-height: 50px;">
-                              <form>
-                                  <script src="https://cdn.razorpay.com/static/widget/subscription-button.js" data-subscription_button_id="pl_T9j7p5Gbk0YDsG" data-button_theme="brand-color" async> </script>
-                              </form>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Right Column: Payment Gateway & Approval Actions Box -->
+          <!-- Action Required Box (Centered / Full Width) -->
+          <div style="max-width: 650px; margin: 2rem auto 1.5rem;">
               <div style="display: flex; flex-direction: column;">
                   @if($isAccepted && $totalDue > 0)
                       <div class="pay-action-box approved" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
@@ -392,8 +364,8 @@
                       </div>
                   @elseif($isAccepted && $totalDue <= 0)
                       <div class="pay-action-box paid" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                          <strong style="font-size: 1.25rem;">✓ Paid in Full — Thank you!</strong>
-                          <p style="margin: 0.5rem 0 0; color: var(--rudra-muted);">Your project reactivation is confirmed and active.</p>
+                          <strong style="font-size: 1.25rem;">✓ Reactivation Confirmed — Thank you!</strong>
+                          <p style="margin: 0.5rem 0 0; color: var(--rudra-muted);">Your project reactivation is confirmed and active. 1st year basic shared hosting is included at ₹0.</p>
                       </div>
                   @elseif($isDeclined)
                       <div class="pay-action-box" style="background: var(--rudra-danger-soft); border: 2px solid var(--rudra-danger); color: var(--rudra-danger); height: 100%; display: flex; flex-direction: column; justify-content: center;">
@@ -405,7 +377,7 @@
                   @else
                       <div class="pay-action-box pending" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
                           <h3 style="margin: 0 0 0.5rem; color: var(--rudra-ink); font-size: 1.25rem; font-weight: 800;">Action Required: Approve Proposal</h3>
-                          <p style="margin: 0 0 1.5rem; color: var(--rudra-muted);">Please review the terms above and click approve to confirm reactivation and unlock online payment.</p>
+                          <p style="margin: 0 0 1.5rem; color: var(--rudra-muted);">Please review the terms above and click approve to confirm project reactivation (₹0 due today).</p>
                           <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                               {!! Form::open(['route' => ['proposal.public.approve', $publicParam], 'method' => 'POST', 'style' => 'margin: 0;']) !!}
                               <button type="submit" style="font-size: 1.1rem; padding: 0.75rem 2rem; background: var(--rudra-good); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(60,107,69,0.3);">
@@ -417,14 +389,6 @@
                                   ✕ Decline
                               </button>
                           </div>
-                          @if(!empty($razorpayKey))
-                              <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px dashed var(--rudra-border-strong);">
-                                  <p style="font-size: 0.9rem; color: var(--rudra-muted); margin-bottom: 0.75rem;">Or proceed directly to instant secure payment:</p>
-                                  <button type="button" class="btn-rzp-pay" style="font-size: 1rem; padding: 0.6rem 1.75rem; background: var(--rudra-accent); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.15);">
-                                      <i class="ti ti-shield-check"></i> Pay Now — {{ \App\Models\Utility::priceFormat($settings, $totalDue) }}
-                                  </button>
-                              </div>
-                          @endif
                       </div>
                   @endif
               </div>
@@ -434,7 +398,7 @@
         <section>
           <h2><span class="n">5</span> Terms to resume</h2>
           <ol class="terms">
-            <li>Total of <strong>₹<span class="fill" contenteditable="true" style="min-width:5ch">16,800</span></strong> (pending hosting + domain only — <strong>restart fee waived</strong>) payable <strong>in advance</strong>, before development resumes.</li>
+            <li>Total payable now is <strong>₹0</strong> (1st year basic shared hosting included until Dec 2026 — <strong>₹6,000 restart fee 100% waived</strong>). Simply approve this proposal to confirm project reactivation!</li>
             <li>Any new work beyond the original delivered scope is quoted and approved separately.</li>
             <li><span class="deadline">Response deadline: 5 days</span> from the date above. Without confirmation in 5 days, the project stays closed, no resources are reserved, and a fresh reactivation quote at then-current rates will be required later.</li>
           </ol>
@@ -491,13 +455,13 @@
     <article class="sheet lang-hi" id="pane-hi" lang="hi" hidden>
       <div class="sheet-pad">
         <header class="mast">
-          <p class="eyebrow">प्रोजेक्ट पुनःसक्रियण सूचना</p>
-          <h1>पुनः आरंभ शुल्क व बकाया — rudraspirit.com</h1>
-          <p class="sub">लंबे विराम के बाद रुद्राक्ष ई-कॉमर्स वेबसाइट को दोबारा सक्रिय करना।</p>
+          <p class="eyebrow">प्रोजेक्ट पुनःसक्रियण व पूर्णता समय-सीमा</p>
+          <h1>पुनः सक्रियण व 1-महीने का डिलीवरी समझौता — rudraspirit.com</h1>
+          <p class="sub">लंबे विराम के बाद रुद्राक्ष ई-कॉमर्स वेबसाइट को 30 दिन की सख्त पूर्णता समय-सीमा के साथ दोबारा सक्रिय करना।</p>
           <dl class="meta">
             <div><dt>प्रोजेक्ट</dt><dd>rudraspirit.com</dd></div>
-            <div><dt>वेबसाइट निर्माण</dt><dd>₹40,000 <span class="pill paid">भुगतान हुआ</span></dd></div>
-            <div><dt>निष्क्रिय अवधि</dt><dd>लगभग 6 महीने</dd></div>
+            <div><dt>वेबसाइट निर्माण</dt><dd>₹40,000 <span class="pill paid">पूर्ण भुगतान</span></dd></div>
+            <div><dt>पहला वर्ष होस्टिंग</dt><dd>बेसिक शेयर्ड <span class="pill good">शामिल / ₹0</span></dd></div>
             <div><dt>दिनांक</dt><dd><span class="fill" contenteditable="true">{{ $user->dateFormat($proposal->issue_date) }}</span></dd></div>
             <div><dt>ग्राहक</dt><dd><span class="fill" contenteditable="true">rudraspirit.com</span></dd></div>
             <div><dt>प्रस्तुतकर्ता</dt><dd><span class="fill" contenteditable="true">Animazon</span></dd></div>
@@ -507,7 +471,7 @@
         <section>
           <h2><span class="n">1</span> संदर्भ</h2>
           <p>rudraspirit.com वेबसाइट पूरी हुई, डिलीवर हुई और निर्माण शुल्क का <strong>पूरा भुगतान (₹40,000)</strong> हो चुका है। इसके बाद लगभग <strong>6 महीने</strong> तक कोई सक्रिय काम या फीडबैक नहीं मिला और काम रुका रहा।</p>
-          <p>अब दोबारा शुरू करने के लिए दो राशि देय हैं: <strong>बकाया होस्टिंग + डोमेन शुल्क</strong> (₹2,400/माह, 22 दिस॰ 2025 से चालू), और निष्क्रिय प्रोजेक्ट को दोबारा चालू, अद्यतन व डिप्लॉय-योग्य बनाने के लिए <strong>पुनः आरंभ शुल्क</strong>। कोई रद्दीकरण शुल्क नहीं है और पूरे हो चुके निर्माण पर कुछ अतिरिक्त नहीं।</p>
+          <p>काम दोबारा शुरू करने के लिए, आपकी <strong>पहले वर्ष की बेसिक शेयर्ड होस्टिंग बिना किसी अतिरिक्त शुल्क के शामिल है (दिसंबर 2026 तक ₹0/माह)</strong>। इसके अलावा, 6 महीने की निष्क्रियता के बाद प्रोजेक्ट को दोबारा डिप्लॉय-योग्य बनाने के लिए सामान्यतः <strong>₹6,000 का पुनः आरंभ शुल्क</strong> लगता है—जिसे हमने <strong>सद्भावना स्वरूप पूरी तरह माफ़ कर दिया है!</strong></p>
           <div class="clause">
             <p><strong>अतिरिक्त शुल्क क्यों?</strong> ₹40,000 वेबसाइट <strong>बनाने और डिलीवर करने</strong> के लिए था — इसे अनिश्चितकाल तक तैयार रखने के लिए नहीं। इन 6 महीनों में संसाधन दूसरे ग्राहकों पर लगे और साइट अपडेट व सुरक्षा में पीछे रह गई। इसे दोबारा सुरक्षित, अद्यतन व डिप्लॉय-योग्य बनाना — और शेड्यूल में दोबारा समय देना — <strong>नया काम है जो पूरे हो चुके प्रोजेक्ट का हिस्सा नहीं था।</strong> होस्टिंग एक अलग सेवा शुल्क है जो अब तक बकाया रहा।</p>
           </div>
@@ -532,18 +496,18 @@
         </section>
 
         <section>
-          <h2><span class="n">3</span> प्रीमियम वीपीएस होस्टिंग में अपग्रेड</h2>
-          <p>सर्च इंजन ऑप्टिमाइज़ेशन (SEO) और व्यापार विस्तार को प्राथमिकता देने के लिए, हमने वेबसाइट को <strong>होस्टिंगर शेयर्ड होस्टिंग</strong> से हटाकर एक उच्च-प्रदर्शन वाले समर्पित <strong>वर्चुअल प्राइवेट सर्वर (VPS)</strong> पर माइग्रेट कर दिया है। इस माइग्रेशन में WooCommerce प्रदर्शन के अनुकूल अनुकूलित सर्वर कॉन्फ़िगरेशन शामिल हैं।</p>
-          <div class="tbl-scroll">
-            <table class="why">
-              <thead><tr><th>वीपीएस क्लाउड के लाभ</th><th>rudraspirit.com के लिए इसका महत्व</th></tr></thead>
-              <tbody>
-                <tr><td>गूगल SEO रैंकिंग</td><td>तेज़ रिस्पांस टाइम (टाइम टू फर्स्ट बाइट) सीधे तौर पर मोबाइल और डेस्कटॉप सर्च इंजन रैंकिंग में सुधार करता है।</td></tr>
-                <tr><td>समर्पित संसाधन</td><td>अनन्य CPU, RAM, और SSD स्टोरेज उच्च-ट्रैफ़िक बिक्री के दौरान साइट को धीमा होने या क्रैश होने से बचाते हैं।</td></tr>
-                <tr><td>उन्नत सुरक्षा</td><td>समर्पित आईपी, कस्टम फ़ायरवॉल और सुरक्षित फ़ाइल एक्सेस के साथ एक पूरी तरह से निजी सर्वर वातावरण।</td></tr>
-                <tr><td>24/7 सक्रिय निगरानी</td><td>लगातार सर्वर स्वास्थ्य जाँच, डेटाबेस अनुकूलन और ऑटो-रिन्यूइंग एसएसएल (SSL) निगरानी शामिल है।</td></tr>
-              </tbody>
-            </table>
+          <h2><span class="n">3</span> सख्त 1-महीने की पूर्णता समय-सीमा और ग्राहक विलंब शर्त</h2>
+          <p>बिना किसी और देरी के एक तेज़ और कुशल लॉन्च सुनिश्चित करने के लिए, दोनों पक्ष एक सख्त पूर्णता और डिलीवरी समय-सारणी पर सहमत हैं:</p>
+          <div style="border-left: 4px solid var(--rudra-danger); background: var(--rudra-danger-soft); padding: 1.5rem; border-radius: 10px; margin: 1.25rem 0; color: var(--rudra-ink);">
+            <h3 style="margin: 0 0 0.75rem; color: var(--rudra-danger); font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              ⚠️ महत्वपूर्ण अनुबंध शर्त: समय पर सामग्री व विवरण प्रदान करना
+            </h3>
+            <ul style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.95rem; line-height: 1.6;">
+              <li><strong>1-महीने की डिलीवरी गारंटी:</strong> Animazon प्रस्ताव स्वीकृति की तिथि से <strong>केवल 1 महीने (30 कैलेंडर दिनों)</strong> के भीतर पूरी ई-कॉमर्स वेबसाइट को पूरा करने, टेस्ट करने और लॉन्च करने के लिए प्रतिबद्ध है।</li>
+              <li><strong>ग्राहक की जिम्मेदारी:</strong> इस तेज़ 30-दिवसीय पूर्णता को प्राप्त करने के लिए, ग्राहक को हमारी टीम द्वारा मांगे जाने पर सभी आवश्यक उत्पाद विवरण, मूल्य निर्धारण, सामग्री, ब्रांडिंग फ़ाइलें और फीडबैक तुरंत प्रदान करना होगा।</li>
+              <li><strong>देरी होने पर अनुबंध का उल्लंघन:</strong> यदि ग्राहक इस 1-महीने की समय-सीमा के भीतर आवश्यक विवरण, फीडबैक या सामग्री प्रदान करने में देरी करता है या समय बढ़ाता है, <strong>तो यह इस समझौते का सीधा उल्लंघन माना जाएगा और यह अनुबंध समाप्त (void) हो जाएगा।</strong></li>
+              <li><strong>अतिरिक्त शुल्क लागू होना:</strong> ऐसे ग्राहक विलंब या अनुबंध उल्लंघन की स्थिति में, ₹0 शुल्क छूट और पुनःसक्रियण लाभ समाप्त हो जाएंगे। <strong>काम जारी रखने या दोबारा शुरू करने के लिए मानक प्रति घंटा या मासिक प्रोजेक्ट पुनःसक्रियण और रखरखाव शुल्क तुरंत लागू होंगे।</strong></li>
+            </ul>
           </div>
         </section>
 
@@ -559,7 +523,7 @@
                 <strong style="font-size: 1.35rem; color: var(--rudra-good); line-height: 1.2;">बधाई हो! हमने आपका पुनः आरंभ शुल्क माफ़ कर दिया है!</strong>
               </div>
               <p style="margin: 0; font-size: 1rem; color: var(--rudra-ink); line-height: 1.5;">
-                हमारी साझेदारी जारी रखने की खुशी में, हमने <strong>₹6,000 का सर्वर पुनःसक्रियण और पुनः आरंभ शुल्क</strong> पूरी तरह से माफ़ कर दिया है। आपको पुनःसक्रियण के लिए <strong style="color: var(--rudra-good); font-size: 1.1rem;">₹0</strong> देना होगा और केवल बकाया वेब होस्टिंग शुल्क का भुगतान करना होगा!
+                हमारी साझेदारी जारी रखने की खुशी में, हमने <strong>₹6,000 का सर्वर पुनःसक्रियण और पुनः आरंभ शुल्क</strong> पूरी तरह से माफ़ कर दिया है। आपकी पहले वर्ष की बेसिक शेयर्ड होस्टिंग दिसंबर 2026 तक नि:शुल्क शामिल होने के कारण काम शुरू करने के लिए देय राशि <strong style="color: var(--rudra-good); font-size: 1.1rem;">₹0</strong> है!
               </p>
             </div>
           </div>
@@ -570,54 +534,21 @@
               <thead><tr><th class="item">विवरण</th><th>स्थिति</th><th class="amt">राशि</th></tr></thead>
               <tbody>
                 <tr class="ref"><td class="item">वेबसाइट निर्माण व डिलीवरी</td><td><span class="pill paid">पूर्ण भुगतान</span></td><td class="amt"><span class="cur">₹</span>40,000</td></tr>
-                <tr><td class="item">होस्टिंग + डोमेन नवीनीकरण<span class="muted">₹<span class="fill rate" contenteditable="true" style="min-width:3ch">2,400</span>/माह × <span class="fill months" contenteditable="true" style="min-width:2ch">7</span> माह · 22 दिस॰ 2025 से</span></td><td><span class="pill out">अभुगतान</span></td><td class="amt"><span class="cur">₹</span><span class="host-sub">16,800</span></td></tr>
-                <tr class="waived"><td class="item">पुनः आरंभ / पुनःसक्रियण शुल्क</td><td><span class="pill good">माफ़ · सद्भावना</span></td><td class="amt"><span class="was">₹6,000</span><span class="cur">₹</span>0</td></tr>
-                <tr class="total"><td class="item" colspan="2">अभी देय कुल राशि</td><td class="amt"><span class="cur">₹</span><span class="total-val">16,800</span></td></tr>
+                <tr class="ref"><td class="item">पहला वर्ष बेसिक शेयर्ड होस्टिंग<span class="muted">दिस॰ 2025 – दिस॰ 2026 · पैकेज में शामिल</span></td><td><span class="pill good">नि:शुल्क शामिल</span></td><td class="amt"><span class="cur">₹</span>0</td></tr>
+                <tr class="waived"><td class="item">पुनः आरंभ / पुनःसक्रियण शुल्क<span class="muted">6 महीने निष्क्रियता के बाद रीबिल्ड</span></td><td><span class="pill good">माफ़ · सद्भावना</span></td><td class="amt"><span class="was">₹6,000</span><span class="cur">₹</span>0</td></tr>
+                <tr class="total"><td class="item" colspan="2">काम शुरू करने के लिए अभी देय राशि</td><td class="amt"><span class="cur">₹</span><span class="total-val">0</span></td></tr>
               </tbody>
             </table>
             </div>
-            <p class="pay-note">अभी देय कुल = केवल होस्टिंग + डोमेन (<b>₹2,400/माह × 7 = ₹16,800</b>, 22 दिस॰ 2025 से बकाया)। ₹40,000 निर्माण शुल्क पहले ही चुकाया जा चुका है। <b>₹6,000 पुनः आरंभ शुल्क माफ़</b> कर दिया गया है — पुनःसक्रियण का कोई शुल्क नहीं।</p>
+            <p class="pay-note">अभी देय कुल राशि = <b>₹0</b>! आपकी पहले वर्ष की बेसिक शेयर्ड होस्टिंग दिसंबर 2026 तक शामिल है। <b>₹6,000 पुनः आरंभ शुल्क 100% माफ़</b> कर दिया गया है।</p>
             <div class="savings">
               <span class="tick">✓</span>
-              <p><b>खुशखबरी:</b> ₹6,000 पुनः आरंभ शुल्क <b>सद्भावना स्वरूप माफ़</b> कर दिया गया है। आपको केवल बकाया होस्टिंग देना है — <b>₹6,000 की बचत</b>।</p>
+              <p><b>खुशखबरी:</b> ₹6,000 पुनः आरंभ शुल्क <b>सद्भावना स्वरूप माफ़</b> कर दिया गया है, और बेसिक होस्टिंग नि:शुल्क है — <b>आज आपकी ₹6,000 की बचत!</b></p>
             </div>
           </div>
 
-          <!-- Side-by-Side: Web Hosting Auto-Pay & Action Required Box (Hindi) -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin: 2rem 0 1.5rem; align-items: stretch;">
-              <!-- Left Column: Web Hosting Charges Auto-Pay (Hindi) -->
-              <div style="padding: 1.5rem; background: var(--rudra-bg-subtle); border: 2px solid var(--rudra-border-strong); border-radius: 14px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;">
-                  <div>
-                      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-                          <span style="background: var(--rudra-accent); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">वेब होस्टिंग शुल्क</span>
-                          <strong style="font-size: 1.15rem; color: var(--rudra-ink);">वेब होस्टिंग शुल्क ऑटो-पे (Auto-Pay)</strong>
-                      </div>
-                      <p style="margin: 0 0 1.25rem; font-size: 0.9rem; color: var(--rudra-muted); line-height: 1.5;">
-                          निरंतर वेब होस्टिंग अनिवार्य है। क्लाउड होस्टिंग, डोमेन नवीनीकरण, 24/7 अपटाइम मॉनिटरिंग और सुरक्षा पैचिंग के लिए मैनुअल मासिक भुगतान या Razorpay द्वारा स्वचालित आवर्ती भुगतान (Auto-Pay) चुनें।
-                      </p>
-                  </div>
-                  <div style="padding-top: 1rem; border-top: 1px solid var(--rudra-border-strong);">
-                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
-                          <span id="subStatusTextHi" style="font-weight: 700; font-size: 0.95rem; color: var(--rudra-good);">हाँ, ऑटो-पे सक्रिय</span>
-                          <label class="switch-sub">
-                              <input type="checkbox" id="toggleSubHi" checked onchange="toggleSubscriptionWidget('Hi', this.checked)">
-                              <span class="slider-round"></span>
-                          </label>
-                      </div>
-                      <div id="subWidgetBoxHi" style="display: block; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px dashed var(--rudra-border-strong); text-align: center;">
-                          <p style="font-size: 0.9rem; color: var(--rudra-accent-deep); font-weight: 700; margin-bottom: 0.85rem;">
-                              ✓ स्वचालित भुगतान मोड चयनित — नीचे आवर्ती होस्टिंग भुगतान अधिकृत करें:
-                          </p>
-                          <div style="display: flex; justify-content: center; align-items: center; min-height: 50px;">
-                              <form>
-                                  <script src="https://cdn.razorpay.com/static/widget/subscription-button.js" data-subscription_button_id="pl_T9j7p5Gbk0YDsG" data-button_theme="brand-color" async> </script>
-                              </form>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Right Column: Payment Gateway & Approval Actions Box (Hindi) -->
+          <!-- Action Required Box (Centered / Full Width - Hindi) -->
+          <div style="max-width: 650px; margin: 2rem auto 1.5rem;">
               <div style="display: flex; flex-direction: column;">
                   @if($isAccepted && $totalDue > 0)
                       <div class="pay-action-box approved" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
@@ -634,8 +565,8 @@
                       </div>
                   @elseif($isAccepted && $totalDue <= 0)
                       <div class="pay-action-box paid" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                          <strong style="font-size: 1.25rem;">✓ पूर्ण भुगतान प्राप्त — धन्यवाद!</strong>
-                          <p style="margin: 0.5rem 0 0; color: var(--rudra-muted);">आपका प्रोजेक्ट पुनःसक्रियण कन्फर्म है।</p>
+                          <strong style="font-size: 1.25rem;">✓ पुनःसक्रियण कन्फर्म — धन्यवाद!</strong>
+                          <p style="margin: 0.5rem 0 0; color: var(--rudra-muted);">आपका प्रोजेक्ट पुनःसक्रियण कन्फर्म और सक्रिय है। पहले वर्ष की बेसिक होस्टिंग ₹0 पर शामिल है।</p>
                       </div>
                   @elseif($isDeclined)
                       <div class="pay-action-box" style="background: var(--rudra-danger-soft); border: 2px solid var(--rudra-danger); color: var(--rudra-danger); height: 100%; display: flex; flex-direction: column; justify-content: center;">
@@ -647,7 +578,7 @@
                   @else
                       <div class="pay-action-box pending" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
                           <h3 style="margin: 0 0 0.5rem; color: var(--rudra-ink); font-size: 1.25rem; font-weight: 800;">आवश्यक कार्रवाई: प्रस्ताव स्वीकृत करें</h3>
-                          <p style="margin: 0 0 1.5rem; color: var(--rudra-muted);">कृपया उपरोक्त शर्तों की समीक्षा करें और ऑनलाइन भुगतान अनलॉक करने व अपना प्रोजेक्ट पुनः सक्रिय करने के लिए स्वीकृति पर क्लिक करें।</p>
+                          <p style="margin: 0 0 1.5rem; color: var(--rudra-muted);">कृपया उपरोक्त शर्तों की समीक्षा करें और अपना प्रोजेक्ट पुनः सक्रिय करने के लिए (आज देय ₹0) स्वीकृति पर क्लिक करें।</p>
                           <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                               {!! Form::open(['route' => ['proposal.public.approve', $publicParam], 'method' => 'POST', 'style' => 'margin: 0;']) !!}
                               <button type="submit" style="font-size: 1.1rem; padding: 0.75rem 2rem; background: var(--rudra-good); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(60,107,69,0.3);">
@@ -659,14 +590,6 @@
                                   ✕ अस्वीकृत करें
                               </button>
                           </div>
-                          @if(!empty($razorpayKey))
-                              <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px dashed var(--rudra-border-strong);">
-                                  <p style="font-size: 0.9rem; color: var(--rudra-muted); margin-bottom: 0.75rem;">या तुरंत सुरक्षित चेकआउट के माध्यम से सीधे भुगतान करें:</p>
-                                  <button type="button" class="btn-rzp-pay" style="font-size: 1rem; padding: 0.6rem 1.75rem; background: var(--rudra-accent); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.15);">
-                                      <i class="ti ti-shield-check"></i> अभी भुगतान करें — {{ \App\Models\Utility::priceFormat($settings, $totalDue) }}
-                                  </button>
-                              </div>
-                          @endif
                       </div>
                   @endif
               </div>
@@ -676,7 +599,7 @@
         <section>
           <h2><span class="n">5</span> दोबारा शुरू करने की शर्तें</h2>
           <ol class="terms">
-            <li>कुल <strong>₹<span class="fill" contenteditable="true" style="min-width:5ch">16,800</span></strong> (केवल बकाया होस्टिंग + डोमेन — <strong>पुनः आरंभ शुल्क माफ़</strong>) काम शुरू होने से पहले <strong>अग्रिम देय</strong>।</li>
+            <li>अभी देय कुल राशि <strong>₹0</strong> है (पहले वर्ष की बेसिक शेयर्ड होस्टिंग दिसंबर 2026 तक शामिल — <strong>₹6,000 पुनः आरंभ शुल्क 100% माफ़</strong>)। प्रोजेक्ट पुनः सक्रिय करने के लिए बस इस प्रस्ताव को स्वीकृत करें!</li>
             <li>मूल डिलीवर स्कोप से बाहर का कोई भी नया काम अलग से कोट व स्वीकृत किया जाएगा।</li>
             <li><span class="deadline">उत्तर की समय-सीमा: 5 दिन</span> (ऊपर दी तारीख से)। 5 दिन में पुष्टि न होने पर प्रोजेक्ट बंद रहेगा, कोई संसाधन आरक्षित नहीं होंगे, और बाद में तत्कालीन दरों पर नया पुनःसक्रियण कोट लगेगा।</li>
           </ol>
@@ -734,12 +657,10 @@
       <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
           <div>
               <span style="font-size: 0.72rem; color: var(--rudra-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block;">Total Payable Now / देय राशि</span>
-              <strong style="font-size: 1.35rem; color: var(--rudra-ink);">{{ \App\Models\Utility::priceFormat($settings, $totalDue) }}</strong>
+              <strong style="font-size: 1.35rem; color: var(--rudra-good);">₹0 (1st Year Free / शामिल)</strong>
           </div>
-          @if($isAccepted && $totalDue > 0)
-              <span style="padding: 0.35rem 0.85rem; background: var(--rudra-good-soft); color: var(--rudra-good); font-weight: 700; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--rudra-good);">✓ Approved & Ready for Payment</span>
-          @elseif($isAccepted && $totalDue <= 0)
-              <span style="padding: 0.35rem 0.85rem; background: var(--rudra-good-soft); color: var(--rudra-good); font-weight: 700; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--rudra-good);">✓ Paid in Full</span>
+          @if($isAccepted)
+              <span style="padding: 0.35rem 0.85rem; background: var(--rudra-good-soft); color: var(--rudra-good); font-weight: 700; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--rudra-good);">✓ Reactivation Confirmed / सक्रिय</span>
           @elseif($isDeclined)
               <span style="padding: 0.35rem 0.85rem; background: var(--rudra-danger-soft); color: var(--rudra-danger); font-weight: 700; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--rudra-danger);">✕ Proposal Declined</span>
           @else
@@ -747,11 +668,9 @@
           @endif
       </div>
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-          @if($isAccepted && $totalDue > 0 && !empty($razorpayKey))
-              <button type="button" class="btn-rzp-pay" style="font-size: 1rem; padding: 0.65rem 1.75rem; background: var(--rudra-accent); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">
-                  <i class="ti ti-shield-check"></i> Pay Now — {{ \App\Models\Utility::priceFormat($settings, $totalDue) }}
-              </button>
-          @elseif(!$isAccepted && !$isDeclined)
+          @if($isAccepted)
+              <span style="padding: 0.5rem 1.25rem; background: var(--rudra-good); color: #fff; font-weight: 700; border-radius: 8px; font-size: 0.95rem;">✓ Reactivation Active / सक्रिय</span>
+          @elseif(!$isDeclined)
               {!! Form::open(['route' => ['proposal.public.approve', $publicParam], 'method' => 'POST', 'style' => 'margin: 0;']) !!}
               <button type="submit" style="font-size: 1rem; padding: 0.65rem 1.5rem; background: var(--rudra-good); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(60,107,69,0.3);">
                   ✓ Approve Proposal
@@ -820,23 +739,6 @@
       el.addEventListener('input', function(){ recalc(pane); });
     });
   });
-  function toggleSubscriptionWidget(lang, isChecked) {
-    var box = document.getElementById('subWidgetBox' + lang);
-    var text = document.getElementById('subStatusText' + lang);
-    if (isChecked) {
-        if(box) box.style.display = 'block';
-        if(text) {
-            text.innerText = (lang === 'En') ? 'Yes, Add Subscription' : 'हाँ, सदस्यता जोड़ें';
-            text.style.color = 'var(--rudra-good)';
-        }
-    } else {
-        if(box) box.style.display = 'none';
-        if(text) {
-            text.innerText = (lang === 'En') ? 'No, skip for now' : 'नहीं, अभी छोड़ें';
-            text.style.color = 'var(--rudra-muted)';
-        }
-    }
-  }
 </script>
 
 @if(!$isDeclined && !$isExpired && $totalDue > 0 && !empty($razorpayKey))

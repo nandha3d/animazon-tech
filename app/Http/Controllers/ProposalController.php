@@ -938,8 +938,12 @@ class ProposalController extends Controller
             if ($proposal) return $proposal;
         }
         if (is_numeric($idParam)) {
-            $proposal = Proposal::find($idParam);
-            if ($proposal) return $proposal;
+            // SECURITY FIX: Prevent unauthorized public visitors from viewing proposals by randomly typing sequential numbers (e.g. /customer/proposal/1, /2, /3).
+            // Only allow direct numeric ID lookup if the user is an authenticated team member or admin!
+            if (\Auth::check() && (\Auth::user()->type == 'company' || \Auth::user()->type == 'super admin' || \Auth::user()->can('manage proposal'))) {
+                $proposal = Proposal::find($idParam);
+                if ($proposal) return $proposal;
+            }
         }
         try {
             $id = Crypt::decrypt($idParam);
@@ -962,6 +966,13 @@ class ProposalController extends Controller
             $status   = Proposal::$statues;
             $customFields         = CustomField::where('module', '=', 'proposal')->get();
 
+            $proposalComments = [];
+            $proposalAttachments = [];
+            try {
+                $proposalComments = \App\Models\ProposalComment::where('proposal_id', $proposal->id)->latest()->get();
+                $proposalAttachments = \App\Models\ProposalAttachment::where('proposal_id', $proposal->id)->latest()->get();
+            } catch (\Exception $e) {}
+
             // Resolve Razorpay key robustly from company, admin, or env
             $companyPayment = Utility::getCompanyPaymentSetting($user_id);
             $adminPayment = Utility::getAdminPaymentSetting();
@@ -981,7 +992,7 @@ class ProposalController extends Controller
                 $razorpayKey = 'rzp_test_demo_key_12345';
             }
 
-            return view('proposal.customer_proposal', compact('proposal', 'customer', 'iteams', 'customFields', 'status', 'user', 'razorpayKey', 'companyPayment', 'adminPayment'));
+            return view('proposal.customer_proposal', compact('proposal', 'customer', 'iteams', 'customFields', 'status', 'user', 'razorpayKey', 'companyPayment', 'adminPayment', 'proposalComments', 'proposalAttachments'));
         }
         else
         {
@@ -1116,6 +1127,74 @@ class ProposalController extends Controller
         $proposal->save();
 
         return redirect()->back()->with('success', __('Payment received. Thank you!'));
+    }
+
+    public function publicComment(Request $request, $proposalID)
+    {
+        $proposal = $this->resolveProposal($proposalID);
+        if (!$proposal) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+
+        $request->validate([
+            'client_name' => 'required|string|max:150',
+            'comment' => 'required|string',
+        ]);
+
+        try {
+            \App\Models\ProposalComment::create([
+                'proposal_id' => $proposal->id,
+                'user_id' => \Auth::check() ? \Auth::user()->id : 0,
+                'client_name' => $request->client_name,
+                'client_email' => $request->client_email,
+                'category' => $request->category ?? 'General Feedback',
+                'comment' => $request->comment,
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Proposal comment error: ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', __('Your comment has been submitted successfully!'));
+    }
+
+    public function publicUpload(Request $request, $proposalID)
+    {
+        $proposal = $this->resolveProposal($proposalID);
+        if (!$proposal) {
+            return redirect()->back()->with('error', __('Proposal Not Found.'));
+        }
+
+        $request->validate([
+            'client_name' => 'required|string|max:150',
+            'file' => 'required|file|max:25600',
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $dir = 'proposal_attachments/';
+            $path = Utility::upload_file($request, 'file', $fileName, $dir, []);
+            
+            if ($path['flag'] == 0) {
+                return redirect()->back()->with('error', __($path['msg']));
+            }
+
+            try {
+                \App\Models\ProposalAttachment::create([
+                    'proposal_id' => $proposal->id,
+                    'user_id' => \Auth::check() ? \Auth::user()->id : 0,
+                    'client_name' => $request->client_name,
+                    'category' => $request->category ?? 'Project Asset',
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $fileName,
+                    'file_size' => round($file->getSize() / 1024, 2) . ' KB',
+                ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Proposal upload error: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with('success', __('File uploaded successfully!'));
     }
 
     public function export()
