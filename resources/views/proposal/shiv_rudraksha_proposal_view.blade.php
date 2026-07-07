@@ -471,11 +471,11 @@
             <table>
               <thead><tr><th class="item">Deliverable Item</th><th>Status / Billing Frequency</th><th class="amt">Amount</th></tr></thead>
               <tbody>
-                <tr class="ref"><td class="item">Complete E-Commerce Website Build (WooCommerce/Shopify)<span class="muted">Finalized fixed price · Includes all 6 growth modules &amp; Multi-Currency Switcher</span></td><td><span class="pill paid" id="badge_core_en">50% Advance Build</span></td><td class="amt"><span class="was">₹90,000</span><span class="cur">₹</span><span id="val_core_en">20,000</span></td></tr>
+                <tr class="ref"><td class="item">Complete E-Commerce Website Build (WooCommerce/Shopify)<span class="muted">Finalized fixed price · Includes all 6 growth modules &amp; Multi-Currency Switcher</span></td><td><span class="pill paid">Finalized Fixed Price</span></td><td class="amt"><span class="was">₹90,000</span><span class="cur">₹</span>40,000</td></tr>
                 <tr class="ref" id="row_addons_en" style="display: none;"><td class="item">Selected Custom Add-on Modules<span class="muted" id="names_addons_en">None selected</span></td><td><span class="pill due">Optional Add-ons</span></td><td class="amt"><span class="cur">₹</span><span id="val_addons_en">0</span></td></tr>
                 <tr class="ref"><td class="item">VPS Cloud Hosting Infrastructure<span class="muted" id="desc_hosting_en">Monthly Billing (1st month added to invoice)</span></td><td><span class="pill good" id="badge_hosting_en">Monthly Billing</span></td><td class="amt"><span class="cur">₹</span><span id="val_hosting_en">2,400</span></td></tr>
                 <tr class="ref" id="row_amc_en" style="display: none;"><td class="item">Annual Maintenance Contract (AMC)<span class="muted" id="desc_amc_en">Monthly Billing (1st month added to invoice)</span></td><td><span class="pill gold" id="badge_amc_en">Optional AMC Opt-in</span></td><td class="amt"><span class="cur">₹</span><span id="val_amc_en">2,500</span></td></tr>
-                <tr class="total"><td class="item" colspan="2" id="label_total_en">Total Payable Today (50% Advance Build + Hosting)</td><td class="amt"><span class="cur">₹</span><span class="total-val" id="val_total_en">22,400</span></td></tr>
+                <tr class="total"><td class="item" colspan="2" id="label_total_en">Total Project Valuation / Investment (Selected Package)</td><td class="amt"><span class="cur">₹</span><span class="total-val" id="val_total_en">42,400</span></td></tr>
               </tbody>
             </table>
             </div>
@@ -772,11 +772,11 @@
             <table>
               <thead><tr><th class="item">विवरण</th><th>स्थिति / बिलिंग चक्र</th><th class="amt">राशि</th></tr></thead>
               <tbody>
-                <tr class="ref"><td class="item">संपूर्ण ई-कॉमर्स वेबसाइट निर्माण (WooCommerce/Shopify)<span class="muted">अंतिम तय मूल्य · 6 प्रमुख ग्रोथ मॉड्यूल व मल्टी-करेंसी एक्सपोर्ट शामिल</span></td><td><span class="pill paid" id="badge_core_hi">50% एडवांस निर्माण</span></td><td class="amt"><span class="was">₹90,000</span><span class="cur">₹</span><span id="val_core_hi">20,000</span></td></tr>
+                <tr class="ref"><td class="item">संपूर्ण ई-कॉमर्स वेबसाइट निर्माण (WooCommerce/Shopify)<span class="muted">अंतिम तय मूल्य · 6 प्रमुख ग्रोथ मॉड्यूल व मल्टी-करेंसी एक्सपोर्ट शामिल</span></td><td><span class="pill paid">अंतिम तय मूल्य (Finalized)</span></td><td class="amt"><span class="was">₹90,000</span><span class="cur">₹</span>40,000</td></tr>
                 <tr class="ref" id="row_addons_hi" style="display: none;"><td class="item">चयनित अतिरिक्त कस्टम मॉड्यूल<span class="muted" id="names_addons_hi">कोई मॉड्यूल नहीं चुना गया</span></td><td><span class="pill due">वैकल्पिक मॉड्यूल</span></td><td class="amt"><span class="cur">₹</span><span id="val_addons_hi">0</span></td></tr>
                 <tr class="ref"><td class="item">वीपीएस क्लाउड होस्टिंग इंफ्रास्ट्रक्चर<span class="muted" id="desc_hosting_hi">मासिक बिलिंग (पहला महीना इनवॉइस में शामिल)</span></td><td><span class="pill good" id="badge_hosting_hi">मासिक बिलिंग</span></td><td class="amt"><span class="cur">₹</span><span id="val_hosting_hi">2,400</span></td></tr>
                 <tr class="ref" id="row_amc_hi" style="display: none;"><td class="item">वार्षिक रखरखाव अनुबंध (AMC)<span class="muted" id="desc_amc_hi">मासिक बिलिंग (पहला महीना इनवॉइस में शामिल)</span></td><td><span class="pill gold" id="badge_amc_hi">वैकल्पिक एएमसी सेवा</span></td><td class="amt"><span class="cur">₹</span><span id="val_amc_hi">2,500</span></td></tr>
-                <tr class="total"><td class="item" colspan="2" id="label_total_hi">आज कुल देय राशि (50% एडवांस निर्माण + होस्टिंग)</td><td class="amt"><span class="cur">₹</span><span class="total-val" id="val_total_hi">22,400</span></td></tr>
+                <tr class="total"><td class="item" colspan="2" id="label_total_hi">कुल प्रोजेक्ट लागत (चयनित पैकेज)</td><td class="amt"><span class="cur">₹</span><span class="total-val" id="val_total_hi">42,400</span></td></tr>
               </tbody>
             </table>
             </div>
@@ -1040,10 +1040,8 @@
     // 2. Build Fee Calculations
     let totalBuildFee = shivState.coreBuild + addonsTotal;
     let buildPayableToday = (shivState.paymentSchedule === 'advance') ? (totalBuildFee / 2) : totalBuildFee;
-    let corePayableToday = (shivState.paymentSchedule === 'advance') ? (shivState.coreBuild / 2) : shivState.coreBuild;
-    let addonsPayableToday = (shivState.paymentSchedule === 'advance') ? (addonsTotal / 2) : addonsTotal;
 
-    // Update Plan Card Prices
+    // Update Plan Card Prices in Checkout Box
     let advAmount = totalBuildFee / 2;
     document.getElementById('card_adv_val_en').innerHTML = '₹' + formatINR(advAmount) + ' <span style="font-size: 0.8rem; font-weight: 600; color: var(--shiv-muted);">/ build advance</span>';
     document.getElementById('card_adv_val_hi').innerHTML = '₹' + formatINR(advAmount) + ' <span style="font-size: 0.8rem; font-weight: 600; color: var(--shiv-muted);">/ निर्माण एडवांस</span>';
@@ -1074,18 +1072,12 @@
       document.getElementById('row_amc_hi').style.display = 'none';
     }
 
-    // Update Core Build Row in Table
-    if (document.getElementById('val_core_en')) document.getElementById('val_core_en').innerText = formatINR(corePayableToday);
-    if (document.getElementById('val_core_hi')) document.getElementById('val_core_hi').innerText = formatINR(corePayableToday);
-    if (document.getElementById('badge_core_en')) document.getElementById('badge_core_en').innerText = (shivState.paymentSchedule === 'advance') ? '50% Advance Build' : '100% Upfront Build';
-    if (document.getElementById('badge_core_hi')) document.getElementById('badge_core_hi').innerText = (shivState.paymentSchedule === 'advance') ? '50% एडवांस निर्माण' : '100% एकमुश्त शुल्क';
-
-    // 5. Add-ons Table Row
+    // 5. Add-ons Table Row (Always show ACTUAL 100% selected amount in initial table)
     if (addonsTotal > 0) {
       document.getElementById('row_addons_en').style.display = 'table-row';
       document.getElementById('row_addons_hi').style.display = 'table-row';
-      document.getElementById('val_addons_en').innerText = formatINR(addonsPayableToday);
-      document.getElementById('val_addons_hi').innerText = formatINR(addonsPayableToday);
+      document.getElementById('val_addons_en').innerText = formatINR(addonsTotal);
+      document.getElementById('val_addons_hi').innerText = formatINR(addonsTotal);
       document.getElementById('names_addons_en').innerText = selectedNamesEn.join(', ');
       document.getElementById('names_addons_hi').innerText = selectedNamesHi.join(', ');
     } else {
@@ -1101,28 +1093,21 @@
     document.getElementById('desc_hosting_en').innerText = hostingDescEn;
     document.getElementById('desc_hosting_hi').innerText = hostingDescHi;
 
-    // 7. Calculate Grand Total Payable Today
+    // 7. Calculate Grand Total Valuation (Table sum of actual amounts) & Grand Total Payable Today (Checkout amount)
+    let grandTotalValuation = totalBuildFee + hostingPayableToday + amcPayableToday;
     let grandTotalToday = buildPayableToday + hostingPayableToday + amcPayableToday;
 
-    // Update Labels & Totals
-    let payTypeLabelEn = (shivState.paymentSchedule === 'advance') ? '50% Advance Build + Hosting' : '100% Upfront Build + Hosting';
-    let payTypeLabelHi = (shivState.paymentSchedule === 'advance') ? '50% एडवांस निर्माण + होस्टिंग' : '100% एकमुश्त निर्माण + होस्टिंग';
-    if (shivState.amcOptIn) { payTypeLabelEn += ' + AMC'; payTypeLabelHi += ' + एएमसी'; }
-
-    document.getElementById('label_total_en').innerText = 'Total Payable Today (' + payTypeLabelEn + ')';
-    document.getElementById('label_total_hi').innerText = 'आज कुल देय राशि (' + payTypeLabelHi + ')';
-    document.getElementById('val_total_en').innerText = formatINR(grandTotalToday);
-    document.getElementById('val_total_hi').innerText = formatINR(grandTotalToday);
+    // Update Table Bottom Row (Shows Actual Total Project Valuation)
+    document.getElementById('label_total_en').innerText = 'Total Project Valuation / Investment (Selected Package)';
+    document.getElementById('label_total_hi').innerText = 'कुल प्रोजेक्ट लागत (चयनित पैकेज)';
+    document.getElementById('val_total_en').innerText = formatINR(grandTotalValuation);
+    document.getElementById('val_total_hi').innerText = formatINR(grandTotalValuation);
 
     // Update Notes
-    let noteEn = 'Total project build = <b>₹' + formatINR(totalBuildFee) + '</b> (' + ((addonsTotal > 0) ? '₹40,000 core + ₹' + formatINR(addonsTotal) + ' add-ons' : '₹40,000 core') + '). You selected <b>' + ((shivState.paymentSchedule === 'advance') ? '50% Advance (₹' + formatINR(buildPayableToday) + ')' : '100% Upfront (₹' + formatINR(buildPayableToday) + ')') + '</b> + <b>' + hostingBadgeEn + ' (₹' + formatINR(hostingPayableToday) + ')' + '</b>';
-    if (shivState.amcOptIn) noteEn += ' + <b>' + ((shivState.amcPlan === 'annual') ? 'Annual AMC (₹30,000)' : 'Monthly AMC (₹2,500)') + '</b>';
-    noteEn += '. Total payable today = <b>₹' + formatINR(grandTotalToday) + '</b>.';
+    let noteEn = 'Total Project Valuation = <b>₹' + formatINR(grandTotalValuation) + '</b> (<b>₹' + formatINR(totalBuildFee) + '</b> build + <b>' + hostingBadgeEn + ' (₹' + formatINR(hostingPayableToday) + ')' + '</b>' + (shivState.amcOptIn ? ' + <b>' + ((shivState.amcPlan === 'annual') ? 'Annual AMC (₹30,000)' : 'Monthly AMC (₹2,500)') + '</b>' : '') + ').<br>In Checkout below, you selected <b>' + ((shivState.paymentSchedule === 'advance') ? '50% Advance Build (₹' + formatINR(advAmount) + ' today)' : '100% Upfront Build (₹' + formatINR(totalBuildFee) + ' today)') + '</b>. Total payable today = <b style="color:var(--shiv-accent); font-size:1.1em;">₹' + formatINR(grandTotalToday) + '</b>.';
     document.getElementById('note_total_en').innerHTML = noteEn;
 
-    let noteHi = 'कुल वेबसाइट निर्माण = <b>₹' + formatINR(totalBuildFee) + '</b> (' + ((addonsTotal > 0) ? '₹40,000 मुख्य + ₹' + formatINR(addonsTotal) + ' अतिरिक्त' : '₹40,000 मुख्य') + ')। आपने <b>' + ((shivState.paymentSchedule === 'advance') ? '50% एडवांस (₹' + formatINR(buildPayableToday) + ')' : '100% एकमुश्त (₹' + formatINR(buildPayableToday) + ')') + '</b> + <b>' + hostingBadgeHi + ' (₹' + formatINR(hostingPayableToday) + ')' + '</b> चुना है';
-    if (shivState.amcOptIn) noteHi += ' + <b>' + ((shivState.amcPlan === 'annual') ? 'वार्षिक एएमसी (₹30,000)' : 'मासिक एएमसी (₹2,500)') + '</b>';
-    noteHi += '। आज कुल देय राशि = <b>₹' + formatINR(grandTotalToday) + '</b>।';
+    let noteHi = 'कुल प्रोजेक्ट लागत = <b>₹' + formatINR(grandTotalValuation) + '</b> (<b>₹' + formatINR(totalBuildFee) + '</b> निर्माण + <b>' + hostingBadgeHi + ' (₹' + formatINR(hostingPayableToday) + ')' + '</b>' + (shivState.amcOptIn ? ' + <b>' + ((shivState.amcPlan === 'annual') ? 'वार्षिक एएमसी (₹30,000)' : 'मासिक एएमसी (₹2,500)') + '</b>' : '') + ')।<br>नीचे चेकआउट में आपने <b>' + ((shivState.paymentSchedule === 'advance') ? '50% एडवांस (₹' + formatINR(advAmount) + ' आज)' : '100% एकमुश्त (₹' + formatINR(totalBuildFee) + ' आज)') + '</b> चुना है। आज कुल देय राशि = <b style="color:var(--shiv-accent); font-size:1.1em;">₹' + formatINR(grandTotalToday) + '</b>।';
     document.getElementById('note_total_hi').innerHTML = noteHi;
 
     // Update Buttons & Hidden Fields
