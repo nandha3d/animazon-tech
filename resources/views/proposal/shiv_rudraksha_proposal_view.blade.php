@@ -347,7 +347,7 @@
               <strong>You do not need to pay for or select any maintenance contract at present!</strong> For the first 6 months post-launch, our engineering team will handle all server monitoring, bug fixes, speed optimization, and security updates at zero extra cost.
             </p>
             <p style="margin: 0; font-size: 0.85rem; color: var(--shiv-muted);">
-              * After the complimentary 6-month period expires, optional maintenance plans will be available starting at just ₹2,500/month should you wish to continue dedicated technical support.
+              * After the complimentary 6-month period expires, ongoing maintenance plans and charges will be decided after evaluating the website's performance, traffic, and server load requirements.
             </p>
           </div>
         </section>
@@ -619,7 +619,7 @@
               <strong>वर्तमान में एएमसी (AMC) के लिए कुछ भी भुगतान करने की कोई आवश्यकता नहीं है!</strong> आपके ई-कॉमर्स स्टोर के लॉन्च के बाद पूरे 6 महीने तक समर्पित तकनीकी देखभाल, सर्वर मॉनिटरिंग, सुरक्षा अपडेट और स्पीड ऑप्टिमाइजेशन बिना किसी शुल्क के (Zero Cost) प्रदान किया जाएगा।
             </p>
             <p style="margin: 0; font-size: 0.85rem; color: var(--shiv-muted);">
-              * 6 महीने की नि:शुल्क अवधि समाप्त होने के बाद, आप अपनी इच्छानुसार ₹2,500/माह के सामान्य शुल्क पर एएमसी सेवा को जारी रखने का विकल्प चुन सकते हैं।
+              * 6 महीने की नि:शुल्क अवधि समाप्त होने के बाद, वेबसाइट के प्रदर्शन, ट्रैफिक और सर्वर लोड की जांच करने के बाद ही आगे की एएमसी सेवा और शुल्क तय किया जाएगा।
             </p>
           </div>
         </section>
