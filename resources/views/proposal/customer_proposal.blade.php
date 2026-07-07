@@ -85,7 +85,7 @@
          $totalPaid = $proposal->amountPaid();
          $isRudraProposal = ($proposal->proposal_id == 1 || $proposal->proposal_id == 2 || $proposal->id == 1 || $proposal->id == 2 || (isset($customer) && str_contains(strtolower($customer->name ?? ''), 'rudra')));
          $isKpstaProposal = ($proposal->proposal_id == 3 || $proposal->id == 3 || $proposal->url_slug == 'kpsta-website' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'kpsta') || str_contains(strtolower($customer->name ?? ''), 'kerala pradesh') || str_contains(strtolower($customer->name ?? ''), 'teacher'))));
-         $isShivRudrakshaProposal = ($proposal->proposal_id == 4 || $proposal->id == 4 || $proposal->url_slug == 'shiv-rudraksha' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'shiv rudraksha') || str_contains(strtolower($customer->name ?? ''), 'guddu shah'))));
+         $isShivRudrakshaProposal = ($proposal->proposal_id == 4 || $proposal->id == 4 || $proposal->url_slug == 'shiv-rudraksha' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'shiv rudraksh') || str_contains(strtolower($customer->name ?? ''), 'guddu shah'))));
      @endphp
       @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal)
       <div class="row justify-content-between align-items-center mb-3">
