@@ -85,8 +85,10 @@
          $totalPaid = $proposal->amountPaid();
          $isRudraProposal = ($proposal->proposal_id == 1 || $proposal->proposal_id == 2 || $proposal->id == 1 || $proposal->id == 2 || (isset($customer) && str_contains(strtolower($customer->name ?? ''), 'rudra')));
          $isKpstaProposal = ($proposal->proposal_id == 3 || $proposal->id == 3 || $proposal->url_slug == 'kpsta-website' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'kpsta') || str_contains(strtolower($customer->name ?? ''), 'kerala pradesh') || str_contains(strtolower($customer->name ?? ''), 'teacher'))));
+         $isShivRudrakshaProposal = ($proposal->proposal_id == 4 || $proposal->id == 4 || $proposal->url_slug == 'shiv-rudraksha' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'shiv rudraksh') || str_contains(strtolower($customer->name ?? ''), 'guddu shah'))));
+         $isPlatinaaProposal = ($proposal->proposal_id == 5 || $proposal->id == 5 || $proposal->url_slug == 'platinaa-ceramics-refinery-estimate' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'platinaa'))));
      @endphp
-      @if(!$isRudraProposal && !$isKpstaProposal)
+      @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal && !$isPlatinaaProposal)
       <div class="row justify-content-between align-items-center mb-3">
           <div class="col-md-12 d-flex align-items-center justify-content-between justify-content-md-end">
               <div class="all-button-box mx-2">
@@ -109,6 +111,10 @@
          <div class="col-12">
              @if($isKpstaProposal)
                  @include('proposal.kpsta_proposal_view')
+             @elseif($isShivRudrakshaProposal)
+                 @include('proposal.shiv_rudraksha_proposal_view')
+             @elseif($isPlatinaaProposal)
+                 @include('proposal.platinaa_proposal_view')
              @elseif($isRudraProposal)
                  @if($proposal->url_slug == 'rudra-spirit-agreement' || request()->get('doc') == '1' || request()->get('view') == 'agreement' || ($proposal->proposal_id == 1 && $proposal->url_slug != 'rudra-spirit-hosting'))
                      @include('proposal.rudra_agreement_view')
@@ -348,7 +354,7 @@
         </div>
     </div>
 
-    @if(!$isRudraProposal && !$isKpstaProposal)
+    @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal && !$isPlatinaaProposal)
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">

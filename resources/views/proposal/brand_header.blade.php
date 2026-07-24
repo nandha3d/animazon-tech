@@ -193,7 +193,7 @@
 <script>
   function toggleProposalTheme() {
     var htmlRoot = document.documentElement;
-    var container = document.querySelector('[data-theme-root]') || document.querySelector('.rudra-view-container') || document.querySelector('.kpsta-view-container') || htmlRoot;
+    var container = document.querySelector('[data-theme-root]') || document.querySelector('.rudra-view-container') || document.querySelector('.kpsta-view-container') || document.querySelector('.shiv-view-container') || htmlRoot;
     var icon = document.getElementById('themeIcon');
     var text = document.getElementById('themeText');
     var current = htmlRoot.getAttribute('data-theme') || container.getAttribute('data-theme') || 'light';
@@ -201,7 +201,7 @@
     var nextTheme = (current === 'light') ? 'dark' : 'light';
     
     htmlRoot.setAttribute('data-theme', nextTheme);
-    document.querySelectorAll('[data-theme-root], .rudra-view-container, .kpsta-view-container').forEach(function(el) {
+    document.querySelectorAll('[data-theme-root], .rudra-view-container, .kpsta-view-container, .shiv-view-container').forEach(function(el) {
       el.setAttribute('data-theme', nextTheme);
     });
     
@@ -273,7 +273,7 @@
     var savedTheme = localStorage.getItem('animazon_theme');
     if (savedTheme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
-      document.querySelectorAll('[data-theme-root], .rudra-view-container, .kpsta-view-container').forEach(function(el) {
+      document.querySelectorAll('[data-theme-root], .rudra-view-container, .kpsta-view-container, .shiv-view-container').forEach(function(el) {
         el.setAttribute('data-theme', 'dark');
       });
       var icon = document.getElementById('themeIcon');
