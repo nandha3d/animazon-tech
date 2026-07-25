@@ -180,6 +180,8 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::view('/our-portfolio', 'pages.portfolio')->name('portfolio.public');
 Route::view('/blog', 'pages.blog')->name('blog.index');
+Route::view('/home-3d', 'home_v2.index')->name('home.3d');
+Route::view('/home-sitcon', 'home_v3.index')->name('home.sitcon');
 
 Route::prefix('blog')->name('blog.')->group(function () {
     Route::view('local-business-growth', 'pages.blog.local-business-growth')->name('local-business-growth');
@@ -350,6 +352,39 @@ Route::get('/form/{code}', [FormBuilderController::class, 'formView'])->name('fo
 Route::post('/form_view_store', [FormBuilderController::class, 'formViewStore'])->name('form.view.store')->middleware(['XSS']);
 
 Route::get('/', [DashboardController::class, 'landingpage'])->middleware(['XSS', 'revalidate']);
+
+// Temporary route to insert Platinaa Proposal on the live server
+Route::get('/insert-platinaa-proposal', function () {
+    $customer = \App\Models\Customer::where('name', 'like', '%Platinaa%')->first();
+    if (!$customer) {
+        $customer = new \App\Models\Customer();
+        $customer->customer_id = \App\Models\Customer::max('customer_id') + 1;
+        $customer->name = 'Platinaa Ceramics';
+        $customer->email = 'info@platinaaceramics.in';
+        $customer->created_by = \App\Models\User::where('type', 'company')->first()->id ?? 2;
+        $customer->save();
+    }
+
+    $existing = \App\Models\Proposal::where('url_slug', 'platinaa-ceramics-refinery-estimate')->first();
+    if ($existing) {
+        return "Proposal already exists! Check your dashboard.";
+    }
+
+    $pId = \App\Models\Proposal::max('proposal_id') + 1;
+    $p = new \App\Models\Proposal();
+    $p->proposal_id = $pId;
+    $p->url_slug = 'platinaa-ceramics-refinery-estimate';
+    $p->customer_id = $customer->id;
+    $p->issue_date = date('Y-m-d');
+    $p->valid_till = date('Y-m-d', strtotime('+30 days'));
+    $p->category_id = 1; 
+    $p->status = 1; 
+    $p->terms = 'Development of platinaaceramics.in interactive 3D WebGL showcase and company website.';
+    $p->created_by = \App\Models\User::where('type', 'company')->first()->id ?? 2;
+    $p->save();
+    
+    return "Successfully inserted Platinaa Proposal (#PROP0000" . $pId . ")! You can now check your dashboard.";
+});
 
 // Public Cost Calculator (Project Estimate) - No auth required
 Route::get('/pricing', [CostCalculatorController::class, 'publicIndex'])->name('cost-calculator.public')->middleware(['XSS']);
