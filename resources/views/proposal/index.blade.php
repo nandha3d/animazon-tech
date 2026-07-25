@@ -105,6 +105,8 @@
                             <thead>
                             <tr>
                                 <th> {{__('Proposal')}}</th>
+                                <th> {{__('Client Name')}}</th>
+                                <th> {{__('Project Title')}}</th>
                                 <th> {{__('Category')}}</th>
                                 <th> {{__('Issue Date')}}</th>
                                 <th> {{__('Status')}}</th>
@@ -120,7 +122,8 @@
                                         <a href="{{ route('proposal.show',\Crypt::encrypt($proposal->id)) }}" class="btn btn-outline-primary">{{ AUth::user()->proposalNumberFormat($proposal->proposal_id) }}
                                         </a>
                                     </td>
-
+                                    <td>{{ !empty($proposal->customer)?$proposal->customer->name:''}}</td>
+                                    <td>{{ !empty($proposal->url_slug) ? ucwords(str_replace('-', ' ', $proposal->url_slug)) : '' }}</td>
                                     <td>{{ !empty($proposal->category)?$proposal->category->name:''}}</td>
                                     <td>{{ Auth::user()->dateFormat($proposal->issue_date) }}</td>
                                     <td>
