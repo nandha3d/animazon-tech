@@ -176,7 +176,7 @@
       <div class="sheet-pad">
         <header class="mast">
           <p class="eyebrow">B2B Website Development Proposal</p>
-          <h1>B2B Refinery Website Build Agreement — Platinaa Ceramics</h1>
+          <h1>Ceramic balls for refinery industry - website build - Platinaa ceramics</h1>
           <p class="sub">Delivering an industrial B2B catalog platform (15-20 pages) with Request For Quote (RFQ) capabilities and cross-domain integration. Special discounted price of ₹15,000.</p>
           <dl class="meta">
             <div><dt>Client Brand</dt><dd>Platinaa Ceramics</dd></div>
@@ -355,7 +355,7 @@
       <div class="sheet-pad">
         <header class="mast">
           <p class="eyebrow">B2B Website Development Proposal</p>
-          <h1>B2B Refinery Website Build Agreement — Platinaa Ceramics</h1>
+          <h1>Ceramic balls for refinery industry - website build - Platinaa ceramics</h1>
           <p class="sub">15-20 பக்கங்கள் கொண்ட விரிவான B2B இணையதளத்தை உருவாக்குவோம். சிறப்பு தள்ளுபடியுடன் இதன் இறுதி கட்டணம் ₹15,000.</p>
           <dl class="meta">
             <div><dt>Client Brand</dt><dd>Platinaa Ceramics</dd></div>
