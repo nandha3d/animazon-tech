@@ -302,6 +302,19 @@
         </section>
 
         <section>
+          <h2><span class="n">6</span> Terms &amp; Conditions</h2>
+          <div style="background: var(--platinaa-surface); border: 1px solid var(--platinaa-border); border-radius: 8px; padding: 1.5rem; margin-top: 1rem;">
+            <ul style="margin: 0; padding-left: 1.25rem; color: var(--platinaa-ink); font-size: 0.95rem; line-height: 1.6;">
+              <li style="margin-bottom: 0.5rem;"><strong>6-Month Warranty:</strong> Includes <strong>bug fixing only</strong> for issues related to the delivered code. It does <strong>not</strong> cover any extra/additional features or changes outside the existing scope defined in this document.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Scope of Work:</strong> Any requests or changes outside the scope defined above will be quoted and billed separately at our standard agency rate of ₹800/hour.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Client Responsibilities:</strong> The client is responsible for providing all necessary text content, high-resolution product images, and branding assets in a timely manner. Delays in providing assets may delay the project delivery.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Hosting &amp; Domain:</strong> As previously agreed, the client manages their own hosting and domain. Animazon will provide the finalized code or deploy it directly to the client's provided server environment.</li>
+              <li><strong>Payments &amp; Refunds:</strong> Project initiation requires the selected upfront payment. Payments are non-refundable once development has commenced.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
           <div class="pay-action-box">
             @if($isAccepted)
               <div style="background: var(--platinaa-good-soft); border: 2px solid var(--platinaa-good); color: var(--platinaa-good); padding: 2rem; border-radius: 12px;">
@@ -473,6 +486,19 @@
                 <tr class="total"><td>Total Project Valuation</td><td></td><td class="amt">₹<span id="val_total_ta">15,000</span></td></tr>
               </tbody>
             </table>
+          </div>
+        </section>
+
+        <section>
+          <h2><span class="n">6</span> Terms &amp; Conditions (விதிமுறைகள்)</h2>
+          <div style="background: var(--platinaa-surface); border: 1px solid var(--platinaa-border); border-radius: 8px; padding: 1.5rem; margin-top: 1rem;">
+            <ul style="margin: 0; padding-left: 1.25rem; color: var(--platinaa-ink); font-size: 0.95rem; line-height: 1.6;">
+              <li style="margin-bottom: 0.5rem;"><strong>6-Month Warranty:</strong> 6 மாத உத்தரவாதம் <strong>பிழைகளை (bugs) திருத்துவதற்கு மட்டுமே</strong> பொருந்தும். இந்த ஆவணத்தில் உள்ள திட்டத்திற்கு வெளியே எந்தவொரு புதிய அம்சங்களையோ அல்லது மாற்றங்களையோ இது உள்ளடக்காது.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Scope of Work:</strong> இந்த ஆவணத்தில் குறிப்பிடப்படாத கூடுதல் வேலைகளுக்கு தனியாக மணிக்கு ₹800 வீதம் கட்டணம் வசூலிக்கப்படும்.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Client Responsibilities:</strong> தேவையான எழுத்துக்கள், படங்கள் மற்றும் பிராண்டிங் தகவல்களை உரிய நேரத்தில் வழங்குவது வாடிக்கையாளரின் பொறுப்பாகும்.</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Hosting &amp; Domain:</strong> ஒப்பந்தத்தின்படி, வாடிக்கையாளர் தங்கள் சொந்த ஹோஸ்டிங் மற்றும் டொமைனை நிர்வகிப்பார்கள். Animazon இறுதி செய்யப்பட்ட குறியீட்டை (code) வாடிக்கையாளரின் சர்வரில் பொருத்தும்.</li>
+              <li><strong>Payments &amp; Refunds:</strong> வேலை தொடங்கிய பிறகு செலுத்தப்பட்ட தொகையை திரும்பப் பெற முடியாது.</li>
+            </ul>
           </div>
         </section>
 
