@@ -620,7 +620,7 @@
     ];
     const tdRows = [
       {name: '1. UI/UX Design (Figma)', descEn: 'Custom design + 3D scene mockups, spatial layouts, and immersive product views.', hrs: 15, cost: 12000},
-      {name: '2. 3D WebGL Development', descEn: 'Interactive Three.js / WebGL scenes with product 3D models, animations, and camera controls.', hrs: 25, cost: 20000},
+      {name: '2. 3D WebGL Development', descEn: 'Interactive Three.js / WebGL scenes with product 3D models, animations, and camera controls.', hrs: 45, cost: 36000},
       {name: '3. Frontend Development', descEn: 'Responsive shell, page transitions, and seamless 3D-to-page integration.', hrs: 25, cost: 20000},
       {name: '4. Backend / CMS / RFQ', descEn: 'Dynamic product catalog setup and Request For Quote (RFQ) lead capture routing.', hrs: 15, cost: 12000},
       {name: '5. Cross-Domain & QA', descEn: 'Cross-browser WebGL testing, performance profiling, and platinaaceramics.com integration.', hrs: 10, cost: 8000}
