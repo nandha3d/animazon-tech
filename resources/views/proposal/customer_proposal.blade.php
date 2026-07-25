@@ -21,8 +21,11 @@
  <head>
    <meta charset="UTF-8">
    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+   @if(isset($isPlatinaaProposal) && $isPlatinaaProposal)
+   <title>Ceramic balls for refinery industry - website build - Platinaa ceramics</title>
+   @else
    <title>{{(Utility::companyData($proposal->created_by,'title_text')) ? Utility::companyData($proposal->created_by,'title_text') : config('app.name', 'ANIMAZON')}} - {{__('Proposal')}}</title>
-
+   @endif
      <meta name="title" content="{{$metatitle}}">
      <meta name="description" content="{{$metsdesc}}">
 
