@@ -182,6 +182,7 @@ Route::view('/our-portfolio', 'pages.portfolio')->name('portfolio.public');
 Route::view('/blog', 'pages.blog')->name('blog.index');
 Route::view('/home-3d', 'home_v2.index')->name('home.3d');
 Route::view('/home-sitcon', 'home_v3.index')->name('home.sitcon');
+Route::view('/portfolio-3d', 'pages.portfolio-3d')->name('portfolio.3d');
 
 Route::prefix('blog')->name('blog.')->group(function () {
     Route::view('local-business-growth', 'pages.blog.local-business-growth')->name('local-business-growth');

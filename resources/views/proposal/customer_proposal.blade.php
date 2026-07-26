@@ -89,7 +89,7 @@
          $isRudraProposal = ($proposal->proposal_id == 1 || $proposal->proposal_id == 2 || $proposal->id == 1 || $proposal->id == 2 || (isset($customer) && str_contains(strtolower($customer->name ?? ''), 'rudra')));
          $isKpstaProposal = ($proposal->proposal_id == 3 || $proposal->id == 3 || $proposal->url_slug == 'kpsta-website' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'kpsta') || str_contains(strtolower($customer->name ?? ''), 'kerala pradesh') || str_contains(strtolower($customer->name ?? ''), 'teacher'))));
          $isShivRudrakshaProposal = ($proposal->proposal_id == 4 || $proposal->id == 4 || $proposal->url_slug == 'shiv-rudraksha' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'shiv rudraksh') || str_contains(strtolower($customer->name ?? ''), 'guddu shah'))));
-         $isBabuProposal = ($proposal->proposal_id == 6 || $proposal->id == 8 || $proposal->url_slug == 'ipcatn-event');
+         $isBabuProposal = ($proposal->proposal_id == 6 || $proposal->id == 8 || $proposal->url_slug == 'ipcatn-event' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'babu'))));
          $isPlatinaaProposal = !$isBabuProposal && ($proposal->proposal_id == 5 || $proposal->id == 5 || $proposal->url_slug == 'platinaa-ceramics-refinery-estimate' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'platinaa'))));
      @endphp
       @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal && !$isPlatinaaProposal && !$isBabuProposal)
