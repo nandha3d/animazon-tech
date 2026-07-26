@@ -189,7 +189,7 @@ foreach ($relPath in $filesToDeploy) {
 
 # ─── POST-DEPLOY: Clear caches ───────────────────────
 Write-Host "`nClearing server caches..." -ForegroundColor Yellow
-Invoke-Remote "cd $REMOTE_PATH && rm -rf bootstrap/cache/*.php 2>/dev/null; php artisan config:clear 2>&1; php artisan cache:clear 2>&1; php artisan view:clear 2>&1; echo CACHE_CLEARED" | Out-Null
+Invoke-Remote "cd $REMOTE_PATH && rm -rf bootstrap/cache/*.php 2>/dev/null; php artisan config:clear 2>&1; php artisan cache:clear 2>&1; php artisan view:clear 2>&1; php artisan migrate --force 2>&1; echo CACHE_CLEARED" | Out-Null
 Write-Host "[OK] Caches cleared." -ForegroundColor Green
 
 # ─── SUMMARY ─────────────────────────────────────────
