@@ -11,6 +11,15 @@
     $metsdesc= isset($getseo['meta_desc'])?$getseo['meta_desc']:'';
     $meta_image = \App\Models\Utility::get_file('uploads/meta/');
     $meta_logo = isset($getseo['meta_image'])?$getseo['meta_image']:'';
+
+    // Custom overrides for specific proposals to enhance social media previews
+    if (isset($proposal) && $proposal->url_slug == 'ipcatn-event') {
+        $metatitle = 'IPCATN 2026 Event | On-Screen Presentation & Display Videos';
+        $metsdesc = 'Explore the proposal for On-Screen Event Presentation & Display Videos for the upcoming IPCATN 2026 event. Includes screen layouts, showrunner segments, and cost estimates.';
+        $meta_image = asset('assets/images/');
+        $meta_logo = '/ipcatn_preview.png';
+    }
+
     $get_cookie = \App\Models\Utility::getCookieSetting();
     $settings = DB::table('settings')->where('created_by', $user->creatorId())->pluck('value', 'name')->toArray();
 
@@ -23,6 +32,8 @@
    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
    @if(isset($isPlatinaaProposal) && $isPlatinaaProposal)
    <title>Ceramic balls for refinery industry - website build - Platinaa ceramics</title>
+   @elseif(isset($proposal) && $proposal->url_slug == 'ipcatn-event')
+   <title>IPCATN 2026 Event | On-Screen Presentation & Display Videos</title>
    @else
    <title>{{(Utility::companyData($proposal->created_by,'title_text')) ? Utility::companyData($proposal->created_by,'title_text') : config('app.name', 'ANIMAZON')}} - {{__('Proposal')}}</title>
    @endif
