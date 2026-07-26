@@ -198,7 +198,7 @@
                         <div class="row g-2 mb-2">
                             <div class="col-sm-6">
                                 <label>{{ __('Your Name') }} <span class="text-danger">*</span></label>
-                                <input type="text" name="client_name" class="form-control" required placeholder="{{ __('e.g. John Doe') }}" value="{{ $customer->name ?? '' }}">
+                                <input type="text" name="client_name" class="form-control" required placeholder="{{ __('e.g. John Doe') }}" value="{{ (isset($customer->name) && strtolower($customer->name) !== 'random client') ? $customer->name : '' }}">
                             </div>
                             <div class="col-sm-6">
                                 <label>{{ __('Topic / Category') }}</label>
@@ -270,7 +270,7 @@
                         <div class="row g-2 mb-2">
                             <div class="col-sm-6">
                                 <label>{{ __('Uploaded By') }} <span class="text-danger">*</span></label>
-                                <input type="text" name="client_name" class="form-control" required placeholder="{{ __('Your Name') }}" value="{{ $customer->name ?? '' }}">
+                                <input type="text" name="client_name" class="form-control" required placeholder="{{ __('Your Name') }}" value="{{ (isset($customer->name) && strtolower($customer->name) !== 'random client') ? $customer->name : '' }}">
                             </div>
                             <div class="col-sm-6">
                                 <label>{{ __('Asset Category') }}</label>

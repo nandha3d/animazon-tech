@@ -102,8 +102,9 @@
          $isShivRudrakshaProposal = ($proposal->proposal_id == 4 || $proposal->id == 4 || $proposal->url_slug == 'shiv-rudraksha' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'shiv rudraksh') || str_contains(strtolower($customer->name ?? ''), 'guddu shah'))));
          $isBabuProposal = ($proposal->proposal_id == 6 || $proposal->id == 8 || $proposal->url_slug == 'ipcatn-event' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'babu'))));
          $isPlatinaaProposal = !$isBabuProposal && ($proposal->proposal_id == 5 || $proposal->id == 5 || $proposal->url_slug == 'platinaa-ceramics-refinery-estimate' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'platinaa'))));
+         $isGenericEcomProposal = ($proposal->url_slug == 'ecom-crm-erp' || (isset($customer) && (str_contains(strtolower($customer->name ?? ''), 'random client'))));
      @endphp
-      @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal && !$isPlatinaaProposal && !$isBabuProposal)
+      @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal && !$isPlatinaaProposal && !$isBabuProposal && !$isGenericEcomProposal)
       <div class="row justify-content-between align-items-center mb-3">
           <div class="col-md-12 d-flex align-items-center justify-content-between justify-content-md-end">
               <div class="all-button-box mx-2">
@@ -130,6 +131,8 @@
                  @include('proposal.shiv_rudraksha_proposal_view')
              @elseif($isBabuProposal)
                  @include('proposal.babu_proposal_view')
+             @elseif($isGenericEcomProposal)
+                 @include('proposal.generic_ecom_proposal_view')
              @elseif($isPlatinaaProposal)
                  @include('proposal.platinaa_proposal_view')
              @elseif($isRudraProposal)
@@ -371,7 +374,7 @@
         </div>
     </div>
 
-    @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal && !$isPlatinaaProposal && !$isBabuProposal)
+    @if(!$isRudraProposal && !$isKpstaProposal && !$isShivRudrakshaProposal && !$isPlatinaaProposal && !$isBabuProposal && !$isGenericEcomProposal)
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
@@ -580,26 +583,6 @@
                 </div>
                 <div class="col-md-6">
                     <ul class="nav justify-content-center justify-content-md-end mt-3 mt-md-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" target="_blank">
-                                <i class="fab fa-dribbble"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" target="_blank">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" target="_blank">
-                                <i class="fab fa-github"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" target="_blank">
-                                <i class="fab fa-facebook"></i>
-                            </a>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -642,6 +625,159 @@
 @if($get_cookie['enable_cookie'] == 'on')
     @include('layouts.cookie_consent')
 @endif
+
+@php
+    $chatbot_primary_color = '#0f9c86';
+    $chatbot_company_whatsapp = '918089405950';
+    $chatbot_company_phone = '+918089405950';
+    $chatbot_footer_email = 'hello@animazon.in';
+    $chatbot_wa_message = "Hi Animazon! I'm reaching out regarding my proposal.";
+    $chatbot_wa_link = 'https://wa.me/' . $chatbot_company_whatsapp . '?text=' . urlencode($chatbot_wa_message);
+@endphp
+
+<!-- On-site Live Chat widget -->
+<div id="acw" style="position:fixed;bottom:20px;right:20px;z-index:9999;font-family:inherit;">
+    <!-- Chat panel -->
+    <div id="acwPanel" style="display:none;flex-direction:column;width:350px;max-width:92vw;height:470px;max-height:72vh;background:#0F1020;border:1px solid #1E293B;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);margin-bottom:14px;">
+        <!-- Header -->
+        <div style="background:{{ $chatbot_primary_color }};padding:14px 16px;display:flex;align-items:center;gap:11px;color:#fff;">
+            <div style="width:38px;height:38px;border-radius:9999px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="ti ti-messages" style="font-size:20px;"></i>
+            </div>
+            <div style="flex:1;line-height:1.2;">
+                <div style="font-weight:700;font-size:15px;">Animazon Support</div>
+                <div style="font-size:11px;opacity:.9;"><span style="display:inline-block;width:7px;height:7px;border-radius:9999px;background:#4ade80;margin-right:5px;"></span>Online · replies in minutes</div>
+            </div>
+            <button type="button" onclick="acwToggle(false)" aria-label="Close chat" style="background:none;border:none;color:#fff;cursor:pointer;font-size:20px;line-height:1;"><i class="ti ti-x"></i></button>
+        </div>
+        <!-- Messages -->
+        <div id="acwMsgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#0A0A0F;"></div>
+        <!-- Input -->
+        <form id="acwForm" style="display:flex;gap:8px;padding:10px;border-top:1px solid #1E293B;background:#0F1020;">
+            <input id="acwInput" type="text" autocomplete="off" placeholder="Type your message…" style="flex:1;background:#0A0A0F;border:1px solid #1E293B;border-radius:9999px;padding:9px 14px;color:#fff;font-size:13px;outline:none;">
+            <button type="submit" aria-label="Send" style="background:{{ $chatbot_primary_color }};border:none;color:#fff;width:40px;height:40px;border-radius:9999px;cursor:pointer;flex-shrink:0;"><i class="ti ti-send" style="font-size:17px;"></i></button>
+        </form>
+    </div>
+    <!-- Bubble -->
+    <button type="button" id="acwToggle" onclick="acwToggle()" aria-label="Open live chat"
+        style="background:{{ $chatbot_primary_color }};color:#fff;border:none;cursor:pointer;display:flex;align-items:center;gap:9px;border-radius:9999px;padding:12px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35);margin-left:auto;">
+        <i id="acwIcon" class="ti ti-message-circle" style="font-size:22px;"></i>
+        <span style="font-weight:700;font-size:14px;white-space:nowrap;">Chat with us</span>
+    </button>
+</div>
+<script>
+(function () {
+    var WA = @json($chatbot_wa_link);
+    var WA_BASE = 'https://wa.me/' + @json($chatbot_company_whatsapp);
+    var TEL = @json('tel:' . $chatbot_company_phone);
+    var EMAIL = @json('mailto:' . $chatbot_footer_email);
+    var BRIDGE = @json((bool) config('whatsapp.enabled')); 
+    var CSRF = @json(csrf_token());
+    var SEND_URL = @json(url('/chat/send'));
+    var POLL_URL = @json(url('/chat/poll'));
+    var opened = false, greeted = false;
+
+    var SID = localStorage.getItem('acw_sid_p');
+    if (!SID) { SID = 'prop-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8); localStorage.setItem('acw_sid_p', SID); }
+    var lastId = 0, pollTimer = null;
+
+    window.acwToggle = function (force) {
+        var panel = document.getElementById('acwPanel');
+        var icon = document.getElementById('acwIcon');
+        opened = (typeof force === 'boolean') ? force : !opened;
+        panel.style.display = opened ? 'flex' : 'none';
+        icon.className = opened ? 'ti ti-chevron-down' : 'ti ti-message-circle';
+        if (opened && !greeted) { greeted = true; greet(); }
+        if (opened) { setTimeout(function(){ var i=document.getElementById('acwInput'); if(i) i.focus(); }, 50); if (BRIDGE) startPoll(); }
+        else { stopPoll(); }
+    };
+
+    function startPoll() { if (pollTimer) return; poll(); pollTimer = setInterval(poll, 4000); }
+    function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+
+    function poll() {
+        fetch(POLL_URL + '?session_id=' + encodeURIComponent(SID) + '&after=' + lastId, { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data || !data.messages) return;
+                data.messages.forEach(function (m) { lastId = m.id; bubble(esc(m.body), 'bot'); });
+            })
+            .catch(function () {});
+    }
+
+    function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+    function bubble(text, who) {
+        var m = document.getElementById('acwMsgs');
+        var b = document.createElement('div');
+        if (who === 'user') {
+            b.style.cssText = 'align-self:flex-end;max-width:80%;background:{{ $chatbot_primary_color }};color:#fff;padding:9px 13px;border-radius:14px 14px 4px 14px;font-size:13px;line-height:1.45;';
+        } else {
+            b.style.cssText = 'align-self:flex-start;max-width:85%;background:#1A1B2E;color:#E2E8F0;padding:9px 13px;border-radius:14px 14px 14px 4px;font-size:13px;line-height:1.45;';
+        }
+        b.innerHTML = text;
+        m.appendChild(b);
+        m.scrollTop = m.scrollHeight;
+        return b;
+    }
+
+    function actions() {
+        var m = document.getElementById('acwMsgs');
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;margin-top:2px;';
+        wrap.innerHTML =
+            '<a href="'+WA+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;padding:8px 13px;border-radius:9999px;font-size:12px;font-weight:600;text-decoration:none;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>'+
+            '<a href="'+TEL+'" style="display:inline-flex;align-items:center;gap:6px;background:#1A1B2E;color:#E2E8F0;padding:8px 13px;border-radius:9999px;font-size:12px;font-weight:600;text-decoration:none;"><i class="ti ti-phone"></i> Call</a>'+
+            '<a href="'+EMAIL+'" style="display:inline-flex;align-items:center;gap:6px;background:#1A1B2E;color:#E2E8F0;padding:8px 13px;border-radius:9999px;font-size:12px;font-weight:600;text-decoration:none;"><i class="ti ti-mail"></i> Email</a>';
+        m.appendChild(wrap);
+        m.scrollTop = m.scrollHeight;
+    }
+
+    function greet() {
+        bubble('👋 Hi! Welcome to Animazon Web Studio. Do you have any questions about this proposal?', 'bot');
+        setTimeout(actions, 400);
+    }
+
+    function botReply(topic) {
+        bubble('Our team is ready to help. Tap below to reach us directly on WhatsApp — we reply fast.', 'bot');
+        setTimeout(actions, 200);
+    }
+
+    var noteShown = false;
+    function send(text) {
+        text = (text || '').trim();
+        if (!text) return;
+        bubble(esc(text), 'user');
+        var i = document.getElementById('acwInput'); if (i) i.value = '';
+
+        if (BRIDGE) {
+            startPoll();
+            fetch(SEND_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ session_id: SID, message: text })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data && data.bridged === false) { WA = WA_BASE + '?text=' + encodeURIComponent(text); setTimeout(function(){ botReply(''); }, 200); return; }
+                if (!noteShown) { noteShown = true; setTimeout(function(){ bubble('✅ Sent! Our team will reply right here in a moment.', 'bot'); }, 300); }
+            })
+            .catch(function () { WA = WA_BASE + '?text=' + encodeURIComponent(text); setTimeout(function(){ botReply(''); }, 200); });
+        } else {
+            WA = WA_BASE + '?text=' + encodeURIComponent(text + ' — sent from proposal page');
+            setTimeout(function(){ botReply(text.length < 24 ? text : ''); }, 350);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var f = document.getElementById('acwForm');
+        if (f) f.addEventListener('submit', function (e) { e.preventDefault(); send(document.getElementById('acwInput').value); });
+    });
+})();
+</script>
+
+</body>
+</html>
 
 
 
