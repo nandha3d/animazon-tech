@@ -65,9 +65,13 @@
             var value = $(selector + " .repeater").attr('data-value');
             if (typeof value != 'undefined' && value.length != 0) {
                 value = JSON.parse(value);
+                for (var i = 0; i < value.length; i++) {
+                    value[i].item = value[i].product_id;
+                    value[i].items = value[i].product_id;
+                }
                 $repeater.setList(value);
                 for (var i = 0; i < value.length; i++) {
-                    var tr = $('#sortable-table .id[value="' + value[i].id + '"]').parent();
+                    var tr = $('#sortable-table tbody tr').eq(i);
                     tr.find('.item').val(value[i].product_id);
                     changeItem(tr.find('.item'));
                 }

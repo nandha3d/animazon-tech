@@ -455,6 +455,15 @@
                                         <div class="text-xs mt-1 text-muted">{{ __('Client cannot accept/pay after this date.') }}</div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ Form::label('url_slug', __('Custom URL Slug'),['class'=>'form-label']) }}
+                                        <div class="form-icon-user">
+                                            {{Form::text('url_slug',null,array('class'=>'form-control','placeholder'=>__('e.g. custom-event-name')))}}
+                                        </div>
+                                        <div class="text-xs mt-1 text-muted">{{ __('Optional. Used for custom proposal links.') }}</div>
+                                    </div>
+                                </div>
 
                                 @if(!$customFields->isEmpty())
                                             @include('customFields.formBuilder')

@@ -482,14 +482,6 @@ class InvoiceController extends Controller
                 $invoice->due_date = $request->due_date;
                 $invoice->ref_number = $request->ref_number;
                 $invoice->category_id = $request->category_id;
-                
-                $due = $invoice->getDue();
-                if ($due <= 0) {
-                    $invoice->status = 4;
-                } else {
-                    $invoice->status = 3;
-                }
-                
                 $invoice->save();
 
                 Utility::starting_number($invoice->invoice_id + 1, 'invoice');
@@ -537,6 +529,18 @@ class InvoiceController extends Controller
                     }
 
                 }
+
+                $due = $invoice->getDue();
+                if ($due <= 0 && $invoice->getTotal() > 0) {
+                    $invoice->status = 4;
+                } elseif ($invoice->payments->sum('amount') > 0 || $invoice->bankPayments->sum('amount') > 0) {
+                    $invoice->status = 3;
+                } else {
+                    if ($invoice->status == 3 || $invoice->status == 4) {
+                        $invoice->status = 2;
+                    }
+                }
+                $invoice->save();
 
                 $invoice_products = InvoiceProduct::where('invoice_id', $invoice->id)->get();
                 foreach ($invoice_products as $invoice_product) {

@@ -102,9 +102,12 @@
 
             if (typeof value != 'undefined' && value.length != 0) {
                 value = JSON.parse(value);
+                for (var i = 0; i < value.length; i++) {
+                    value[i].item = value[i].product_id;
+                }
                 $repeater.setList(value);
                 for (var i = 0; i < value.length; i++) {
-                    var tr = $('#sortable-table .id[value="' + value[i].id + '"]').parent();
+                    var tr = $('#sortable-table tbody tr').eq(i);
                     tr.find('.item').val(value[i].product_id);
                     changeItem(tr.find('.item'));
                 }
@@ -581,8 +584,8 @@
                             </thead>
                             <tbody class="ui-sortable" data-repeater-item>
                             <tr>
-                                {{ Form::hidden('id',null, array('class' => 'form-control id')) }}
                                 <td width="25%" class="form-group pt-0">
+                                    {{ Form::hidden('id',null, array('class' => 'form-control id')) }}
                                     {{ Form::select('item', $product_services,null, array('class' => 'form-control item select','data-url'=>route('invoice.product'))) }}
 
                                 </td>

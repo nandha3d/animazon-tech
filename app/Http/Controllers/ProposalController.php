@@ -142,6 +142,7 @@ class ProposalController extends Controller
             $proposal->status         = 0;
             $proposal->issue_date     = $request->issue_date;
             $proposal->valid_till     = $request->valid_till;
+            $proposal->url_slug       = $request->url_slug;
             $proposal->category_id    = $request->category_id;
             $proposal->terms          = $request->terms;
             $proposal->created_by     = \Auth::user()->creatorId();
@@ -250,6 +251,7 @@ class ProposalController extends Controller
                 $proposal->customer_id    = $request->customer_id;
                 $proposal->issue_date     = $request->issue_date;
                 $proposal->valid_till     = $request->valid_till;
+                $proposal->url_slug       = $request->url_slug;
                 $proposal->category_id    = $request->category_id;
                 $proposal->terms          = $request->terms;
                 $proposal->save();

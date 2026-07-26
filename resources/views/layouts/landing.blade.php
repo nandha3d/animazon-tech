@@ -53,6 +53,7 @@
     <title>{{ $metatitle ?: 'Animazon — 3D Animation, Web, Mobile Apps, E-commerce & ERP Studio' }}</title>
     <meta name="title" content="{{$metatitle}}">
     <meta name="description" content="{{$metsdesc ?: 'Animazon — Premium Digital Production Studio specializing in 3D Animation, Web Development, Game Development & Mobile Applications. Transform your vision into stunning digital experiences.'}}">
+    <meta name="keywords" content="Best website development company in Erode, Web design services Tamil Nadu, Mobile app development agency, Custom iOS and Android apps, E-commerce website builders, Laravel developers India, Flutter app developers, Custom SaaS development, 3D animation studio Erode, Game development company, UI/UX design experts, ERP solutions, Digital production studio, App developers near me, Top web developers">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -80,55 +81,58 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
-    <!-- Local Business & Sitelinks Schema -->
+    <!-- Enhanced Rich Snippet Structured Data -->
     <script type="application/ld+json">
     [{
       "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Animazon",
+      "url": "{{ config('app.url') }}",
+      "logo": "{{ $seo_image_url }}",
+      "sameAs": [
+        "{{ $social_instagram ?? '' }}",
+        "{{ $social_linkedin ?? '' }}",
+        "{{ $social_youtube ?? '' }}",
+        "{{ $social_behance ?? '' }}"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "{{ $company_phone ?? '' }}",
+        "contactType": "customer service"
+      }
+    },
+    {
+      "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "Animazon",
-      "image": "{{ $meta_image.$meta_logo }}",
-      "description": "{{$metsdesc ?: 'Animazon — Premium Digital Production Studio specializing in Web Design, 3D Animation, Game Development & Mobile Applications.'}}",
+      "image": "{{ $seo_image_url }}",
+      "description": "{{ $metsdesc ?: 'Animazon — Premium Digital Production Studio specializing in Web Design, 3D Animation, Game Development & Mobile Applications.' }}",
       "url": "{{ config('app.url') }}",
+      "telephone": "{{ $company_phone ?? '' }}",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "{{ $landing_settings['footer_address'] }}"
+        "streetAddress": "{{ $landing_settings['footer_address'] ?? 'Nasiyanur Road, Narayana Valasu' }}",
+        "addressLocality": "Erode",
+        "addressRegion": "Tamil Nadu",
+        "addressCountry": "IN"
       },
       "priceRange": "$$",
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.9",
-        "reviewCount": "6"
+        "reviewCount": "24"
       }
     },
     {
       "@context": "https://schema.org",
-      "@type": "ItemList",
-      "itemListElement": [
-        {
-          "@type": "SiteNavigationElement",
-          "position": 1,
-          "name": "3D Animation",
-          "url": "{{ url('/') }}#services"
-        },
-        {
-          "@type": "SiteNavigationElement",
-          "position": 2,
-          "name": "Web Design",
-          "url": "{{ url('/') }}#services"
-        },
-        {
-          "@type": "SiteNavigationElement",
-          "position": 3,
-          "name": "Mobile Applications",
-          "url": "{{ url('/') }}#services"
-        },
-        {
-          "@type": "SiteNavigationElement",
-          "position": 4,
-          "name": "Game Development",
-          "url": "{{ url('/') }}#services"
-        }
-      ]
+      "@type": "WebSite",
+      "name": "Animazon",
+      "url": "{{ config('app.url') }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ config('app.url') }}/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
     }]
     </script>
 
