@@ -118,7 +118,7 @@
   .preview-card { display: block; margin: 0; border-radius: 14px; overflow: hidden; border: 2px solid var(--platinaa-border-strong); transition: all 0.25s ease; text-decoration: none; }
   .preview-card:hover { border-color: var(--platinaa-accent); transform: translateY(-3px); box-shadow: 0 8px 28px -6px rgba(15, 156, 134, 0.18); }
   .preview-card .preview-img { width: 100%; height: 160px; object-fit: cover; display: block; background: var(--platinaa-accent-soft); position: relative; }
-  .preview-card .preview-iframe { position: absolute; top: 0; left: 0; width: 400%; height: 400%; border: none; transform: scale(0.25); transform-origin: top left; pointer-events: none; }
+  .preview-card .preview-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; background: #f8f9fa; }
   .preview-card .preview-body { padding: 1rem 1.25rem; background: var(--platinaa-surface); }
   .preview-card .preview-body strong { color: var(--platinaa-accent); font-size: 0.95rem; }
   .preview-card .preview-body p { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--platinaa-muted); }
@@ -165,7 +165,7 @@
           <div class="portfolio-carousel">
              <a href="https://animazon.in/ceramica" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://animazon.in/ceramica" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Fanimazon.in%2Fceramica?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>Platinaa Ceramics →</strong>
@@ -174,7 +174,7 @@
             </a>
             <a href="https://animazon.in" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://animazon.in" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Fanimazon.in?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>Our Digital Home →</strong>
@@ -183,7 +183,7 @@
             </a>
             <a href="https://www.lenzbreeze.com/" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://www.lenzbreeze.com/" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Fwww.lenzbreeze.com%2F?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>LenzBreeze →</strong>
@@ -192,7 +192,7 @@
             </a>
             <a href="https://dhanvanthrifoods.com/" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://dhanvanthrifoods.com/" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Fdhanvanthrifoods.com%2F?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>Dhanvanthiri Foods →</strong>
@@ -201,7 +201,7 @@
             </a>
             <a href="https://rudraspirit.com/" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://rudraspirit.com/" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Frudraspirit.com%2F?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>Rudra Spirit →</strong>
@@ -210,7 +210,7 @@
             </a>
             <a href="https://wildlifeleather.in/" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://wildlifeleather.in/" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Fwildlifeleather.in%2F?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>Wildlife Leather →</strong>
@@ -219,7 +219,7 @@
             </a>
             <a href="https://app.animazon.in/home" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://app.animazon.in/home" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Fapp.animazon.in%2Fhome?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>Loan Track ERP →</strong>
@@ -228,7 +228,7 @@
             </a>
             <a href="https://ipcatn.com/login/" target="_blank" class="preview-card">
               <div class="preview-img">
-                <iframe src="https://ipcatn.com/login/" class="preview-iframe" tabindex="-1"></iframe>
+                <img src="https://s0.wordpress.com/mshots/v1/https%3A%2F%2Fipcatn.com%2Flogin%2F?w=800" class="preview-image" loading="lazy" alt="Preview">
               </div>
               <div class="preview-body">
                 <strong>IPCA TN →</strong>
