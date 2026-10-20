@@ -528,8 +528,8 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-animazon-black/50 rounded-xl p-3 text-center">
                             <i class="ti ti-calendar text-primary text-lg"></i>
-                            <p class="text-lg font-bold text-animazon-white mt-1" id="sidebarWeeks">—</p>
-                            <p class="text-[10px] text-animazon-muted">Weeks</p>
+                            <p class="text-base font-bold text-animazon-white mt-1" id="sidebarWeeks">{{ str_contains(strtolower($projectType->name), 'animation') ? '15 Days' : '—' }}</p>
+                            <p class="text-[10px] text-animazon-muted" id="sidebarTimelineUnit">{{ str_contains(strtolower($projectType->name), 'animation') ? 'Turnaround' : 'Weeks' }}</p>
                         </div>
                         <div class="bg-animazon-black/50 rounded-xl p-3 text-center">
                             <i class="ti ti-users text-primary text-lg"></i>
@@ -610,7 +610,7 @@
 
     function formatPrice(usd) {
         const c = getCurrency();
-        const local = usd * c.rate;
+        const local = Math.round(usd * c.rate);
         const noDecimal = ['JPY','KRW','NGN','PKR','BDT','LKR','KES','PHP','THB','INR','EGP'];
         const dec = noDecimal.includes(c.code) ? 0 : 0;
         return c.symbol + local.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
@@ -840,22 +840,35 @@
                 // Grand total (incl. GST) is the headline figure
                 const grandUsd = (data.grand_total_usd != null) ? data.grand_total_usd : data.total_cost_usd;
                 document.getElementById('sidebarTotal').textContent = formatPrice(grandUsd);
-                document.getElementById('currencyLabel').textContent = c.code;
-                document.getElementById('sidebarWeeks').textContent = data.timeline_weeks;
+                if (data.timeline_display) {
+                    document.getElementById('sidebarWeeks').textContent = data.timeline_display;
+                    const unitEl = document.getElementById('sidebarTimelineUnit');
+                    if (unitEl) {
+                        unitEl.textContent = (data.timeline_display.includes('Day') || data.timeline_display.includes('Hour')) ? 'Turnaround' : 'Weeks';
+                    }
+                } else {
+                    document.getElementById('sidebarWeeks').textContent = data.timeline_weeks;
+                    const unitEl = document.getElementById('sidebarTimelineUnit');
+                    if (unitEl) unitEl.textContent = 'Weeks';
+                }
                 document.getElementById('sidebarTeam').textContent = data.team_size;
 
                 if (document.getElementById('mobileTotal')) document.getElementById('mobileTotal').textContent = formatPrice(grandUsd);
                 if (document.getElementById('mobileCurrencyLabel')) document.getElementById('mobileCurrencyLabel').textContent = c.code;
 
-                // Subtotal + GST rows
+                // Subtotal + GST rows (only show if GST > 0)
                 const taxRows = document.getElementById('taxRows');
                 if (taxRows) {
-                    document.getElementById('sidebarSubtotal').textContent = formatPrice(data.total_cost_usd);
                     const gstPct = data.gst_percent || 0;
-                    document.getElementById('gstPct').textContent = gstPct;
-                    document.getElementById('sidebarGst').textContent = formatPrice(data.gst_usd || 0);
-                    document.getElementById('gstRow').style.display = gstPct > 0 ? '' : 'none';
-                    taxRows.classList.remove('hidden');
+                    if (gstPct > 0) {
+                        document.getElementById('sidebarSubtotal').textContent = formatPrice(data.total_cost_usd);
+                        document.getElementById('gstPct').textContent = gstPct;
+                        document.getElementById('sidebarGst').textContent = formatPrice(data.gst_usd || 0);
+                        document.getElementById('gstRow').style.display = '';
+                        taxRows.classList.remove('hidden');
+                    } else {
+                        taxRows.classList.add('hidden');
+                    }
                 }
 
                 // Advance / balance schedule

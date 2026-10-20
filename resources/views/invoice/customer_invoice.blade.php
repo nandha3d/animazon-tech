@@ -104,392 +104,938 @@
 
     </header>
 
-    <div class="main-content container">
-        <div class="row justify-content-between align-items-center mb-3">
-            <div class="col-md-12 d-flex align-items-center justify-content-between justify-content-md-end">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-                <div class="all-button-box mx-2">
-                    <a href="{{ route('invoice.pdf', Crypt::encrypt($invoice->id)) }}"  target="_blank"
-                        class="btn btn-primary mt-3">
-                        {{ __('Download') }}
+    .inv-wrapper {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: #f1f5f9;
+        margin: 20px auto 40px;
+        max-width: 980px;
+    }
+
+    .inv-main-card {
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.08);
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Ambient glow at top */
+    .inv-main-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0284c7, #06b6d4, #3b82f6, #6366f1);
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+    }
+
+    .inv-body {
+        padding: 36px 40px;
+    }
+
+    /* Top Brand & Action Bar */
+    .inv-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        flex-wrap: wrap;
+        padding-bottom: 28px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .inv-brand-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .inv-brand-icon {
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Outfit', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        color: #ffffff;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    .inv-brand-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #ffffff;
+        margin: 0 0 2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .inv-brand-tagline {
+        font-size: 13px;
+        color: #94a3b8;
+        margin: 0;
+    }
+
+    .inv-action-pills {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-inv-print {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        color: #f1f5f9;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .btn-inv-print:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #38bdf8;
+        border-color: #38bdf8;
+        transform: translateY(-1px);
+    }
+
+    .btn-inv-pay {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 22px;
+        background: linear-gradient(135deg, #2563eb, #06b6d4);
+        border: none;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .btn-inv-pay:hover {
+        background: linear-gradient(135deg, #1d4ed8, #0891b2);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+        color: #fff;
+    }
+
+    /* Meta & Badges Bar */
+    .inv-meta-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        gap: 16px;
+        margin: 28px 0;
+        align-items: stretch;
+    }
+
+    @media (max-width: 768px) {
+        .inv-meta-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .inv-meta-box {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 18px 20px;
+    }
+
+    .inv-meta-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #94a3b8;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .inv-meta-num {
+        font-family: 'Outfit', sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+    }
+
+    .inv-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .inv-status-unpaid {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .inv-status-paid {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Parties Bento Grid (Billed To vs Provider) */
+    .inv-parties-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    @media (max-width: 640px) {
+        .inv-parties-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .inv-party-card {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 20px;
+    }
+
+    .inv-party-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #38bdf8;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .inv-party-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .inv-party-details {
+        font-size: 13px;
+        color: #94a3b8;
+        line-height: 1.6;
+    }
+
+    .inv-party-details div {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+    }
+
+    /* Modern Table */
+    .inv-table-wrapper {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.4);
+        margin-bottom: 28px;
+    }
+
+    .inv-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+    }
+
+    .inv-table thead {
+        background: #1e293b;
+    }
+
+    .inv-table th {
+        padding: 14px 18px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: #cbd5e1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .inv-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background 0.15s ease;
+    }
+
+    .inv-table tbody tr:hover {
+        background: rgba(59, 130, 246, 0.04);
+    }
+
+    .inv-table td {
+        padding: 18px 18px;
+        vertical-align: middle;
+        color: #e2e8f0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .inv-index-pill {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #94a3b8;
+        font-weight: 700;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .inv-item-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+
+    .inv-item-desc {
+        font-size: 12px;
+        color: #94a3b8;
+        line-height: 1.5;
+    }
+
+    .inv-rate-pill {
+        font-weight: 600;
+        color: #cbd5e1;
+    }
+
+    .inv-amount-cell {
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #38bdf8;
+        text-align: right;
+    }
+
+    /* Bottom Summary & Settlement Grid */
+    .inv-bottom-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    @media (max-width: 768px) {
+        .inv-bottom-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .inv-bank-card {
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        border-radius: 16px;
+        padding: 22px;
+    }
+
+    .inv-bank-title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #38bdf8;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .bank-lbl {
+        color: #94a3b8;
+    }
+
+    .bank-val {
+        color: #ffffff;
+    }
+
+    .bank-val-accent {
+        color: #38bdf8;
+        letter-spacing: 0.5px;
+    }
+
+    .inv-bank-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        padding: 6px 0;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+    }
+
+    .inv-bank-row:last-child {
+        border-bottom: none;
+    }
+
+    .inv-bank-label {
+        color: #94a3b8;
+    }
+
+    .inv-bank-val {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .inv-summary-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 22px;
+    }
+
+    .inv-calc-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 8px 0;
+        color: #94a3b8;
+    }
+
+    .inv-calc-val {
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    .inv-total-row {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+
+    .inv-total-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .inv-total-amount {
+        font-family: 'Outfit', sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: #38bdf8;
+        letter-spacing: -0.5px;
+    }
+
+    /* Print Styles (Strict Light Mode, High-End Clean Corporate Layout) */
+    @media print {
+        @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
+        }
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 11px !important;
+        }
+        .inv-wrapper {
+            margin: 0 !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            color: #0f172a !important;
+        }
+        .inv-main-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            color: #0f172a !important;
+            padding: 0 !important;
+        }
+        .inv-body {
+            padding: 16px 20px !important;
+        }
+        .inv-main-card::before,
+        .inv-action-pills,
+        .header,
+        .modal,
+        .modal-backdrop,
+        #bottom_pay_btn,
+        #top_pay_btn,
+        .btn-pay-razorpay-direct {
+            display: none !important;
+        }
+        .inv-logo-light {
+            display: none !important;
+        }
+        .inv-logo-dark {
+            display: block !important;
+            max-height: 40px !important;
+        }
+        .inv-header-bar {
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding-bottom: 12px !important;
+        }
+        .inv-brand-title {
+            color: #0f172a !important;
+            font-size: 18px !important;
+        }
+        .inv-brand-tagline {
+            color: #64748b !important;
+            font-size: 10px !important;
+        }
+        .inv-meta-grid {
+            margin: 12px 0 !important;
+            gap: 10px !important;
+        }
+        .inv-meta-box {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 10px 14px !important;
+        }
+        .inv-meta-label {
+            color: #64748b !important;
+            font-size: 9px !important;
+        }
+        .inv-meta-num {
+            color: #0284c7 !important;
+            font-size: 16px !important;
+        }
+        .inv-meta-box div {
+            color: #0f172a !important;
+        }
+        .inv-status-pill.inv-status-unpaid {
+            background: #fef3c7 !important;
+            color: #b45309 !important;
+            border: 1px solid #fde68a !important;
+        }
+        .inv-status-pill.inv-status-paid {
+            background: #dcfce7 !important;
+            color: #15803d !important;
+            border: 1px solid #bbf7d0 !important;
+        }
+        .inv-parties-grid {
+            margin-bottom: 14px !important;
+            gap: 12px !important;
+        }
+        .inv-party-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 12px 14px !important;
+        }
+        .inv-party-title {
+            color: #0284c7 !important;
+            font-size: 9.5px !important;
+        }
+        .inv-party-name {
+            color: #0f172a !important;
+            font-size: 13px !important;
+        }
+        .inv-party-details, .inv-party-details div {
+            color: #475569 !important;
+            font-size: 10.5px !important;
+        }
+        .inv-table-wrapper {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            margin-bottom: 14px !important;
+        }
+        .inv-table thead th {
+            background: #0f172a !important;
+            color: #ffffff !important;
+            font-size: 9.5px !important;
+            padding: 8px 12px !important;
+            border-bottom: 1px solid #0f172a !important;
+        }
+        .inv-table td {
+            color: #1e293b !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            padding: 8px 12px !important;
+            font-size: 10.5px !important;
+        }
+        .inv-index-pill {
+            background: #f1f5f9 !important;
+            color: #475569 !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+        .inv-item-name {
+            color: #0f172a !important;
+            font-size: 11.5px !important;
+        }
+        .inv-item-desc {
+            color: #64748b !important;
+            font-size: 9.5px !important;
+        }
+        .inv-rate-pill {
+            color: #1e293b !important;
+        }
+        .inv-amount-cell {
+            color: #0f172a !important;
+            font-size: 12px !important;
+        }
+        .inv-bottom-grid {
+            gap: 14px !important;
+        }
+        .inv-bank-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 10px 14px !important;
+            box-shadow: none !important;
+        }
+        .inv-bank-title {
+            color: #0284c7 !important;
+        }
+        .inv-bank-card strong, .inv-bank-card span, .bank-val {
+            color: #0f172a !important;
+        }
+        .inv-bank-card .bank-lbl {
+            color: #64748b !important;
+        }
+        .inv-bank-card .bank-val-accent {
+            color: #0284c7 !important;
+        }
+        .inv-qr-container {
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
+            padding: 6px !important;
+        }
+        .inv-summary-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 10px 14px !important;
+        }
+        .inv-calc-row {
+            color: #64748b !important;
+            font-size: 11px !important;
+            padding: 3px 0 !important;
+        }
+        .inv-calc-val {
+            color: #0f172a !important;
+        }
+        .inv-total-row {
+            border-top: 2px solid #0f172a !important;
+            margin-top: 6px !important;
+            padding-top: 6px !important;
+        }
+        .inv-total-label {
+            color: #0f172a !important;
+            font-size: 13px !important;
+        }
+        .inv-total-amount {
+            color: #0284c7 !important;
+            font-size: 18px !important;
+        }
+    }
+</style>
+
+<div class="inv-wrapper">
+    <div class="inv-main-card">
+        <div class="inv-body">
+            
+            <!-- Header Brand & Actions -->
+            <div class="inv-header-bar">
+                <div class="inv-brand-box">
+                    <a href="{{ url('/') }}" style="display:flex; align-items:center; text-decoration:none;">
+                        <img src="{{ \App\Models\Utility::get_file('uploads/logo/logo-light.png') }}" alt="Animazon Logo" class="inv-logo-light" style="max-height: 48px; width: auto; object-fit: contain;" onerror="this.onerror=null; this.src='/storage/uploads/logo/logo-light.png';">
+                        <img src="{{ \App\Models\Utility::get_file('uploads/logo/logo-dark.png') }}" alt="Animazon Logo" class="inv-logo-dark" style="max-height: 48px; width: auto; object-fit: contain; display:none;" onerror="this.onerror=null; this.src='/storage/uploads/logo/logo-dark.png';">
                     </a>
-                </div>
-                @if (
-                    $invoice->status != 0 &&
-                        $invoice->getDue() > 0 &&
-                        (!empty($company_payment_setting) &&
-                            ($company_payment_setting['is_bank_transfer_enabled'] == 'on' ||
-                                $company_payment_setting['is_stripe_enabled'] == 'on' ||
-                                $company_payment_setting['is_paypal_enabled'] == 'on' ||
-                                $company_payment_setting['is_paystack_enabled'] == 'on' ||
-                                $company_payment_setting['is_flutterwave_enabled'] == 'on' ||
-                                $company_payment_setting['is_razorpay_enabled'] == 'on' ||
-                                $company_payment_setting['is_mercado_enabled'] == 'on' ||
-                                $company_payment_setting['is_paytm_enabled'] == 'on' ||
-                                $company_payment_setting['is_mollie_enabled'] == 'on' ||
-                                $company_payment_setting['is_paypal_enabled'] == 'on' ||
-                                $company_payment_setting['is_skrill_enabled'] == 'on' ||
-                                $company_payment_setting['is_coingate_enabled'] == 'on' ||
-                                $company_payment_setting['is_paymentwall_enabled'] == 'on' ||
-                                $company_payment_setting['is_toyyibpay_enabled'] == 'on' ||
-                                $company_payment_setting['is_payfast_enabled'] == 'on' ||
-                                $company_payment_setting['is_iyzipay_enabled'] == 'on' ||
-                                $company_payment_setting['is_sspay_enabled'] == 'on' ||
-                                $company_payment_setting['is_paytab_enabled'] == 'on' ||
-                                $company_payment_setting['is_benefit_enabled'] == 'on' ||
-                                $company_payment_setting['is_cashfree_enabled'] == 'on' ||
-                                $company_payment_setting['is_aamarpay_enabled'] == 'on' ||
-                                $company_payment_setting['is_yookassa_enabled'] == 'on' ||
-                                $company_payment_setting['is_midtrans_enabled'] == 'on' ||
-                                $company_payment_setting['is_nepalste_enabled'] == 'on' ||
-                                $company_payment_setting['is_paiementpro_enabled'] == 'on' ||
-                                $company_payment_setting['is_cinetpay_enabled'] == 'on' ||
-                                $company_payment_setting['is_xendit_enabled'] == 'on' ||
-                                $company_payment_setting['is_fedapay_enabled'] == 'on' ||
-                                $company_payment_setting['is_payhere_enabled'] == 'on' ||
-                                $company_payment_setting['tap_payment_is_on'] == 'on' ||
-                                $company_payment_setting['authorizenet_payment_is_on'] == 'on' ||
-                                $company_payment_setting['khalti_payment_is_on'] == 'on' ||
-                                $company_payment_setting['easebuzz_payment_is_on'] == 'on'  ||
-                                $company_payment_setting['company_ozow_payment_is_enabled'] == 'on')))
-                    <div class="all-button-box">
-                        <a href="#" class="btn btn-primary mt-3" data-bs-toggle="modal"
-                            data-bs-target="#paymentModal">
-                            {{ __('Pay Now') }}
-                        </a>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.15); padding-left: 14px; margin-left: 6px;">
+                        <h1 class="inv-brand-title" style="font-size: 20px;">ANIMAZON <span style="font-size:12px; font-weight:600; color:#38bdf8; background:rgba(56,189,248,0.12); padding:2px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.25);">WEB STUDIO</span></h1>
+                        <p class="inv-brand-tagline">Web Development, AI Video & High-Impact Digital Solutions</p>
                     </div>
-                @endif
+                </div>
+                
+                <div class="inv-action-pills">
+                    <button type="button" class="btn-inv-print" onclick="window.print()">
+                        <i class="ti ti-printer"></i> {{ __('Print / PDF') }}
+                    </button>
+                    <a href="{{ route('invoice.pdf', Crypt::encrypt($invoice->id)) }}" target="_blank" class="btn-inv-print">
+                        <i class="ti ti-download"></i> {{ __('Download') }}
+                    </a>
+                    @if ($invoice->status != 4 && $invoice->getDue() > 0)
+                        <button type="button" class="btn-inv-pay" id="top_pay_btn" onclick="payNowWithRazorpay()">
+                            <i class="ti ti-bolt"></i> {{ __('Pay with Razorpay') }}
+                        </button>
+                    @endif
+                </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="invoice">
-                            <div class="invoice-print">
-                                <div class="row invoice-title mt-2">
-                                    <div class="col-xs-12 col-sm-12 col-nd-6 col-lg-6 col-12">
-                                        <h2>{{ __('Invoice') }}</h2>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-12 col-nd-6 col-lg-6 col-12 text-end">
-                                        <h3 class="invoice-number float-right">
-                                            {{ $user->invoiceNumberFormat($invoice->invoice_id) }}</h3>
-                                    </div>
-                                    <div class="col-12">
-                                        <hr>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col text-end">
-                                        <div class="d-flex align-items-center justify-content-end">
+            <!-- Invoice Meta Grid -->
+            <div class="inv-meta-grid">
+                <div class="inv-meta-box">
+                    <div class="inv-meta-label">{{ __('Invoice Number') }}</div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        @php
+                            $invDisplayNum = '#INVO' . sprintf('%04d', $invoice->invoice_id);
+                        @endphp
+                        <div class="inv-meta-num">{{ $invDisplayNum }}</div>
+                        @if(!empty($invoice->ref_number))
+                            <span style="font-size:11px; background:rgba(255,255,255,0.06); padding:3px 8px; border-radius:6px; color:#cbd5e1;">Ref: {{ $invoice->ref_number }}</span>
+                        @endif
+                    </div>
+                </div>
 
-                                            <div class="me-4">
-                                                <small>
-                                                    <strong>{{ __('Issue Date') }} :</strong><br>
-                                                    {{ Utility::dateFormat($settings, $invoice->issue_date) }}<br><br>
-                                                </small>
-                                            </div>
-                                            <small>
-                                                <strong>{{ __('Due Date') }} :</strong><br>
-                                                {{ Utility::dateFormat($settings, $invoice->due_date) }}<br><br>
-                                            </small>
+                <div class="inv-meta-box">
+                    <div class="inv-meta-label">{{ __('Issue Date') }}</div>
+                    <div style="font-size:16px; font-weight:700; color:#ffffff;">
+                        {{ Utility::dateFormat($settings, $invoice->issue_date) }}
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; margin-top:2px;">
+                        Due: {{ Utility::dateFormat($settings, $invoice->due_date) }}
+                    </div>
+                </div>
 
-                                        </div>
+                <div class="inv-meta-box">
+                    <div class="inv-meta-label">{{ __('Payment Status') }}</div>
+                    <div>
+                        @if ($invoice->status == 4)
+                            <span class="inv-status-pill inv-status-paid"><i class="ti ti-check"></i> {{ __('Paid in Full') }}</span>
+                        @elseif ($invoice->status == 0)
+                            <span class="inv-status-pill inv-status-unpaid"><i class="ti ti-clock"></i> {{ __('Payment Pending') }}</span>
+                        @elseif ($invoice->status == 1)
+                            <span class="inv-status-pill inv-status-unpaid"><i class="ti ti-send"></i> {{ __('Invoice Sent') }}</span>
+                        @else
+                            <span class="inv-status-pill inv-status-unpaid"><i class="ti ti-alert-circle"></i> {{ __(\App\Models\Invoice::$statues[$invoice->status] ?? 'Open') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parties Bento Grid (Billed To vs Provider) -->
+            <div class="inv-parties-grid">
+                <div class="inv-party-card">
+                    <div class="inv-party-title"><i class="ti ti-user"></i> {{ __('Billed To (Client)') }}</div>
+                    <div class="inv-party-name">
+                        {{ !empty($customer->name) ? $customer->name : (!empty($customer->billing_name) ? $customer->billing_name : 'Client') }}
+                    </div>
+                    <div class="inv-party-details">
+                        @if(!empty($customer->email))
+                            <div><i class="ti ti-mail" style="color:#38bdf8;"></i> {{ $customer->email }}</div>
+                        @endif
+                        @if(!empty($customer->contact) || !empty($customer->billing_phone))
+                            <div><i class="ti ti-phone" style="color:#38bdf8;"></i> {{ $customer->contact ?: $customer->billing_phone }}</div>
+                        @endif
+                        @if(!empty($customer->billing_address))
+                            <div><i class="ti ti-map-pin" style="color:#38bdf8;"></i> {{ $customer->billing_address }}, {{ $customer->billing_city }} {{ $customer->billing_state }} {{ $customer->billing_zip }}</div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="inv-party-card">
+                    <div class="inv-party-title"><i class="ti ti-building"></i> {{ __('Issued By') }}</div>
+                    <div class="inv-party-name">Animazon Web Studio</div>
+                    <div class="inv-party-details">
+                        <div><i class="ti ti-world" style="color:#38bdf8;"></i> www.animazon.in</div>
+                        <div><i class="ti ti-mail" style="color:#38bdf8;"></i> info@animazon.in</div>
+                        <div><i class="ti ti-phone" style="color:#38bdf8;"></i> +91 80894 05950</div>
+                        <div><i class="ti ti-map-pin" style="color:#38bdf8;"></i> 155, Narayana Valasu, Nasiyanur Road, Above Bake Mart, Erode, TN - 638011</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Itemized Work Table -->
+            <div class="inv-table-wrapper">
+                <table class="inv-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45px;">#</th>
+                            <th>{{ __('Description & Deliverables') }}</th>
+                            <th style="width: 80px; text-align:center;">{{ __('Qty') }}</th>
+                            <th style="width: 130px; text-align:right;">{{ __('Unit Rate') }}</th>
+                            <th style="width: 140px; text-align:right;">{{ __('Amount') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($iteams as $key => $iteam)
+                            @php
+                                $product = $iteam->product;
+                                $itemTotal = ($iteam->price * $iteam->quantity) - $iteam->discount;
+                            @endphp
+                            <tr>
+                                <td>
+                                    <div class="inv-index-pill">{{ str_pad($key + 1, 2, '0', STR_PAD_LEFT) }}</div>
+                                </td>
+                                <td>
+                                    <div class="inv-item-name">
+                                        {{ !empty($product) ? $product->name : ($iteam->description ?? 'Service Item') }}
                                     </div>
-                                </div>
-
-                                <div class="row">
-                                    @if (!empty($customer->billing_name))
-                                        <div class="col">
-                                            <small class="font-style">
-                                                <strong>{{ __('Billed To') }} :</strong><br>
-                                                {{ !empty($customer->billing_name) ? $customer->billing_name : '' }}<br>
-                                                {{ !empty($customer->billing_phone) ? $customer->billing_phone : '' }}<br>
-                                                {{ !empty($customer->billing_address) ? $customer->billing_address : '' }}<br>
-                                                {{ !empty($customer->billing_zip) ? $customer->billing_zip : '' }}<br>
-                                                {{ !empty($customer->billing_city) ? $customer->billing_city : '' . ', ' }}
-                                                {{ !empty($customer->billing_state) ? $customer->billing_state : '', ', ' }}
-                                                {{ !empty($customer->billing_country) ? $customer->billing_country : '' }}
-                                            </small>
-                                        </div>
+                                    @if(!empty($iteam->description) && (!empty($product) && $product->name !== $iteam->description))
+                                        <div class="inv-item-desc">{{ $iteam->description }}</div>
                                     @endif
-                                    @if (\Utility::companyData($invoice->created_by, 'shipping_display') == 'on')
-                                        <div class="col">
-                                            <small>
-                                                <strong>{{ __('Shipped To') }} :</strong><br>
-                                                {{ !empty($customer->shipping_name) ? $customer->shipping_name : '' }}<br>
-                                                {{ !empty($customer->shipping_phone) ? $customer->shipping_phone : '' }}<br>
-                                                {{ !empty($customer->shipping_address) ? $customer->shipping_address : '' }}<br>
-                                                {{ !empty($customer->shipping_zip) ? $customer->shipping_zip : '' }}<br>
-                                                {{ !empty($customer->shipping_city) ? $customer->shipping_city : '' . ', ' }}
-                                                {{ !empty($customer->shipping_state) ? $customer->shipping_state : '' . ', ' }},{{ !empty($customer->shipping_country) ? $customer->shipping_country : '' }}
-                                            </small>
-                                        </div>
-                                    @endif
-                                    <div class="col">
-                                        <div class="float-end mt-3">
-                                            @if(isset($settings['invoice_qr_display']) == 'on')
-                                            {!! DNS2D::getBarcodeHTML(
-                                                route('invoice.link.copy', \Illuminate\Support\Facades\Crypt::encrypt($invoice->id)),
-                                                'QRCODE',
-                                                2,
-                                                2,
-                                            ) !!}
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="col">
-                                        @if($company_setting['vat_gst_number_switch'] == 'on')
-                                        @if(!empty($company_setting['tax_type']) && !empty($company_setting['vat_number'])){{$company_setting['tax_type'].' '. __('Number')}} : {{$company_setting['vat_number']}} <br>@endif
+                                </td>
+                                <td style="text-align:center;">
+                                    <span class="inv-rate-pill">{{ $iteam->quantity }}</span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <span class="inv-rate-pill">₹{{ number_format((float)$iteam->price, 2, '.', ',') }}</span>
+                                </td>
+                                <td class="inv-amount-cell">
+                                    ₹{{ number_format((float)$itemTotal, 2, '.', ',') }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-                                        <strong>{{__('Tax Number ')}} : </strong>{{!empty($customer->tax_number)?$customer->tax_number:'--'}}
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col">
-                                        <small>
-                                            <strong>{{ __('Status') }} :</strong><br>
-                                            @if ($invoice->status == 0)
-                                                <span
-                                                    class="badge bg-primary">{{ __(\App\Models\Invoice::$statues[$invoice->status]) }}</span>
-                                            @elseif($invoice->status == 1)
-                                                <span
-                                                    class="badge bg-warning">{{ __(\App\Models\Invoice::$statues[$invoice->status]) }}</span>
-                                            @elseif($invoice->status == 2)
-                                                <span
-                                                    class="badge bg-danger">{{ __(\App\Models\Invoice::$statues[$invoice->status]) }}</span>
-                                            @elseif($invoice->status == 3)
-                                                <span
-                                                    class="badge bg-info">{{ __(\App\Models\Invoice::$statues[$invoice->status]) }}</span>
-                                            @elseif($invoice->status == 4)
-                                                <span
-                                                    class="badge bg-primary">{{ __(\App\Models\Invoice::$statues[$invoice->status]) }}</span>
-                                            @endif
-                                        </small>
-                                    </div>
+            <!-- Summary & Payment Bento Grid -->
+            <div class="inv-bottom-grid">
+                <!-- Direct Bank Transfer & Razorpay Payment Card -->
+                <div class="inv-bank-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="inv-bank-title" style="margin-bottom:0; color:#38bdf8;">
+                            <i class="ti ti-building-bank"></i> {{ __('Bank Details & Direct Settlement') }}
+                        </div>
+                        <span style="font-size:10px; font-weight:700; background:rgba(56, 189, 248, 0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:2px 8px; border-radius:12px; text-transform:uppercase;">Verified Account</span>
+                    </div>
 
-                                    @if (!empty($customFields) && count($invoice->customField) > 0)
-                                        @foreach ($customFields as $field)
-                                            <div class="col text-md-right">
-                                                <small>
-                                                    <strong>{{ $field->name }} :</strong><br>
-                                                    {{ !empty($invoice->customField) ? $invoice->customField[$field->id] : '-' }}
-                                                    <br><br>
-                                                </small>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                                <div class="row mt-4">
-                                    <div class="col-md-12">
-                                        <div class="font-weight-bold">{{ __('Product Summary') }}</div>
-                                        <small>{{ __('All items here cannot be deleted.') }}</small>
-                                        <div class="table-responsive mt-2">
-                                            <table class="table mb-0 table-striped">
-                                                <tr>
-                                                    <th data-width="40" class="text-dark">#</th>
-                                                    <th class="text-dark">{{ __('Product') }}</th>
-                                                    <th class="text-dark">{{ __('Quantity') }}</th>
-                                                    <th class="text-dark">{{ __('Rate') }}</th>
-                                                    <th class="text-dark">{{ __('Discount') }}</th>
-                                                    <th class="text-dark">{{ __('Tax') }}</th>
-                                                    <th class="text-dark">{{ __('Description') }}</th>
-                                                    <th class="text-end text-dark" width="12%">
-                                                        {{ __('Price') }}<br>
-                                                        <small
-                                                            class="text-danger font-weight-bold">{{ __('after tax & discount') }}</small>
-                                                    </th>
-                                                </tr>
-                                                @php
-                                                    $totalQuantity = 0;
-                                                    $totalRate = 0;
-                                                    $totalTaxPrice = 0;
-                                                    $totalDiscount = 0;
-                                                    $taxesData = [];
-                                                @endphp
-                                                @foreach ($iteams as $key => $iteam)
-
-                                                    <tr>
-                                                        <td>{{ $key + 1 }}</td>
-                                                        @php
-                                                            $productName = $iteam->product;
-                                                            $totalRate += $iteam->price;
-                                                            $totalQuantity += $iteam->quantity;
-                                                            $totalDiscount += $iteam->discount;
-                                                        @endphp
-                                                        <td>{{ !empty($productName) ? $productName->name : '' }}</td>
-                                                        @php
-                                                            $unitName = App\Models\ProductServiceUnit::find(
-                                                                $iteam->unit,
-                                                            );
-                                                        @endphp
-                                                        <td>{{ $iteam->quantity }}
-                                                            {{ $unitName != null ? '(' . $unitName->name . ')' : '' }}
-                                                        </td>
-                                                        <td>{{ \App\Models\Utility::priceFormat($settings, $iteam->price) }}
-                                                        </td>
-                                                        <td>{{ \App\Models\Utility::priceFormat($settings, $iteam->discount) }}
-                                                        </td>
-                                                        <td>
-                                                            @if (!empty($iteam->tax))
-                                                                <table>
-                                                                    @php
-                                                                        $itemTaxes = [];
-                                                                        $getTaxData = Utility::getTaxData();
-                                                                        $itemTaxPrice = 0;
-                                                                        if (!empty($iteam->tax)) {
-                                                                            foreach (
-                                                                                explode(',', $iteam->tax)
-                                                                                as $tax
-                                                                            ) {
-                                                                                $taxPrice = \Utility::taxRate(
-                                                                                    $getTaxData[$tax]['rate'],
-                                                                                    $iteam->price,
-                                                                                    $iteam->quantity,
-                                                                                );
-                                                                                $itemTaxPrice += $taxPrice;
-                                                                                $totalTaxPrice += $taxPrice;
-                                                                                $itemTax['name'] =
-                                                                                    $getTaxData[$tax]['name'];
-                                                                                $itemTax['rate'] =
-                                                                                    $getTaxData[$tax]['rate'] . '%';
-                                                                                $itemTax[
-                                                                                    'price'
-                                                                                ] = \App\Models\Utility::priceFormat(
-                                                                                    $settings,
-                                                                                    $taxPrice,
-                                                                                );
-
-                                                                                $itemTaxes[] = $itemTax;
-                                                                                if (
-                                                                                    array_key_exists(
-                                                                                        $getTaxData[$tax]['name'],
-                                                                                        $taxesData,
-                                                                                    )
-                                                                                ) {
-                                                                                    $taxesData[
-                                                                                        $getTaxData[$tax]['name']
-                                                                                    ] =
-                                                                                        $taxesData[
-                                                                                            $getTaxData[$tax]['name']
-                                                                                        ] + $taxPrice;
-                                                                                } else {
-                                                                                    $taxesData[
-                                                                                        $getTaxData[$tax]['name']
-                                                                                    ] = $taxPrice;
-                                                                                }
-                                                                            }
-                                                                            $iteam->itemTax = $itemTaxes;
-                                                                        } else {
-                                                                            $iteam->itemTax = [];
-                                                                        }
-                                                                    @endphp
-                                                                    @foreach ($iteam->itemTax as $tax)
-                                                                        <tr>
-                                                                            <td>{{ $tax['name'] . ' (' . $tax['rate'] . ')' }}
-                                                                            </td>
-                                                                            <td>{{ $tax['price'] }}</td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </table>
-                                                            @else
-                                                                @php
-                                                                    $itemTaxPrice = 0;
-                                                                @endphp
-                                                                -
-                                                            @endif
-                                                        </td>
-
-                                                        <td>{{ !empty($iteam->description) ? $iteam->description : '-' }}
-                                                        </td>
-                                                        <td class="text-end">
-                                                            {{ Utility::priceFormat($settings, $iteam->price * $iteam->quantity - $iteam->discount + $itemTaxPrice) }}
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                                <tfoot>
-                                                    <tr>
-                                                        <td></td>
-
-                                                        <td><b>{{ __('Total') }}</b></td>
-                                                        <td><b>{{ $totalQuantity }}</b></td>
-                                                        <td>{{ Utility::priceFormat($settings, $totalRate) }}</td>
-                                                        <td><b>{{ Utility::priceFormat($settings, $totalDiscount) }}</b>
-                                                        </td>
-                                                        <td><b>{{ Utility::priceFormat($settings, $totalTaxPrice) }}</b>
-                                                        </td>
-                                                        <td></td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="6"></td>
-                                                        <td class="text-end"><b>{{ __('Sub Total') }}</b></td>
-                                                        <td class="text-end">
-                                                            {{ Utility::priceFormat($settings, $invoice->getSubTotal()) }}
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td colspan="6"></td>
-                                                        <td class="text-end"><b>{{ __('Discount') }}</b></td>
-                                                        <td class="text-end">
-                                                            {{ Utility::priceFormat($settings, $invoice->getTotalDiscount()) }}
-                                                        </td>
-                                                    </tr>
-
-                                                    @if (!empty($taxesData))
-                                                        @foreach ($taxesData as $taxName => $taxPrice)
-                                                            <tr>
-                                                                <td colspan="6"></td>
-                                                                <td class="text-end"><b>{{ $taxName }}</b></td>
-                                                                <td class="text-end">
-                                                                    {{ Utility::priceFormat($settings, $taxPrice) }}
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @endif
-                                                    <tr>
-                                                        <td colspan="6"></td>
-                                                        <td class="blue-text text-end"><b>{{ __('Total') }}</b></td>
-                                                        <td class="blue-text text-end">
-                                                            {{ Utility::priceFormat($settings, $invoice->getTotal()) }}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="6"></td>
-                                                        <td class="text-end"><b>{{ __('Paid') }}</b></td>
-                                                        <td class="text-end">
-                                                            {{ Utility::priceFormat($settings, $invoice->getTotal() - $invoice->getDue() - $invoice->invoiceTotalCreditNote()) }}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="6"></td>
-                                                        <td class="text-end"><b>{{ __('Credit Note') }}</b></td>
-                                                        <td class="text-end">
-                                                            {{ Utility::priceFormat($settings, $invoice->invoiceTotalCreditNote()) }}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="6"></td>
-                                                        <td class="text-end"><b>{{ __('Due') }}</b></td>
-                                                        <td class="text-end">
-                                                            {{ Utility::priceFormat($settings, $invoice->getDue()) }}
-                                                        </td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div style="display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap;">
+                        <!-- QR Code Container -->
+                        <div class="inv-qr-container" style="background:#ffffff; padding:10px; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,0.35); text-align:center; flex-shrink:0;">
+                            @php
+                                $dueAmount = number_format((float)$invoice->getDue(), 2, '.', '');
+                                $invCleanNum = 'INVO' . sprintf('%04d', $invoice->invoice_id);
+                                $upiLink = "upi://pay?pa=nandhu3d@oksbi" .
+                                          "&pn=" . rawurlencode("Animazon Web Studio") .
+                                          "&am=" . $dueAmount .
+                                          "&cu=INR" .
+                                          "&tn=" . rawurlencode("Invoice " . $invCleanNum);
+                            @endphp
+                            <div style="display:inline-block;">
+                                {!! DNS2D::getBarcodeHTML($upiLink, 'QRCODE', 4.2, 4.2, '#0f172a') !!}
                             </div>
+                            <div style="font-size:9.5px; font-weight:800; color:#0f172a; margin-top:6px; letter-spacing:0.5px;">
+                                SCAN & PAY VIA UPI
+                            </div>
+                            <div style="font-size:8px; font-weight:600; color:#475569; margin-top:2px;">
+                                GPay • PhonePe • Paytm • BHIM
+                            </div>
+                        </div>
+
+                        <!-- Bank Details -->
+                        <div style="flex:1; min-width:200px; font-size:12px; color:#cbd5e1; line-height:1.6;">
+                            <div style="display:grid; grid-template-columns: 95px 1fr; gap:3px 8px; margin-bottom:12px;">
+                                <span class="bank-lbl">Bank Name:</span>
+                                <strong class="bank-val">INDIAN BANK</strong>
+
+                                <span class="bank-lbl">A/C Name:</span>
+                                <strong class="bank-val">G.Nandhakumar</strong>
+
+                                <span class="bank-lbl">A/C Number:</span>
+                                <strong class="bank-val bank-val-accent">975099385</strong>
+
+                                <span class="bank-lbl">IFSC Code:</span>
+                                <strong class="bank-val">IDIB000P106</strong>
+
+                                <span class="bank-lbl">Branch:</span>
+                                <span class="bank-val">Perundurai Road</span>
+
+                                <span class="bank-lbl">GPay / UPI ID:</span>
+                                <strong class="bank-val bank-val-accent">nandhu3d@oksbi</strong>
+                            </div>
+
+                            @if ($invoice->status != 4 && $invoice->getDue() > 0)
+                                <button type="button" class="btn btn-sm w-100 btn-pay-razorpay-direct" id="bottom_pay_btn" style="background:linear-gradient(135deg, #0284c7, #2563eb); color:#fff; font-weight:700; font-size:12px; border-radius:10px; padding:10px 12px; border:none; box-shadow:0 4px 12px rgba(37,99,235,0.4); display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;" onclick="payNowWithRazorpay()">
+                                    <i class="ti ti-bolt"></i> {{ __('Pay Online via Razorpay Gateway') }}
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
+
+                <!-- Financial Calculation Card -->
+                <div class="inv-summary-card">
+                    <div class="inv-calc-row">
+                        <span>{{ __('Sub Total') }}</span>
+                        <span class="inv-calc-val">₹{{ number_format((float)$invoice->getSubTotal(), 2, '.', ',') }}</span>
+                    </div>
+                    @if ($invoice->getTotalDiscount() > 0)
+                        <div class="inv-calc-row">
+                            <span>{{ __('Discount') }}</span>
+                            <span class="inv-calc-val" style="color:#34d399;">- ₹{{ number_format((float)$invoice->getTotalDiscount(), 2, '.', ',') }}</span>
+                        </div>
+                    @endif
+                    @if ($invoice->getTotalTax() > 0)
+                        <div class="inv-calc-row">
+                            <span>{{ __('Taxes') }}</span>
+                            <span class="inv-calc-val">+ ₹{{ number_format((float)$invoice->getTotalTax(), 2, '.', ',') }}</span>
+                        </div>
+                    @endif
+                    @if ($invoice->getDue() < $invoice->getTotal() && $invoice->getDue() > 0)
+                        <div class="inv-calc-row">
+                            <span>{{ __('Amount Paid') }}</span>
+                            <span class="inv-calc-val" style="color:#34d399;">- ₹{{ number_format((float)($invoice->getTotal() - $invoice->getDue()), 2, '.', ',') }}</span>
+                        </div>
+                        <div class="inv-calc-row">
+                            <span>{{ __('Balance Due') }}</span>
+                            <span class="inv-calc-val" style="color:#f59e0b;">₹{{ number_format((float)$invoice->getDue(), 2, '.', ',') }}</span>
+                        </div>
+                    @endif
+
+                    <div class="inv-total-row">
+                        <span class="inv-total-label">{{ __('Total Payable') }}</span>
+                        <span class="inv-total-amount">₹{{ number_format((float)$invoice->getTotal(), 2, '.', ',') }}</span>
+                    </div>
+                </div>
             </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function openRazorpayTab() {
+        setTimeout(function() {
+            var razorpayTabLink = document.querySelector('a[href="#razorpay-payment"]');
+            if (razorpayTabLink) {
+                var tab = new bootstrap.Tab(razorpayTabLink);
+                tab.show();
+            }
+        }, 300);
+    }
+</script>
+
             <div class="col-12">
                 <h5 class="h4 d-inline-block font-weight-400 mb-2">{{ __('Receipt Summary') }}</h5><br>
                 @if ($user_plan->storage_limit <= $user->storage_limit)
@@ -2513,46 +3059,75 @@
             });
         @endif
 
-        // Razorpay Payment
-        @if (isset($company_payment_setting['razorpay_public_key']))
-            $(document).on("click", "#pay_with_razorpay", function() {
-                var account = "{{$razorpayAccount}}";
-                if(account == '')
-                {
-                    show_toastr('Error', '{{ __("Bank account not connected with Razorpay.") }}', 'error')
-                    return;
-                } 
-                $('#razorpay-payment-form').ajaxForm(function(res) {
+        // Direct Razorpay Payment Function (Bypasses intermediate modal)
+        function payNowWithRazorpay() {
+            var $topBtn = $('#top_pay_btn');
+            var $btmBtn = $('#bottom_pay_btn');
+            
+            $topBtn.prop('disabled', true).html('<i class="ti ti-loader rotate"></i> Connecting...');
+            $btmBtn.prop('disabled', true).html('<i class="ti ti-loader rotate"></i> Connecting Gateway...');
+
+            $.ajax({
+                url: "{{ route('customer.pay.with.razorpay') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    invoice_id: "{{ \Illuminate\Support\Facades\Crypt::encrypt($invoice->id) }}",
+                    amount: "{{ $invoice->getDue() }}"
+                },
+                success: function(res) {
+                    $topBtn.prop('disabled', false).html('<i class="ti ti-bolt"></i> {{ __('Pay with Razorpay') }}');
+                    $btmBtn.prop('disabled', false).html('<i class="ti ti-bolt"></i> {{ __('Pay Online via Razorpay Gateway') }}');
+
                     if (res.flag == 1) {
                         var amount = res.total_price;
                         var razorPay_callback = '{{ url('/customer/razorpay') }}';
-                        var totalAmount = res.total_price * 100;
-                        var coupon_id = res.coupon;
+                        var totalAmount = Math.round(parseFloat(res.total_price) * 100);
                         var options = {
-                            "key": "{{ $company_payment_setting['razorpay_public_key'] }}", // your Razorpay Key Id
+                            "key": "{{ $company_payment_setting['razorpay_public_key'] ?? '' }}",
                             "amount": totalAmount,
-                            "name": 'Invoice',
-                            "currency": '{{ $company_setting['site_currency'] }}',
-                            "description": "",
+                            "name": "ANIMAZON",
+                            "description": "Invoice Payment {{ $invDisplayNum }}",
+                            "currency": (res.currency && res.currency !== '') ? res.currency : 'INR',
+                            "prefill": {
+                                "name": "{{ !empty($customer->name) ? $customer->name : (!empty($customer->billing_name) ? $customer->billing_name : '') }}",
+                                "email": "{{ !empty($customer->email) ? $customer->email : '' }}",
+                                "contact": "{{ !empty($customer->contact) ? $customer->contact : (!empty($customer->billing_phone) ? $customer->billing_phone : '') }}"
+                            },
+                            "notes": {
+                                "invoice_id": "{{ $invoice->id }}",
+                                "invoice_number": "{{ $invDisplayNum }}"
+                            },
                             "handler": function(response) {
-                                window.location.href = razorPay_callback + '/' + response
-                                    .razorpay_payment_id + '/' +
-                                    '{{ \Illuminate\Support\Facades\Crypt::encrypt($invoice->id) }}' +
-                                    '?amount=' + amount;
+                                window.location.href = razorPay_callback + '/' + response.razorpay_payment_id + '/' + '{{ \Illuminate\Support\Facades\Crypt::encrypt($invoice->id) }}' + '?amount=' + amount;
                             },
                             "theme": {
-                                "color": "#528FF0"
+                                "color": "#0284c7"
                             }
                         };
                         var rzp1 = new Razorpay(options);
+                        rzp1.on('payment.failed', function (response){
+                            alert("Payment Failed: " + (response.error.description || response.error.reason));
+                        });
                         rzp1.open();
                     } else if (res.flag == 2) {
-                        toastrs('Error', res.msg, 'msg');
+                        toastrs('Error', res.msg, 'error');
                     } else {
-                        toastrs('Error', data.message, 'msg');
+                        toastrs('Error', res.message || 'Payment processing error', 'error');
                     }
+                },
+                error: function(xhr) {
+                    $topBtn.prop('disabled', false).html('<i class="ti ti-bolt"></i> {{ __('Pay with Razorpay') }}');
+                    $btmBtn.prop('disabled', false).html('<i class="ti ti-bolt"></i> {{ __('Pay Online via Razorpay Gateway') }}');
+                    alert('Unable to initialize Razorpay checkout. Please try again.');
+                }
+            });
+        }
 
-                }).submit();
+        @if (isset($company_payment_setting['razorpay_public_key']))
+            $(document).on("click", "#pay_with_razorpay", function(e) {
+                e.preventDefault();
+                payNowWithRazorpay();
             });
         @endif
 

@@ -33,21 +33,32 @@ class CostCalculatorSeeder extends Seeder
         $animVideo = ProjectType::create([
             'parent_id' => $animation->id,
             'name' => '3D Animation Video',
-            'description' => 'Cinematic 3D animation for marketing, products, explainers, or storytelling. Includes modeling, texturing, animation, and rendering.',
+            'description' => 'Cinematic 3D animation for marketing, products, explainers, or storytelling. Base rate: ₹8,000 for 10 seconds.',
             'icon' => 'ti ti-video',
             'image_path' => 'assets/images/services/3d-animation-video.webp',
-            'base_cost' => 1500,
+            'base_cost' => 96, // ₹8,000 at ₹83.5/USD ($96 * 83.5 = ₹8,016)
             'active' => true,
         ]);
         $this->seed3dAnimVideoQuestions($animVideo->id);
 
+        $archRender = ProjectType::create([
+            'parent_id' => $animation->id,
+            'name' => 'Architectural 3D Rendering & Walkthrough',
+            'description' => 'Photorealistic architectural interior & exterior rendering, 360° panorama views, and walkthrough animations. Base rate: ₹2,000 per 2 angles.',
+            'icon' => 'ti ti-building-estate',
+            'image_path' => 'assets/images/services/arch-rendering.webp',
+            'base_cost' => 24, // ₹2,000 per 2 angles at ₹83.5/USD ($24 * 83.5 = ₹2,004)
+            'active' => true,
+        ]);
+        $this->seedArchRenderingQuestions($archRender->id);
+
         $modeling = ProjectType::create([
             'parent_id' => $animation->id,
-            'name' => '3D Modeling & Assets',
-            'description' => 'High-quality 3D models for games, printing, AR/VR, or rendering. Priced per model based on complexity.',
+            'name' => '3D Modeling & Product Assets',
+            'description' => 'High-quality 3D models for products, games, printing, AR/VR, or e-commerce showcase.',
             'icon' => 'ti ti-box',
             'image_path' => 'assets/images/services/3d-modeling.webp',
-            'base_cost' => 800,
+            'base_cost' => 36, // ~₹3,000 base
             'active' => true,
         ]);
         $this->seed3dModelingQuestions($modeling->id);
@@ -235,48 +246,122 @@ class CostCalculatorSeeder extends Seeder
 
     private function seed3dAnimVideoQuestions($id)
     {
-        // Q1: Duration — base $1500 for 15s
+        // Q1: Duration — Base ₹8,000 for 10s ($96 USD)
         $this->q($id, 1, 'scope', 'single_select',
-            'Video Duration', 'Base package covers up to 15 seconds of rendered animation.', [
-                ['Up to 15 seconds', 1.0, 0, 'Perfect for social media teasers & ads', '💡 A 15-second Instagram/TikTok ad typically has 2-3 scenes with transitions.'],
-                ['30 seconds', 1.8, 0, 'Standard TV/YouTube commercial length', '💡 A 30s commercial is the standard TV ad slot. YouTube pre-roll ads are 15–30s.'],
-                ['60 seconds (1 Minute)', 3.0, 0, 'Detailed product showcase or explainer', '💡 1-minute explainer videos have a 77% viewer retention rate. Ideal for landing pages.'],
-                ['90+ seconds', 4.5, 0, 'In-depth presentation or cinematic trailer', '💡 Cinematic trailers typically run 90s–2min. Each second adds ~$25–40 in render costs.'],
+            'Video Duration (Length of Animation)', 'Base package is ₹8,000 for a 10-second animation video. Longer durations receive volume discounts.', [
+                ['10 Seconds (Base Package)', 1.00, 0, '₹8,000 — Ideal for social media reels, product intro teasers', '💡 10 seconds covers 2–3 dynamic camera angles with smooth transitions.'],
+                ['20 Seconds', 1.875, 0, '₹15,000 — Standard product explainer and feature showcase', '💡 20s allows time for exploded views, zoom-ins, and key feature highlights.'],
+                ['30 Seconds (Half Minute)', 2.75, 0, '₹22,000 — Commercial TV / YouTube pre-roll ad format', '💡 30s is the industry standard for ad slots and landing page hero videos.'],
+                ['60 Seconds (1 Minute)', 5.25, 0, '₹42,000 — Full storytelling, complex machinery, or process explainer', '💡 1-minute explainers boast a 77% completion rate and communicate full value.'],
+                ['90 Seconds', 7.50, 0, '₹60,000 — Comprehensive presentation or cinematic product launch', '💡 90s includes extensive multi-part demonstrations and narrative arcs.'],
+                ['120 Seconds (2 Minutes)', 9.50, 0, '₹76,000 — In-depth technical training or corporate showcase', '💡 Complete end-to-end breakdown of complex assemblies or workflows.'],
             ]);
 
-        // Q2: Complexity
+        // Q2: Mechanical Kinematics & Fluid/Cloth Simulations
         $this->q($id, 2, 'scope', 'single_select',
-            'Animation Complexity', 'What type of objects or characters will be animated?', [
-                ['Simple Products / Machinery (Rigid)', 1.0, 0, 'Basic rotations, exploded views, hard-surface objects', '💡 Rigid body animation includes product turntables, mechanical assembly, and simple motion paths.'],
-                ['Organic / Soft Bodies / Fluids', 1.4, 0, 'Cloth simulation, liquid splashes, organic motion', '💡 Fluid simulations (water, smoke) require specialized solvers like Mantaflow or RealFlow, adding 30–40% render time.'],
-                ['Character Animation (Rigging + Motion)', 1.8, 0, 'Fully rigged characters with walk cycles and actions', '💡 Character rigging alone takes 15–30 hours. Motion capture can speed this up but requires specialized equipment.'],
-                ['Medical / Scientific Accuracy', 1.5, 0, 'Internal body, cellular, or molecular visualizations', '💡 Medical animations require scientific review and typically involve 50+ reference images for accuracy.'],
+            'Mechanical Kinematics & Physics Simulations', 'Select if your animation requires moving mechanical parts or complex physics simulations.', [
+                ['Standard Rigid Motion / Exploded View', 1.00, 0, 'Included in base (+₹0) — Smooth camera orbits, turntable, part separation', '💡 Standard mechanical movements and camera orbits around rigid objects.'],
+                ['Mechanical Kinematics & Functional Assembly', 1.00, 60, '+₹5,000 — Gears, pistons, engine cycles, linkages & moving mechanisms', '💡 Accurate mechanical motion constraints and realistic assembly sequencing.'],
+                ['Fluid, Liquid Splash & Cloth Dynamics', 1.00, 72, '+₹6,000 — Pouring liquid, splashing fluid, fabric/drape simulation', '💡 Requires physics solvers (Mantaflow/Flip Fluids) with extended baking time.'],
+                ['Both Mechanical Kinematics + Fluid/Cloth Simulation', 1.00, 132, '+₹11,000 — Combined mechanical assemblies and dynamic fluid/cloth physics', '💡 Advanced engineering simulations with concurrent fluid and mechanical solvers.'],
             ]);
 
-        // Q3: Assets
+        // Q3: Character Animation & Count (+8k/char)
+        $this->q($id, 3, 'scope', 'single_select',
+            'Character Animation (Number of Characters)', 'Does your animation feature human, mascot, or creature characters? (Charged at flat ₹8,000 per character for rigging & animation).', [
+                ['No Characters (Product / Mechanical / Architectural Only)', 1.00, 0, '+₹0 — No characters required', '💡 Focuses purely on product or environmental motion.'],
+                ['1 Character (Rigging & Keyframed Motion)', 1.00, 96, '+₹8,000 — Single mascot, hero presenter, or character model', '💡 Full skeletal rigging, weight painting, walk cycles, and expressive performance.'],
+                ['2 Characters (Interactions / Dialogue)', 1.00, 192, '+₹16,000 — Two characters interacting or co-presenting', '💡 Coordinated multi-character animation and timing.'],
+                ['3 Characters (Group Scene)', 1.00, 288, '+₹24,000 — Three characters with individual choreography', '💡 Multi-character group interactions and secondary animation.'],
+                ['4+ Characters (Ensemble / Crowd)', 1.00, 384, '+₹32,000 — 4 or more animated characters', '💡 Complete character ensemble with dedicated rigs.'],
+            ]);
+
+        // Q4: Character Scale & Complexity Level
+        $this->q($id, 4, 'scope', 'single_select',
+            'Character Scale & Detail Level', 'If characters are included, select their visual style and scale.', [
+                ['N/A — No Characters in Project', 1.00, 0, 'No character modeling or rigging needed (+₹0)', null],
+                ['Stylized Mascot / Low-Poly Toy / Cute Avatar', 1.00, 0, 'Simple character structure and cartoon movements (Included in character fee)', '💡 Streamlined rigging, highly expressive and engaging for brand promos.'],
+                ['Full Humanoid Hero Character (Anatomical & Facial)', 1.00, 24, '+₹2,000 ($24) — High-detail human anatomy, facial blendshapes & lip-sync', '💡 Photorealistic human proportions with facial rigging for speech and emotions.'],
+                ['Creature / Quadruped / Multi-Limb Monster', 1.00, 36, '+₹3,000 ($36) — Non-human skeletal structure, tail, wings, or complex appendages', '💡 Specialized skeletal rigging with custom inverse kinematics.'],
+            ]);
+
+        // Q5: 3D Model Readiness
+        $this->q($id, 5, 'assets', 'single_select',
+            '3D Model & CAD File Availability', 'Do you already have production-ready 3D models?', [
+                ['Yes — 3D Model provided (CAD / STEP / FBX / OBJ)', 1.00, 0, 'Ready to texture, light, and animate (+₹0)', '💡 We import your existing model directly into our Blender/Maya animation pipeline.'],
+                ['Model provided but needs cleanup & optimization', 1.00, 35.93, 'Mesh topology fix, UV unwrapping, material setup (+₹3,000 / $36)', '💡 Fixes polygon errors, flipped normals, and optimizes for photoreal lighting.'],
+                ['No 3D model — Animazon builds from scratch', 1.00, 71.86, 'We model from reference photos, sketches, or drawings (+₹6,000 / $72)', '💡 Precision custom 3D model created from your blueprints and reference photographs.'],
+            ]);
+
+        // Q6: Render Resolution & Quality
+        $this->q($id, 6, 'quality', 'single_select',
+            'Render Resolution & Format', 'Deliverable resolution for display screens or web platforms.', [
+                ['1080p Full HD (16:9 Landscape or 9:16 Reel)', 1.00, 0, 'Standard web, YouTube, Instagram & presentation quality (Included in base)', '💡 Crystal clear on all modern phones, tablets, and desktop displays.'],
+                ['2K QHD (2560×1440)', 1.00, 119.76, 'Crisp 2K resolution — 2x render computation load (+₹10,000 / $120)', '💡 2K QHD has 78% more pixels than 1080p, substantially increasing in-house workstation ray-tracing time.'],
+                ['4K Ultra HD (3840×2160)', 1.00, 215.57, 'Cinematic 4K clarity — 4x render computation load (+₹18,000 / $216)', '💡 4K Ultra HD contains 8.3 million pixels per frame (4x 1080p), requiring heavy workstation ray-tracing compute time.'],
+            ]);
+
+        // Q7: Production Timeline & Render Farm Selection
+        $this->q($id, 7, 'scope', 'single_select',
+            'Production Timeline & Render Farm Schedule', 'Standard delivery is 15 business days (rendered in-house on workstations). Rush orders utilize external cloud render farms.', [
+                ['Standard Turnaround (15 Days — In-House Workstation Rendering)', 1.00, 0, '15 business days (+₹0) — Sequential in-house GPU rendering', '💡 Because we do not maintain a local render farm, photorealistic ray-tracing is rendered frame-by-frame on our dedicated internal workstations. 15 days provides ample time for lighting passes, shading, and final rendering.'],
+                ['Urgent Rush (5–7 Days — External Cloud Render Farm & Setup)', 1.00, 59.88, '+₹5,000 ($60) — Third-party cloud farm compute credits + scene packaging setup', '💡 Dispatches your 3D scene to commercial high-speed cloud GPU clusters (GarageFarm/FoxRenderfarm). Fee covers third-party farm compute credits plus technical scene packaging, VDB caching, and farm job monitoring.'],
+                ['Emergency Priority (48–72 Hours — High-Priority Cloud Farm & 24/7 Shifts)', 1.00, 95.80, '+₹8,000 ($96) — Multi-node cloud farm cluster + 24/7 dedicated animator shifts', '💡 Instant top-tier cloud cluster execution with round-the-clock priority supervision for emergency trade show or pitch deadlines.'],
+            ]);
+
+        // Q8: Post-Production & Audio Add-ons
+        $this->q($id, 8, 'extras', 'multi_select',
+            'Audio & Post-Production Add-ons', 'Select optional enhancements for your video.', [
+                ['Professional Voiceover Sync', 1.00, 30, 'Native English / Hindi / Tamil voiceover recording (+₹2,500 / $30)', '💡 Studio voice talent timed perfectly to your animation cues.'],
+                ['Licensed Background Music & Sound FX', 1.00, 15, 'Commercial license audio + realistic foley sound effects (+₹1,250 / $15)', '💡 Cinematic impact whooshes, mechanical clicks, and atmospheric music.'],
+                ['Kinetic Motion Graphics & Text Callouts', 1.00, 18, 'Feature pointer arrows, spec text badges (+₹1,500 / $18)', '💡 Highlight technical dimensions and USPs directly over the 3D render.'],
+                ['Raw Project Source Files Handover', 1.00, 60, 'Complete .blend scene, textures, and camera rigs (+₹5,000 / $60)', '💡 Full ownership of raw editable 3D project files.'],
+            ]);
+    }
+
+    private function seedArchRenderingQuestions($id)
+    {
+        // Q1: Number of Angles (Base = ₹2,000 for 2 angles = $24 USD)
+        $this->q($id, 1, 'scope', 'single_select',
+            'Camera Angles & Views (Package Size)', 'Base package is ₹2,000 for 2 rendered angles (₹1,000 per angle).', [
+                ['2 Angles (Base Package)', 1.00, 0, '₹2,000 — e.g., Front elevation + Corner perspective view', '💡 Ideal for quick client approvals, site hoarding displays, or municipal submissions.'],
+                ['4 Angles (Comprehensive Set)', 1.90, 0, '₹3,800 — Front, side, rear, and dramatic hero angle', '💡 Complete 360° visual understanding of exterior or multi-room layout.'],
+                ['6 Angles (Full Villa / Interior Walkthrough Stills)', 2.75, 0, '₹5,500 — Full house: Exterior + Living + Kitchen + Master Bed', '💡 Best value for real estate sales brochures, websites, and property listings.'],
+                ['8 Angles (Complete Multi-Zone Estate)', 3.75, 0, '₹7,500 — 4 exterior views + 4 interior styled rooms', '💡 High-end luxury presentations covering landscape, exterior elevations, and styled interiors.'],
+                ['10+ Angles (Master Plan & Full Development)', 4.75, 0, '₹9,500 — Complete commercial or residential development package', '💡 Full coverage for builders and property developers.'],
+            ]);
+
+        // Q2: Space Type
+        $this->q($id, 2, 'scope', 'single_select',
+            'Project Scope & Space Type', 'What type of space are we visualizing?', [
+                ['Exterior Elevation / Facade', 1.00, 0, 'Modern residential villa, duplex, or commercial frontage (Included in base)', '💡 Realistic architectural textures: concrete, brick, glass, wood louvers, and landscaping.'],
+                ['Interior Space (Living / Modular Kitchen / Bedroom)', 1.00, 0, 'Detailed interior lighting, custom furniture, and decor (Included in base)', '💡 Photorealistic materials, fabrics, marble reflections, and warm atmospheric lighting.'],
+                ['Commercial Building / Township / Master Plan', 1.35, 0, 'Multi-story commercial complex, retail mall, or gated layout', '💡 Larger polygon count with road networks, cars, surrounding infrastructure.'],
+                ['Aerial / Drone Bird\'s-Eye View', 1.25, 0, 'Top-down isometric or high-altitude aerial view', '💡 Visualizes complete plot boundaries, landscape planning, and site context.'],
+            ]);
+
+        // Q3: Plan Inputs
         $this->q($id, 3, 'assets', 'single_select',
-            'Do you have 3D models ready?', 'If you already have production-ready models, we can skip asset creation.', [
-                ['Yes — fully textured and rigged', 1.0, 0, 'Ready to animate, just needs scene setup', null],
-                ['Partially ready — needs cleanup/texturing', 1.0, 200, 'We\'ll fix geometry, add materials, and optimize', '💡 Mesh cleanup typically takes 4–8 hours depending on polygon density and topology issues.'],
-                ['No — everything from scratch', 1.0, 600, 'We\'ll create all 3D assets based on your references', '💡 Creating a detailed product model from scratch takes 8–20 hours. We require photo/video references or CAD files.'],
+            'Architectural Plans Provided', 'What design inputs will you supply?', [
+                ['2D AutoCAD DWG / Dimensioned Architectural PDF', 1.00, 0, 'Standard blueprint with clear floor plans and elevations (+₹0)', '💡 We extrude and build the 3D model directly from your CAD linework.'],
+                ['Rough Hand Sketch / PDF Layout with dimensions', 1.00, 12, 'Drafting required from basic sketches (+₹1,000 / $12)', '💡 Our architects convert your sketch into accurate 3D dimensional geometry.'],
+                ['Pre-built 3D Model provided (Revit / SketchUp / ArchiCAD)', 0.85, 0, '15% Discount — Model provided, we handle lighting, materials & rendering', '💡 Accelerates delivery since 3D structure is already modeled.'],
             ]);
 
-        // Q4: Render Quality
+        // Q4: Lighting Atmosphere
         $this->q($id, 4, 'quality', 'single_select',
-            'Render Resolution & Quality', 'Higher resolution increases render time significantly.', [
-                ['1080p Full HD', 1.0, 0, 'Standard web/social quality', '💡 1080p is the standard for YouTube, Instagram, and most web platforms. Renders in ~2–5 min/frame.'],
-                ['2K (2560×1440)', 1.15, 0, 'Higher clarity for presentations', '💡 2K adds 50% more pixels vs 1080p. Good for projector/conference presentations.'],
-                ['4K Ultra HD (3840×2160)', 1.3, 100, '4× pixel count — cinematic quality', '💡 4K renders take 3–6× longer per frame. A 30s video at 30fps = 900 frames to render.'],
+            'Lighting Atmosphere & Time of Day', 'Select the ambient mood for the rendered stills.', [
+                ['Daylight / Golden Hour Sunlight', 1.00, 0, 'Crisp natural sun, realistic sky backdrop, and shadows (Included)', '💡 Ideal for architectural brochures and site hoardings.'],
+                ['Dusk / Evening with Architectural Lighting', 1.15, 0, 'Twilight sky with warm warm interior glows, spotlights & landscape lights', '💡 Highlights facade light strips, cove lights, and evening luxury aesthetics.'],
+                ['Both Day & Night Variations for All Angles', 1.50, 0, 'Get 2 versions of every angle (Daylight + Twilight Warm)', '💡 Complete lighting portfolio showing daylight usability and evening ambience.'],
             ]);
 
-        // Q5: Add-ons
+        // Q5: Deliverables & Add-ons
         $this->q($id, 5, 'extras', 'multi_select',
-            'Add-ons & Deliverables', 'Select all extras you need.', [
-                ['Professional Voiceover', 1.0, 150, 'Script timing + narration', '💡 Pro voiceover artists charge $100–500 for 60s. We include script direction and timing sync.'],
-                ['Background Music & SFX', 1.0, 80, 'Licensed royalty-free audio', '💡 Licensed music from Epidemic Sound/Artlist costs $15–50/track. We handle licensing.'],
-                ['Raw Project Files Handover', 1.0, 500, '.blend, .ma, or .c4d project files', '💡 Project files let you modify scenes in-house later. Includes all textures, rigs, and scene setups.'],
-                ['Storyboard & Pre-visualization', 1.0, 200, 'Scene-by-scene visual blueprint', '💡 Storyboards reduce revision cycles by 40%. Includes camera angles, timing, and transition notes.'],
-                ['2 Revision Rounds (Extra)', 1.0, 150, 'Beyond the 1 included revision', '💡 Each revision round typically involves re-rendering 30–50% of frames.'],
+            'Deliverables & Add-ons', 'Optional additions for client presentation.', [
+                ['Ultra High-Res 4K Stills (Print 300 DPI)', 1.00, 10, 'Large format print-ready for billboards & brochures (+₹800 / $10)', '💡 Razor-sharp 3840×2160 resolution for hoardings and high-gloss prints.'],
+                ['360° Interactive Virtual Panorama (Web VR Viewer)', 1.00, 30, 'Interactive 360° sphere view embeddable on website (+₹2,500 / $30)', '💡 Clients can drag and look in all directions on phones, tablets, or VR.'],
+                ['10-Second 3D Architectural Flythrough Video', 1.00, 96, 'Smooth cinematic camera glide around the building (+₹8,000 / $96)', '💡 Short 10-second cinematic video walkaround set to ambient music.'],
             ]);
     }
 

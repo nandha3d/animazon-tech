@@ -115,7 +115,7 @@
                     <p class="text-animazon-muted text-sm">Created: {{ $estimate->created_at->format('M d, Y') }}</p>
                     <p class="text-animazon-muted text-sm">Valid Until: {{ $validUntil->format('M d, Y') }}</p>
                     <div class="flex items-center gap-4 mt-3 text-xs text-animazon-muted">
-                        <span class="flex items-center gap-1"><i class="ti ti-calendar text-primary"></i> ~{{ $estimate->timeline_weeks }} Weeks</span>
+                        <span class="flex items-center gap-1"><i class="ti ti-calendar text-primary"></i> {{ $estimate->timeline_weeks == 2 && str_contains(strtolower($estimate->projectType->name ?? ''), 'animation') ? '15 Days (~2 Weeks)' : '~' . $estimate->timeline_weeks . ' Weeks' }}</span>
                         <span class="flex items-center gap-1"><i class="ti ti-users text-primary"></i> {{ $estimate->team_size }} Experts</span>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
 
                     <div>
                         <h4 class="text-animazon-white font-semibold mb-1">C. Timeline & Delivery</h4>
-                        <p>The estimated timeline of approximately {{ $estimate->timeline_weeks }} weeks commences from the date the advance payment is received and all required project assets (content, branding guidelines, credentials) are provided by the Client. Delays in providing assets may extend the timeline proportionally. {{ $companyName }} will provide regular progress updates.</p>
+                        <p>The estimated timeline of approximately {{ $estimate->timeline_weeks == 2 && str_contains(strtolower($estimate->projectType->name ?? ''), 'animation') ? '15 business days (~2 weeks)' : $estimate->timeline_weeks . ' weeks' }} commences from the date the advance payment is received and all required project assets (content, 3D CAD/models, branding guidelines) are provided by the Client. {{ str_contains(strtolower($estimate->projectType->name ?? ''), 'animation') ? 'Animazon renders sequentially on dedicated in-house workstations without an internal server farm. As render resolution increases (2K/4K), render computation time increases proportionally. Expedited rush deliveries deploy commercial cloud render farms and incur third-party compute & scene packaging setup fees.' : '' }} Delays in providing assets may extend the timeline proportionally. {{ $companyName }} will provide regular progress updates.</p>
                     </div>
 
                     <div>

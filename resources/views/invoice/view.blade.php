@@ -479,12 +479,24 @@
                                 <div class="col">
                                     <div class="float-end mt-3">
                                         @if($settings['invoice_qr_display'] == 'on')
+                                        @php
+                                            $dueAmount = number_format((float)$invoice->getDue(), 2, '.', '');
+                                            $invCleanNum = 'INVO' . sprintf('%04d', $invoice->invoice_id);
+                                            $upiLink = "upi://pay?pa=nandhu3d@oksbi" .
+                                                      "&pn=" . rawurlencode("Animazon Web Studio") .
+                                                      "&am=" . $dueAmount .
+                                                      "&cu=INR" .
+                                                      "&tn=" . rawurlencode("Invoice " . $invCleanNum);
+                                        @endphp
                                         {!! DNS2D::getBarcodeHTML(
-                                            route('invoice.link.copy', \Illuminate\Support\Facades\Crypt::encrypt($invoice->id)),
+                                            $upiLink,
                                             'QRCODE',
-                                            2,
-                                            2,
+                                            2.2,
+                                            2.2,
                                         ) !!}
+                                        <div style="font-size: 8px; font-weight: 700; color: #0f172a; margin-top: 3px;">
+                                            SCAN VIA GPAY / UPI
+                                        </div>
                                         @endif
                                     </div>
                                 </div>

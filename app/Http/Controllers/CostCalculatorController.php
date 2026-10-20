@@ -67,7 +67,7 @@ class CostCalculatorController extends Controller
      * Change these to adjust quotes site-wide.
      */
     public const ADVANCE_PERCENT = 30;     // upfront advance to start (matches estimate agreement milestone 1)
-    public const GST_PERCENT_IN  = 18;     // GST applied for India clients only
+    public const GST_PERCENT_IN  = 0;      // GST disabled (0% — no GST applied)
     public const GST_PERCENT_INTL = 0;     // export of services — zero-rated for non-India
 
     /**
@@ -312,7 +312,19 @@ class CostCalculatorController extends Controller
         $currency = self::CURRENCY_MAP[$countryCode] ?? self::CURRENCY_MAP['US'];
         $rate = $currency['rate'];
 
-        $timeline = $this->estimateTimeline($scopeCost);
+        $isUrgent = false;
+        $isEmergency = false;
+        foreach ($costBreakdown as $item) {
+            $ansText = strtolower($item['answer'] ?? '');
+            if (str_contains($ansText, '48–72') || str_contains($ansText, 'emergency')) {
+                $isEmergency = true;
+            } elseif (str_contains($ansText, 'urgent') || str_contains($ansText, 'cloud render farm')) {
+                $isUrgent = true;
+            }
+        }
+
+        $timeline = $this->estimateTimeline($scopeCost, $projectType, $isUrgent || $isEmergency);
+        $timelineDisplay = $this->estimateTimelineDisplay($scopeCost, $projectType, $isUrgent, $isEmergency, $timeline);
         $teamSize = $this->estimateTeamSize($scopeCost);
 
         return response()->json([
@@ -340,6 +352,7 @@ class CostCalculatorController extends Controller
             'balance_local' => round($balanceUsd * $rate, 2),
             'currency' => $currency,
             'timeline_weeks' => $timeline,
+            'timeline_display' => $timelineDisplay,
             'team_size' => $teamSize,
             'cost_breakdown' => $costBreakdown,
             'international_margin' => $internationalMultiplier,
@@ -615,8 +628,20 @@ class CostCalculatorController extends Controller
 
     // ─── Private Helpers ────────────────────────────────────────
 
-    private function estimateTimeline($costUsd)
+    private function estimateTimeline($costUsd, $projectType = null, $isRush = false)
     {
+        if ($isRush) {
+            return 1;
+        }
+
+        $isAnim = $projectType && (stripos($projectType->name, 'animation') !== false || stripos($projectType->name, '3d') !== false);
+        if ($isAnim) {
+            if ($costUsd <= 140) return 2; // 10s video = 15 business days (~2 weeks)
+            if ($costUsd <= 300) return 3; // 20s-30s = ~3 weeks
+            if ($costUsd <= 650) return 5; // 60s = ~5 weeks
+            if ($costUsd <= 1200) return 8; // 90s-120s = ~8 weeks
+        }
+
         if ($costUsd <= 500) return 1;
         if ($costUsd <= 1500) return 2;
         if ($costUsd <= 3000) return 4;
@@ -625,6 +650,18 @@ class CostCalculatorController extends Controller
         if ($costUsd <= 25000) return 12;
         if ($costUsd <= 50000) return 16;
         return max(4, ceil($costUsd / 3000));
+    }
+
+    private function estimateTimelineDisplay($costUsd, $projectType = null, $isUrgent = false, $isEmergency = false, $weeks = 1)
+    {
+        $isAnim = $projectType && (stripos($projectType->name, 'animation') !== false || stripos($projectType->name, '3d') !== false);
+        if ($isAnim) {
+            if ($isEmergency) return '48–72 Hours';
+            if ($isUrgent) return '5–7 Days';
+            if ($costUsd <= 140) return '15 Days';
+            return $weeks . ' Weeks';
+        }
+        return $weeks . ' Weeks';
     }
 
     private function estimateTeamSize($costUsd)

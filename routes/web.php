@@ -159,30 +159,35 @@ use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\ReferralProgramController;
 use App\Http\Controllers\TapController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\AffiliateRedirectController;
+use App\Http\Controllers\AffiliateLinkController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
- */
+// Amazon Affiliate Deeplink Engine (Main domain & subdomain support)
+Route::domain('buy.animazon.in')->group(function () {
+    Route::get('/{code}', [AffiliateRedirectController::class, 'redirect'])->name('affiliate.redirect');
+    Route::get('/', function() {
+        return redirect()->action([AffiliateRedirectController::class, 'redirect'], ['code' => 'home']);
+    });
+});
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
+// Primary domain shortlink routes: animazon.in/buy/CODE, animazon.in/b/CODE, animazon.in/p/CODE
+Route::get('/buy/{code}', [AffiliateRedirectController::class, 'redirect'])->name('affiliate.redirect.buy');
+Route::get('/b/{code}', [AffiliateRedirectController::class, 'redirect'])->name('affiliate.redirect.b');
+Route::get('/p/{code}', [AffiliateRedirectController::class, 'redirect'])->name('affiliate.redirect.p');
 
 Route::view('/our-portfolio', 'pages.portfolio')->name('portfolio.public');
 Route::view('/blog', 'pages.blog')->name('blog.index');
 Route::view('/home-3d', 'home_v2.index')->name('home.3d');
 Route::view('/home-sitcon', 'home_v3.index')->name('home.sitcon');
 Route::view('/portfolio-3d', 'pages.portfolio-3d')->name('portfolio.3d');
+
+// Affiliate Public REST API Endpoints
+Route::prefix('api/v1/affiliate')->group(function () {
+    Route::post('shorten', [\App\Http\Controllers\Api\AffiliateApiController::class, 'shorten']);
+    Route::get('stats', [\App\Http\Controllers\Api\AffiliateApiController::class, 'stats']);
+});
 
 Route::prefix('blog')->name('blog.')->group(function () {
     Route::view('local-business-growth', 'pages.blog.local-business-growth')->name('local-business-growth');
@@ -446,6 +451,11 @@ Route::group(['middleware' => ['verified']], function () {
     Route::resource('roles', RoleController::class)->middleware(['auth', 'XSS', 'revalidate']);
 
     Route::resource('permissions', PermissionController::class)->middleware(['auth', 'XSS', 'revalidate']);
+
+    Route::resource('affiliate-links', AffiliateLinkController::class)->middleware(['auth', 'XSS', 'revalidate']);
+    Route::post('affiliate-store-ids', [AffiliateLinkController::class, 'storeStoreId'])->name('affiliate.store-ids.store')->middleware(['auth', 'XSS', 'revalidate']);
+    Route::get('affiliate-store-ids/{id}/default', [AffiliateLinkController::class, 'setDefaultStoreId'])->name('affiliate.store-ids.default')->middleware(['auth', 'XSS', 'revalidate']);
+    Route::delete('affiliate-store-ids/{id}', [AffiliateLinkController::class, 'deleteStoreId'])->name('affiliate.store-ids.destroy')->middleware(['auth', 'XSS', 'revalidate']);
 
     Route::group(
         [
@@ -1979,3 +1989,9 @@ Route::get('/update-pricing', function () {
     );
     return 'Database pricing successfully updated! You can now close this tab and refresh the pricing page.';
 });
+
+// Catch-all root level shortlinks for animazon.in/{code} (e.g. animazon.in/B08N5WRWNW or animazon.in/boat-airdopes)
+Route::get('/{code}', [\App\Http\Controllers\AffiliateRedirectController::class, 'redirect'])
+    ->where('code', '^(?!our-portfolio|blog|home-3d|home-sitcon|portfolio-3d|whatsapp|customer|vender|vendor|proposal|career|job|projects|pricing|cost-calculator|terms-and-conditions|config-cache|account-dashboard|project-dashboard|hrm-dashboard|crm-dashboard|pos-dashboard|analytics|profile|edit-profile|users|roles|permissions|systems|productservice|bank-account|bank-transfer|taxes|product-category|product-unit|invoice|bill|revenue|payment|report|login|register|logout|password|api|storage|assets|build|affiliate-links).*$')
+    ->name('affiliate.redirect.root');
+
